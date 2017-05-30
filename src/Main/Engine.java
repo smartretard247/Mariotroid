@@ -1,11 +1,19 @@
 package Main;
 
-import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import com.jogamp.opengl.*;
-import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.util.gl2.GLUT;  // for drawing GLUT objects (such as the teapot)
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.awt.GLJPanel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import javax.swing.JFrame;
 
 /**
  * A template for a basic JOGL application with support for animation, and for
@@ -17,12 +25,12 @@ import com.jogamp.opengl.util.gl2.GLUT;  // for drawing GLUT objects (such as th
  * Note that this program is based on JOGL 2.3, which has some differences
  * from earlier versions; in particular, some of the package names have changed.
  */
-public class JoglStarter extends JPanel implements GLEventListener, KeyListener, MouseListener, 
+public class Engine extends JPanel implements GLEventListener, KeyListener, MouseListener, 
         MouseMotionListener, ActionListener {
 
   public static void main(String[] args) {
-    JFrame window = new JFrame("JOGL");
-    JoglStarter panel = new JoglStarter();
+    JFrame window = new JFrame("Mariotroid");
+    Engine panel = new Engine();
     window.setContentPane(panel);
     /* TODO: If you want to have a menu, comment out the following line. */
     //window.setJMenuBar(panel.createMenuBar());
@@ -30,17 +38,26 @@ public class JoglStarter extends JPanel implements GLEventListener, KeyListener,
     window.setLocation(50,50);
     window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     window.setVisible(true);
+    panel.requestFocusInWindow(); //
   }
 
   private final GLJPanel display;
   private Timer animationTimer;
+  
+  // variables to translate and rotate the scene
+  // private double rotateX = 0;
+  // private double rotateY = 0;
+  // private double rotateZ = 0;
+  private double transX = 0;
+  private double transY = 0;
+  private double transZ = 0; // initial depth, won't change because we are simulating 2D
 
   private int frameNumber = 0; // The current frame number for an animation.
 
   private final GLUT glut = new GLUT(); // TODO: For drawing GLUT objects, otherwise, not needed.
 
   @SuppressWarnings("LeakingThisInConstructor")
-  public JoglStarter() {
+  public Engine() {
     GLCapabilities caps = new GLCapabilities(null);
     display = new GLJPanel(caps);
     display.setPreferredSize( new Dimension(600,600) );  // TODO: set display size here
@@ -49,15 +66,15 @@ public class JoglStarter extends JPanel implements GLEventListener, KeyListener,
     add(display,BorderLayout.CENTER);
     // TODO:  Other components could be added to the main panel.
 
-    // TODO:  Uncomment the next two lines to enable keyboard event handling
-    //display.requestFocusInWindow();
-    //display.addKeyListener(this);
+    // enable keyboard event handling
+    display.requestFocusInWindow();
+    display.addKeyListener(this);
 
     // TODO:  Uncomment the next one or two lines to enable mouse event handling
     //display.addMouseListener(this);
     //display.addMouseMotionListener(this);
 
-    //TODO:  Uncomment the following line to start the animation
+    // start the animation
     //startAnimation();
   }
 
@@ -68,10 +85,14 @@ public class JoglStarter extends JPanel implements GLEventListener, KeyListener,
   @Override
   public void display(GLAutoDrawable drawable) { // called when the panel needs to be drawn
     GL2 gl = drawable.getGL().getGL2();
-    gl.glClearColor(0,0,0,0);
-    gl.glClear( GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT ); // TODO? Omit depth buffer for 2D.
+    gl.glClearColor(0, 0.4f, 0.8f, 0);
+    gl.glClear( GL.GL_COLOR_BUFFER_BIT ); // TODO? Omit depth buffer for 2D.
     gl.glLoadIdentity();             // Set up modelview transform. 
-    // TODO: add drawing code here!!
+    //camera.apply(gl);
+    gl.glPushMatrix(); // save initial transform
+    gl.glTranslated(transX, transY, transZ);  //move the world to respond to user input
+    draw(gl); // draw the scene, all drawing should be done in draw(), not here
+    gl.glPopMatrix(); // return to initial transform
   }
 
   /**
@@ -82,20 +103,42 @@ public class JoglStarter extends JPanel implements GLEventListener, KeyListener,
   @Override
   public void init(GLAutoDrawable drawable) { // called when the panel is created
     GL2 gl = drawable.getGL().getGL2();
-    gl.glEnable(GL2.GL_DEPTH_TEST);  // TODO: Required for 3D drawing, not usually for 2D.
+    //gl.glEnable(GL2.GL_DEPTH_TEST);  // required for 3D drawing, not usually for 2D.
     gl.glMatrixMode(GL2.GL_PROJECTION);
-    //gl.glOrtho(-2, 2 ,-2, 2, -2, 2);
-    gl.glFrustum(-2,2,-2,2,1,3);
+    gl.glOrtho(-20, 20 ,-20, 20, -2, 2);
+    //gl.glFrustum(-2,2,-2,2,1,3);
     gl.glMatrixMode(GL2.GL_MODELVIEW);
     gl.glClearColor( 0, 0, 0, 1 );
 
-    // TODO: Uncomment the following 4 lines to do some typical initialization for 
-    // lighting and materials.
-
+    // TODO: Uncomment the following 4 lines to do some typical initialization for lighting and materials.
     // gl.glEnable(GL2.GL_LIGHTING);        // Enable lighting.
     // gl.glEnable(GL2.GL_LIGHT0);          // Turn on a light.  By default, shines from direction of viewer.
     // gl.glEnable(GL2.GL_NORMALIZE);       // OpenGL will make all normal vectors into unit normals
     // gl.glEnable(GL2.GL_COLOR_MATERIAL);  // Material ambient and diffuse colors can be set by glColor*
+  }
+  
+  /* 
+   * Draws a rectangle with the current color based on the given scales, centered at (0,0,0) and
+   * facing in the +z direction.
+  */
+  private void draw(GL2 gl) {
+    drawRectangle(gl, 10, 10); // a basic rectangle
+  }
+  
+  /* 
+   * Draws a rectangle with the current color based on the given scales, centered at (0,0,0) and
+   * facing in the +z direction.
+  */
+  private void drawRectangle(GL2 gl, double width, double height) {
+    gl.glPushMatrix();
+    gl.glScaled(width, height, 1);
+    gl.glBegin(GL.GL_TRIANGLE_FAN);
+    gl.glVertex3d(-0.5, -0.5, 0);
+    gl.glVertex3d(0.5, -0.5, 0);
+    gl.glVertex3d(0.5, 0.5, 0);
+    gl.glVertex3d(-0.5, 0.5, 0);
+    gl.glEnd();
+    gl.glPopMatrix();
   }
 
   /**
@@ -109,8 +152,6 @@ public class JoglStarter extends JPanel implements GLEventListener, KeyListener,
    */
   @Override
   public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-    // TODO: Add any code required to respond to the size of the display area.
-    //             (Not usually needed.)
   }
 
   /**
@@ -121,16 +162,12 @@ public class JoglStarter extends JPanel implements GLEventListener, KeyListener,
   public void dispose(GLAutoDrawable drawable) {
   }
 
-
   // ------------ Support for a menu -----------------------
   public JMenuBar createMenuBar() {
     JMenuBar menubar = new JMenuBar();
-
     MenuHandler menuHandler = new MenuHandler(); // An object to respond to menu commands.
-
     JMenu menu = new JMenu("Menu"); // Create a menu and add it to the menu bar
     menubar.add(menu);
-
     JMenuItem item = new JMenuItem("Quit");  // Create a menu command.
     item.addActionListener(menuHandler);  // Set up handling for this command.
     menu.add(item);  // Add the command to the menu.
@@ -168,7 +205,22 @@ public class JoglStarter extends JPanel implements GLEventListener, KeyListener,
   @Override
   public void keyPressed(KeyEvent e) {
     int key = e.getKeyCode();  // Tells which key was pressed.
-    // TODO:  Add code to respond to key presses.
+    switch (key) {
+      case KeyEvent.VK_LEFT:
+        transX -= 0.2;
+        break;
+      case KeyEvent.VK_RIGHT:
+        transX += 0.2;
+        break;
+      case KeyEvent.VK_DOWN:
+        transY -= 0.2;
+        break;
+      case KeyEvent.VK_UP:
+        transY += 0.2;
+        break;
+      default:
+        break;
+    }
     display.repaint();  // Causes the display() function to be called.
   }
 
@@ -194,7 +246,6 @@ public class JoglStarter extends JPanel implements GLEventListener, KeyListener,
   }
 
   // --------------------------- animation support ---------------------------
-
   /* You can call startAnimation() to run an animation.  A frame will be drawn every
    * 30 milliseconds (can be changed in the call to glutTimerFunc.  The global frameNumber
    * variable will be incremented for each frame.  Call pauseAnimation() to stop animating.
