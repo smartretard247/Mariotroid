@@ -13,7 +13,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Vector;
 import javax.swing.JFrame;
 
 /**
@@ -51,7 +50,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   // private double rotateZ = 0;
   private double transX = 0;
   private double transY = 0;
-  private double transZ = 0; // initial depth, won't change because we are simulating 2D
+  private final double transZ = 0; // initial depth, won't change because we are simulating 2D
+  private double speedX = 0.2;
+  private double speedY = 0.2;
 
   private int frameNumber = 0; // The current frame number for an animation.
 
@@ -209,16 +210,20 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     int key = e.getKeyCode();  // Tells which key was pressed.
     switch (key) {
       case KeyEvent.VK_LEFT:
-        transX -= 0.2;
+      case KeyEvent.VK_A:
+        transX -= speedX;
         break;
       case KeyEvent.VK_RIGHT:
-        transX += 0.2;
+      case KeyEvent.VK_D:
+        transX += speedX;
         break;
       case KeyEvent.VK_DOWN:
-        transY -= 0.2;
+      case KeyEvent.VK_S:
+        transY -= speedY;
         break;
       case KeyEvent.VK_UP:
-        transY += 0.2;
+      case KeyEvent.VK_W:
+        transY += speedY;
         break;
       default:
         break;
