@@ -13,6 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Vector;
 import javax.swing.JFrame;
 
 /**
@@ -118,10 +119,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   /* 
-   * Draws a rectangle with the current color based on the given scales, centered at (0,0,0) and
-   * facing in the +z direction.
+   * Draws the scene.
   */
   private void draw(GL2 gl) {
+    float[] red = { 1.0f, 0, 0 };
+    gl.glColor3fv(red, 0);
     drawRectangle(gl, 10, 10); // a basic rectangle
   }
   
