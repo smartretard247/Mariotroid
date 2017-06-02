@@ -54,11 +54,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   // all images should be listed here, and stored in the textures directory
   private final String[] textureFileNames = {
+    "hero.png",
     "cloud.gif",
     "TinySmiley.png"
   };
-  private final int TEX_CLOUD = 0; // easier texture identification
-  private final int TEX_SMILEY = 1;
+  private final int TEX_HERO = 0; // easier texture identification
+  private final int TEX_CLOUD = 1;
+  private final int TEX_SMILEY = 2;
   private final Texture[] textures = new Texture[textureFileNames.length];
   
   ///// START METHODS
@@ -139,6 +141,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * Draws the scene.
   */
   private void draw(GL2 gl) {
+    // THIS BLOCK FOR TESTING ONLY ///////////////////////
     float[] red = { 1.0f, 0, 0 };
     gl.glColor3fv(red, 0);
     drawRectangle(gl, 100, 100); // a basic rectangle
@@ -156,6 +159,22 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glTranslated(0, 60, 0);
     drawBlendedRectangle(gl, TEX_SMILEY, 50, 50);
     gl.glPopMatrix();
+    // END TEST BLOCK
+    drawBackground(gl);
+    drawHero(gl);
+    drawForeground(gl);
+  }
+  
+  private void drawBackground(GL2 gl) {
+    
+  }
+  
+  private void drawHero(GL2 gl) {
+    drawBlendedRectangle(gl, TEX_HERO, textures[TEX_HERO].getWidth(), textures[TEX_HERO].getHeight());
+  }
+  
+  private void drawForeground(GL2 gl) {
+    
   }
   
   /**
