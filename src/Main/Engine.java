@@ -3,6 +3,9 @@ package Main;
 import java.awt.event.*;
 import javax.swing.*;
 import com.jogamp.opengl.GL;
+import static com.jogamp.opengl.GL.GL_BLEND;
+import static com.jogamp.opengl.GL.GL_ONE;
+import static com.jogamp.opengl.GL.GL_ONE_MINUS_SRC_ALPHA;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
@@ -35,6 +38,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         MouseMotionListener, ActionListener {
   //////// VARIBLES
   private final GLJPanel display;
+  private final Dimension windowDim = new Dimension(1280,720);
   private Timer animationTimer;
   
   // variables to translate and rotate the scene
@@ -44,14 +48,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private double transX = 0;
   private double transY = 0;
   private final double transZ = 0; // initial depth, won't change because we are simulating 2D
-  private double speedX = 0.2;
-  private double speedY = 0.2;
+  private double speedX = 1.8;
+  private double speedY = 1.8;
   private int frameNumber = 0; // The current frame number for an animation.
   
   // all images should be listed here, and stored in the textures directory
   private final String[] textureFileNames = {
-    "cloud.gif"
+    "cloud.gif",
+    "TinySmiley.png"
   };
+  private final int TEX_CLOUD = 0; // easier texture identification
+  private final int TEX_SMILEY = 1;
   private final Texture[] textures = new Texture[textureFileNames.length];
   
   ///// START METHODS
@@ -73,7 +80,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public Engine() {
     GLCapabilities caps = new GLCapabilities(null);
     display = new GLJPanel(caps);
-    display.setPreferredSize( new Dimension(1280,720) );
+    display.setPreferredSize( windowDim );
     display.addGLEventListener(this);
     setLayout(new BorderLayout());
     add(display,BorderLayout.CENTER);
@@ -101,7 +108,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glClearColor(0, 0.4f, 0.8f, 0);
     gl.glClear( GL.GL_COLOR_BUFFER_BIT ); // TODO? Omit depth buffer for 2D.
     gl.glLoadIdentity();             // Set up modelview transform. 
-    //camera.apply(gl);
     gl.glPushMatrix(); // save initial transform
     gl.glTranslated(transX, transY, transZ);  //move the world to respond to user input
     draw(gl); // draw the scene, all drawing should be done in draw(), not here
@@ -118,16 +124,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     GL2 gl = drawable.getGL().getGL2();
     //gl.glEnable(GL2.GL_DEPTH_TEST);  // required for 3D drawing, not usually for 2D.
     gl.glMatrixMode(GL2.GL_PROJECTION);
-    gl.glOrtho(-20, 20 ,-20, 20, -2, 2);
+    gl.glLoadIdentity();
+    gl.glOrtho(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, -2, 2);
     gl.glMatrixMode(GL2.GL_MODELVIEW);
     gl.glClearColor( 0, 0, 0, 1 );
     //gl.glEnable(GL2.GL_LIGHTING);        // Enable lighting.
     //gl.glEnable(GL2.GL_LIGHT0);          // Turn on a light.  By default, shines from direction of viewer.
     //gl.glEnable(GL2.GL_NORMALIZE);       // OpenGL will make all normal vectors into unit normals
     //gl.glEnable(GL2.GL_COLOR_MATERIAL);  // Material ambient and diffuse colors can be set by glColor*
-    
     this.loadTextures(gl);
-    
   }
   
   /* 
@@ -136,12 +141,53 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void draw(GL2 gl) {
     float[] red = { 1.0f, 0, 0 };
     gl.glColor3fv(red, 0);
-    drawRectangle(gl, 10, 10); // a basic rectangle
+    drawRectangle(gl, 100, 100); // a basic rectangle
+    
+    // snippet as reference to drawing a textured object
     gl.glPushMatrix();
-    gl.glTranslated(0, 10, 0);
-    textures[0].bind(gl);  // Says which texture to use.
-    TexturedShapes.square(gl, 8, true);
+    gl.glTranslated(0, 100, 0);
+    drawTexturedRectangle(gl, TEX_CLOUD, 200, 80);
     gl.glPopMatrix();
+    // end reference
+    
+    gl.glPushMatrix();
+    gl.glTranslated(-300, 0, 0);
+    drawTexturedRectangle(gl, TEX_SMILEY, 50, 50);
+    gl.glTranslated(0, 60, 0);
+    drawBlendedRectangle(gl, TEX_SMILEY, 50, 50);
+    gl.glPopMatrix();
+  }
+  
+  /**
+   * Draws a rectangle using the texture and dimensions specified.
+   * @param gl
+   * @param textureId is an integer matching the array index of the texture
+   * @param width
+   * @param height 
+   */
+  private void drawTexturedRectangle(GL2 gl, int textureId, double width, double height) {
+    gl.glColor3f(1.0f, 1.0f, 1.0f); // remove color before applying texture 
+    textures[textureId].enable(gl);
+    textures[textureId].bind(gl);  // set texture to use
+    gl.glPushMatrix();
+    gl.glScaled(width, height, 1);
+    TexturedShapes.square(gl, 1, true);
+    gl.glPopMatrix();
+    textures[textureId].disable(gl);
+  }
+  
+  /**
+   * Draws textures with alpha blending, use for anything that needs transparency.
+   * @param gl
+   * @param textureId
+   * @param width
+   * @param height 
+   */
+  private void drawBlendedRectangle(GL2 gl, int textureId, double width, double height) {
+    gl.glEnable(GL_BLEND);
+    gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    drawTexturedRectangle(gl, textureId, width, height);
+    gl.glDisable(GL_BLEND);
   }
   
   /* 
