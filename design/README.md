@@ -35,7 +35,7 @@
 * Coming soon: [Pause](art/pause.jpg)
 * Coming soon: [UI Overlay](art/ui.jpg)
 
-##### Layers (refer to layers.jpg for general idea)
+##### [Layers](art/layers.jpg)
 
 The mood I had in mind for this game is somewhat dark with a glimmer of home that our hero can escape and get home.  The colony was destroyed by the calamity in an attempt to take back it's home from the invaders (the colonists).
 
