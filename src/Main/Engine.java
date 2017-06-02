@@ -2,17 +2,23 @@ package Main;
 
 import java.awt.event.*;
 import javax.swing.*;
-import com.jogamp.opengl.util.gl2.GLUT;  // for drawing GLUT objects (such as the teapot)
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLJPanel;
+import com.jogamp.opengl.util.awt.ImageUtil;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 /**
@@ -27,20 +33,7 @@ import javax.swing.JFrame;
  */
 public class Engine extends JPanel implements GLEventListener, KeyListener, MouseListener, 
         MouseMotionListener, ActionListener {
-
-  public static void main(String[] args) {
-    JFrame window = new JFrame("Mariotroid");
-    Engine panel = new Engine();
-    window.setContentPane(panel);
-    /* TODO: If you want to have a menu, comment out the following line. */
-    //window.setJMenuBar(panel.createMenuBar());
-    window.pack();
-    window.setLocation(50,50);
-    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    window.setVisible(true);
-    panel.requestFocusInWindow(); //
-  }
-
+  //////// VARIBLES
   private final GLJPanel display;
   private Timer animationTimer;
   
@@ -53,16 +46,34 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final double transZ = 0; // initial depth, won't change because we are simulating 2D
   private double speedX = 0.2;
   private double speedY = 0.2;
-
   private int frameNumber = 0; // The current frame number for an animation.
+  
+  // all images should be listed here, and stored in the textures directory
+  private final String[] textureFileNames = {
+    "cloud.gif"
+  };
+  private final Texture[] textures = new Texture[textureFileNames.length];
+  
+  ///// START METHODS
 
-  private final GLUT glut = new GLUT(); // TODO: For drawing GLUT objects, otherwise, not needed.
+  public static void main(String[] args) {
+    JFrame window = new JFrame("Mariotroid");
+    Engine panel = new Engine();
+    window.setContentPane(panel);
+    /* TODO: If you want to have a menu, comment out the following line. */
+    //window.setJMenuBar(panel.createMenuBar());
+    window.pack();
+    window.setLocation(10,10);
+    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    window.setVisible(true);
+    panel.requestFocusInWindow(); //
+  }
 
   @SuppressWarnings("LeakingThisInConstructor")
   public Engine() {
     GLCapabilities caps = new GLCapabilities(null);
     display = new GLJPanel(caps);
-    display.setPreferredSize( new Dimension(600,600) );  // TODO: set display size here
+    display.setPreferredSize( new Dimension(1280,720) );
     display.addGLEventListener(this);
     setLayout(new BorderLayout());
     add(display,BorderLayout.CENTER);
@@ -108,15 +119,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     //gl.glEnable(GL2.GL_DEPTH_TEST);  // required for 3D drawing, not usually for 2D.
     gl.glMatrixMode(GL2.GL_PROJECTION);
     gl.glOrtho(-20, 20 ,-20, 20, -2, 2);
-    //gl.glFrustum(-2,2,-2,2,1,3);
     gl.glMatrixMode(GL2.GL_MODELVIEW);
     gl.glClearColor( 0, 0, 0, 1 );
-
-    // TODO: Uncomment the following 4 lines to do some typical initialization for lighting and materials.
-    // gl.glEnable(GL2.GL_LIGHTING);        // Enable lighting.
-    // gl.glEnable(GL2.GL_LIGHT0);          // Turn on a light.  By default, shines from direction of viewer.
-    // gl.glEnable(GL2.GL_NORMALIZE);       // OpenGL will make all normal vectors into unit normals
-    // gl.glEnable(GL2.GL_COLOR_MATERIAL);  // Material ambient and diffuse colors can be set by glColor*
+    //gl.glEnable(GL2.GL_LIGHTING);        // Enable lighting.
+    //gl.glEnable(GL2.GL_LIGHT0);          // Turn on a light.  By default, shines from direction of viewer.
+    //gl.glEnable(GL2.GL_NORMALIZE);       // OpenGL will make all normal vectors into unit normals
+    //gl.glEnable(GL2.GL_COLOR_MATERIAL);  // Material ambient and diffuse colors can be set by glColor*
+    
+    this.loadTextures(gl);
+    
   }
   
   /* 
@@ -126,6 +137,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     float[] red = { 1.0f, 0, 0 };
     gl.glColor3fv(red, 0);
     drawRectangle(gl, 10, 10); // a basic rectangle
+    gl.glPushMatrix();
+    gl.glTranslated(0, 10, 0);
+    textures[0].bind(gl);  // Says which texture to use.
+    TexturedShapes.square(gl, 8, true);
+    gl.glPopMatrix();
   }
   
   /* 
@@ -142,6 +158,31 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glVertex3d(-0.5, 0.5, 0);
     gl.glEnd();
     gl.glPopMatrix();
+  }
+  
+  /**
+   * Loads all the listed images in textureFileNames, as long as they are stored in the textures
+   * folder.  Should only be called once during initialization.
+   * @param gl 
+   */
+  private void loadTextures(GL2 gl) {
+    for (int i = 0; i < textureFileNames.length; i++) {
+      try {
+          URL textureURL;
+          textureURL = getClass().getClassLoader().getResource(textureFileNames[i]);
+          if (textureURL != null) {
+            BufferedImage img = ImageIO.read(textureURL);
+            ImageUtil.flipImageVertically(img);
+            textures[i] = AWTTextureIO.newTexture(GLProfile.getDefault(), img, true);
+            textures[i].setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_S, GL2.GL_REPEAT);
+            textures[i].setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_T, GL2.GL_REPEAT);
+          }
+      }
+      catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    textures[0].enable(gl);
   }
 
   /**
