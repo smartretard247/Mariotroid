@@ -12,7 +12,7 @@
 * Space - Jump
 * Shift - Sprint
 * F - Interact
-* I - Inventory
+* I - Inventory -- Nice to have feature, not required
 
 ##### Mouse - combat
 
@@ -28,6 +28,12 @@
 ***
 
 #### Layout
+
+* Resolution: 1280×720
+* [Logo](art/logo.png)
+* Coming soon: [Menu](art/menu.jpg)
+* Coming soon: [Pause](art/pause.jpg)
+* Coming soon: [UI Overlay](art/ui.jpg)
 
 ##### Layers (refer to layers.jpg for general idea)
 
@@ -45,7 +51,7 @@ I like [this interface](https://opengameart.org/content/sci-fi-platform-tiles) a
 
 * To maintain a good parallax perspective, this layer should scroll slower than the other two layers
 
-###### Interface
+###### Interface/Collision
 
 * This is the layer that we can use to mask or texturize the ground, platforms, and other environment objects (both destructible and non-destructible)
 
@@ -57,9 +63,11 @@ I like [this interface](https://opengameart.org/content/sci-fi-platform-tiles) a
 
 * Decorative layer to bring more life/immersion to the Interface layer
 
-* This layer should "complete" the interface layer but highlight aspects of the background (nature taking back its planet)
+* This layer will help hide loot and secret areas from the user
 
 * similar to background, alien foliage, non-interactable forrest critters?, obstructions to hide easter eggs
+
+* If possible, I'd like to lower the opacity of this layer while the player is behind it (letting them see hidden platforms).  This request will likely cause the foreground to be cut up into several "zones" so that the entire layer (accross the whole level) doesn't become more transparent.
 
 ***
 
@@ -69,9 +77,8 @@ I like [this interface](https://opengameart.org/content/sci-fi-platform-tiles) a
 
 * Crowbar
 * Blaster
-    * attachments?
+    * attachments/power-up?
 * Punch
-* Mine/Trap
 
 ##### Armor
 
@@ -89,7 +96,7 @@ Can have basic stat modifiers (+n or *n)
 * Crowbar (open boxes, break barriers, etc.)
 * Jetpack (double jump)
 * Health
-* Potion (strength, speed, heal over time, etc.)
+* Potion (strength, speed, heal over time, etc.) -- Nice to have, not a requirement
 
 ***
 
