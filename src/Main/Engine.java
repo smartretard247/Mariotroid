@@ -10,6 +10,7 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.util.awt.ImageUtil;
@@ -20,6 +21,7 @@ import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -40,27 +42,31 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final GLJPanel display;
   private final Dimension windowDim = new Dimension(1280,720);
   private Timer animationTimer;
+  private final Timer introTimer = new Timer(3000, this); // used to run intro for 3 seconds
   
   // variables to translate and rotate the scene
   // private double rotateX = 0;
   // private double rotateY = 0;
   // private double rotateZ = 0;
-  private double transX = 0;
-  private double transY = 0;
-  private final double transZ = 0; // initial depth, won't change because we are simulating 2D
-  private double speedX = 1.8;
-  private double speedY = 1.8;
+  private double transX = 0; // for moving the entire scene
+  private double transY = 0; // for moving the entire scene
+  private double heroX = 0; // for moving the hero only
+  private double heroY = 0; // for moving the hero only
+  private double speedX = 1.8; // movement increment
+  private double speedY = 1.8; // movement increment
   private int frameNumber = 0; // The current frame number for an animation.
   
   // all images should be listed here, and stored in the textures directory
   private final String[] textureFileNames = {
     "hero.png",
+    "logo.png",
     "cloud.gif",
     "TinySmiley.png"
   };
   private final int TEX_HERO = 0; // easier texture identification
-  private final int TEX_CLOUD = 1;
-  private final int TEX_SMILEY = 2;
+  private final int TEX_LOGO = 1;
+  private final int TEX_CLOUD = 2;
+  private final int TEX_SMILEY = 3;
   private final Texture[] textures = new Texture[textureFileNames.length];
   
   ///// START METHODS
@@ -97,7 +103,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     //display.addMouseMotionListener(this);
 
     // start the animation
-    //startAnimation();
+    this.startAnimation(); // also control pause function (and remove keyboard response)
+    this.introTimer.setRepeats(false);
+    this.introTimer.start();
   }
 
   /**
@@ -110,10 +118,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glClearColor(0, 0.4f, 0.8f, 0);
     gl.glClear( GL.GL_COLOR_BUFFER_BIT ); // TODO? Omit depth buffer for 2D.
     gl.glLoadIdentity();             // Set up modelview transform. 
-    gl.glPushMatrix(); // save initial transform
-    gl.glTranslated(transX, transY, transZ);  //move the world to respond to user input
-    draw(gl); // draw the scene, all drawing should be done in draw(), not here
-    gl.glPopMatrix(); // return to initial transform
+    if(!introTimer.isRunning()) {
+      gl.glPushMatrix(); // save initial transform
+      gl.glTranslated(transX, transY, 0);  //move the world to respond to user input
+      draw(gl); // draw the scene, all drawing should be done in draw(), not here
+      gl.glPopMatrix(); // return to initial transform
+    } else {
+      drawIntro(gl);
+    }
   }
 
   /**
@@ -142,10 +154,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   */
   private void draw(GL2 gl) {
     // THIS BLOCK FOR TESTING ONLY ///////////////////////
-    float[] red = { 1.0f, 0, 0 };
-    gl.glColor3fv(red, 0);
-    drawRectangle(gl, 100, 100); // a basic rectangle
-    
     // snippet as reference to drawing a textured object
     gl.glPushMatrix();
     gl.glTranslated(0, 100, 0);
@@ -165,16 +173,35 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawForeground(gl);
   }
   
+  /**
+   * Draws the background once per frame.
+   * @param gl 
+   */
   private void drawBackground(GL2 gl) {
     
   }
   
+  /**
+   * Draws the hero on top of the scene.
+   * @param gl 
+   */
   private void drawHero(GL2 gl) {
+    gl.glPushMatrix();
+    gl.glTranslated(heroX, heroY, 0);  //move the world to respond to user input
     drawBlendedRectangle(gl, TEX_HERO, textures[TEX_HERO].getWidth(), textures[TEX_HERO].getHeight());
+    gl.glPopMatrix();
   }
-  
+   /**
+    * Draws any foreground objects to simulate depth.
+    * @param gl 
+    */
   private void drawForeground(GL2 gl) {
-    
+    gl.glPushMatrix();
+    float[] red = { 1.0f, 0, 0 };
+    gl.glColor3fv(red, 0);
+    gl.glTranslated(60, 0, 0);
+    drawRectangle(gl, 100, 100); // a basic rectangle
+    gl.glPopMatrix();
   }
   
   /**
@@ -225,6 +252,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
   }
   
+  private void drawIntro(GL2 gl) {
+    gl.glPushMatrix();
+    drawBlendedRectangle(gl, TEX_LOGO, textures[TEX_LOGO].getWidth(), textures[TEX_LOGO].getHeight());
+    gl.glPopMatrix();
+  }
+  
   /**
    * Loads all the listed images in textureFileNames, as long as they are stored in the textures
    * folder.  Should only be called once during initialization.
@@ -243,7 +276,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             textures[i].setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_T, GL2.GL_REPEAT);
           }
       }
-      catch (Exception e) {
+      catch (IOException | GLException e) {
         e.printStackTrace();
       }
     }
@@ -314,25 +347,49 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   @Override
   public void keyPressed(KeyEvent e) {
     int key = e.getKeyCode();  // Tells which key was pressed.
-    switch (key) {
-      case KeyEvent.VK_LEFT:
-      case KeyEvent.VK_A:
-        transX -= speedX;
-        break;
-      case KeyEvent.VK_RIGHT:
-      case KeyEvent.VK_D:
-        transX += speedX;
-        break;
-      case KeyEvent.VK_DOWN:
-      case KeyEvent.VK_S:
-        transY -= speedY;
-        break;
-      case KeyEvent.VK_UP:
-      case KeyEvent.VK_W:
-        transY += speedY;
-        break;
-      default:
-        break;
+    if(animating) {
+      switch (key) {
+        case KeyEvent.VK_P: // pause/unpause
+          this.pauseAnimation();
+          break;
+        // hero movements
+        case KeyEvent.VK_LEFT:
+          heroX -= speedX;
+          break;
+        case KeyEvent.VK_RIGHT:
+          heroX += speedX;
+          break;
+        case KeyEvent.VK_UP:
+          heroY += speedY;
+          break;
+        case KeyEvent.VK_DOWN:
+          heroY -= speedY;
+          break;
+        // global movements
+        case KeyEvent.VK_A:
+          transX -= speedX;
+          break;
+        case KeyEvent.VK_D:
+          transX += speedX;
+          break;
+        case KeyEvent.VK_W:
+          transY += speedY;
+          break;
+        case KeyEvent.VK_S:
+          transY -= speedY;
+          break;
+        default:
+          break;
+      }
+    } else { // then we are paused, so change keyboard options
+      switch (key) {
+        // hero movements
+        case KeyEvent.VK_P: // pause/unpause
+          this.startAnimation();
+          break;
+        default:
+          break;
+      }
     }
     display.repaint();  // Causes the display() function to be called.
   }
@@ -376,6 +433,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     if (!animating ) {
       if (animationTimer == null) {
         animationTimer = new Timer(30, this);
+        animationTimer.setInitialDelay(5000); // used to display intro for 5 seconds
       }
       animationTimer.start();
       animating = true;
