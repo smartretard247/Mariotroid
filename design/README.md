@@ -30,6 +30,8 @@
 #### Layout
 
 * Resolution: 1280×720
+* All things will be sized in multiples of one inch
+* Most sprites will be two inches tall and one inch wide
 * [Logo](art/logo.png)
 * Coming soon: [Menu](art/menu.jpg)
 * Coming soon: [Pause](art/pause.jpg)
