@@ -53,13 +53,15 @@ I like [this interface](https://opengameart.org/content/sci-fi-platform-tiles) a
 
 * To maintain a good parallax perspective, this layer should scroll slower than the other two layers
 
-###### Interface/Collision
+###### Interface/Collision (level.png)
 
 * This is the layer that we can use to mask or texturize the ground, platforms, and other environment objects (both destructible and non-destructible)
 
 * This layer should have very simple textures for the interactables (wood, metal, stone, etc.)
 
 * This layer is the layer that all sprites will traverse
+
+* If anyone edits level.vsdx: Export as PNG, Interlace, Bi-level, Adaptive, with tranparency
 
 ###### Foreground
 
