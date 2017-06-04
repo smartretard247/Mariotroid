@@ -49,6 +49,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   // variables to translate the scene
   private double transX = 0; // for moving the entire scene
   private double transY = 0; // for moving the entire scene
+  private double scaleX = 0.2; // global scaling
+  private double scaleY = 0.2; // global scaling
   
   // these will most likely have to be wrapped in a class
   private double heroX = 0; // for moving the hero only
@@ -122,7 +124,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glLoadIdentity();             // Set up modelview transform. 
     if(!introTimer.isRunning()) {
       gl.glPushMatrix(); // save initial transform
-      gl.glScaled(0.1, 0.1, 1); // set global scale
+      gl.glScaled(scaleX, scaleY, 1); // set global scale
       gl.glTranslated(transX, transY, 0);  //move the world to respond to user input
       draw(gl); // draw the scene, all drawing should be done in draw(), not here
       gl.glPopMatrix(); // return to initial transform
