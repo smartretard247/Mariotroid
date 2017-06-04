@@ -5,6 +5,7 @@ import javax.swing.*;
 import com.jogamp.opengl.GL;
 import static com.jogamp.opengl.GL.GL_BLEND;
 import static com.jogamp.opengl.GL.GL_ONE;
+import static com.jogamp.opengl.GL.GL_ONE_MINUS_DST_ALPHA;
 import static com.jogamp.opengl.GL.GL_ONE_MINUS_SRC_ALPHA;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -43,30 +44,31 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final Dimension windowDim = new Dimension(1280,720);
   private Timer animationTimer;
   private final Timer introTimer = new Timer(3000, this); // used to run intro for 3 seconds
+  private int frameNumber = 0; // The current frame number for an animation.
   
-  // variables to translate and rotate the scene
-  // private double rotateX = 0;
-  // private double rotateY = 0;
-  // private double rotateZ = 0;
+  // variables to translate the scene
   private double transX = 0; // for moving the entire scene
   private double transY = 0; // for moving the entire scene
+  
+  // these will most likely have to be wrapped in a class
   private double heroX = 0; // for moving the hero only
   private double heroY = 0; // for moving the hero only
   private double speedX = 1.8; // movement increment
   private double speedY = 1.8; // movement increment
-  private int frameNumber = 0; // The current frame number for an animation.
   
   // all images should be listed here, and stored in the textures directory
   private final String[] textureFileNames = {
     "hero.png",
     "logo.png",
+    "level.png",
     "cloud.gif",
     "TinySmiley.png"
   };
   private final int TEX_HERO = 0; // easier texture identification
   private final int TEX_LOGO = 1;
-  private final int TEX_CLOUD = 2;
-  private final int TEX_SMILEY = 3;
+  private final int TEX_COLLISIONS = 2;
+  private final int TEX_CLOUD = 3;
+  private final int TEX_SMILEY = 4;
   private final Texture[] textures = new Texture[textureFileNames.length];
   
   ///// START METHODS
@@ -120,6 +122,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glLoadIdentity();             // Set up modelview transform. 
     if(!introTimer.isRunning()) {
       gl.glPushMatrix(); // save initial transform
+      gl.glScaled(0.1, 0.1, 1); // set global scale
       gl.glTranslated(transX, transY, 0);  //move the world to respond to user input
       draw(gl); // draw the scene, all drawing should be done in draw(), not here
       gl.glPopMatrix(); // return to initial transform
@@ -168,9 +171,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawBlendedRectangle(gl, TEX_SMILEY, 50, 50);
     gl.glPopMatrix();
     // END TEST BLOCK
+    
     drawBackground(gl);
     drawHero(gl);
     drawForeground(gl);
+    //drawCollisions(gl); // comment this line after collisions are working
   }
   
   /**
@@ -255,6 +260,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawIntro(GL2 gl) {
     gl.glPushMatrix();
     drawBlendedRectangle(gl, TEX_LOGO, textures[TEX_LOGO].getWidth(), textures[TEX_LOGO].getHeight());
+    gl.glPopMatrix();
+  }
+  
+  private void drawCollisions(GL2 gl) {
+    gl.glPushMatrix();
+    drawBlendedRectangle(gl, TEX_COLLISIONS, textures[TEX_COLLISIONS].getWidth(), textures[TEX_COLLISIONS].getHeight());
     gl.glPopMatrix();
   }
   
