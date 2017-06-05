@@ -5,7 +5,7 @@
 
 ##### Keyboard
 
-* W - Jump/Climb
+* W - ~~Jump/~~ Climb
 * A - Left
 * S - Crouch/Climb
 * D - Right
