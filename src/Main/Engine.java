@@ -5,7 +5,6 @@ import javax.swing.*;
 import com.jogamp.opengl.GL;
 import static com.jogamp.opengl.GL.GL_BLEND;
 import static com.jogamp.opengl.GL.GL_ONE;
-import static com.jogamp.opengl.GL.GL_ONE_MINUS_DST_ALPHA;
 import static com.jogamp.opengl.GL.GL_ONE_MINUS_SRC_ALPHA;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -43,8 +42,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final GLJPanel display;
   private final Dimension windowDim = new Dimension(1280,720);
   private Timer animationTimer;
-  private final Timer introTimer = new Timer(3000, this); // used to run intro for 3 seconds
   private int frameNumber = 0; // The current frame number for an animation.
+  private GAME_MODES gameMode = GAME_MODES.INTRO;
+  private START_MENU_OPTIONS startMenuSelection = START_MENU_OPTIONS.START_GAME;
   
   // variables to translate the scene
   private double transX = 0; // for moving the entire scene
@@ -108,8 +108,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
 
     // start the animation
     this.startAnimation(); // also control pause function (and remove keyboard response)
-    this.introTimer.setRepeats(false);
-    this.introTimer.start();
+    
+    Timer introTimer = new Timer(4000, (evt)-> {
+      this.gameMode = GAME_MODES.START_MENU;
+    });
+    introTimer.setRepeats(false);
+    introTimer.start();
   }
 
   /**
@@ -122,15 +126,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glClearColor(0, 0.4f, 0.8f, 0);
     gl.glClear( GL.GL_COLOR_BUFFER_BIT ); // TODO? Omit depth buffer for 2D.
     gl.glLoadIdentity();             // Set up modelview transform. 
-    if(!introTimer.isRunning()) {
-      gl.glPushMatrix(); // save initial transform
-      gl.glScaled(scaleX, scaleY, 1); // set global scale
-      gl.glTranslated(transX, transY, 0);  //move the world to respond to user input
-      draw(gl); // draw the scene, all drawing should be done in draw(), not here
-      gl.glPopMatrix(); // return to initial transform
-    } else {
-      drawIntro(gl);
-    }
+    draw(gl);
   }
 
   /**
@@ -147,6 +143,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glOrtho(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, -2, 2);
     gl.glMatrixMode(GL2.GL_MODELVIEW);
     gl.glClearColor( 0, 0, 0, 1 );
+    gl.glEnable(GL_BLEND);
+    gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     //gl.glEnable(GL2.GL_LIGHTING);        // Enable lighting.
     //gl.glEnable(GL2.GL_LIGHT0);          // Turn on a light.  By default, shines from direction of viewer.
     //gl.glEnable(GL2.GL_NORMALIZE);       // OpenGL will make all normal vectors into unit normals
@@ -155,9 +153,26 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   /* 
-   * Draws the scene.
+   * Draws the scene, for each given game mode.
   */
   private void draw(GL2 gl) {
+    switch(gameMode) {
+      case INTRO: drawIntro(gl); break; // END INTRO
+      case START_MENU: drawStartMenu(gl); break; // END START MENU
+      case RUNNING: drawNormalGamePlay(gl); break; // END RUNNING
+      case PAUSED: drawPauseMenu(gl); break; // END PAUSED
+      default: break;
+    }
+  }
+  
+  /**
+   * This is the standard loop for the game, showing level, character, enemies, etc.
+   * @param gl 
+   */
+  private void drawNormalGamePlay(GL2 gl) {
+    gl.glPushMatrix(); // save initial transform
+    gl.glScaled(scaleX, scaleY, 1); // set global scale
+    gl.glTranslated(transX, transY, 0);  //move the world to respond to user input
     // THIS BLOCK FOR TESTING ONLY ///////////////////////
     // snippet as reference to drawing a textured object
     gl.glPushMatrix();
@@ -165,19 +180,20 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawTexturedRectangle(gl, TEX_CLOUD, 200, 80);
     gl.glPopMatrix();
     // end reference
-    
+
     gl.glPushMatrix();
     gl.glTranslated(-300, 0, 0);
     drawTexturedRectangle(gl, TEX_SMILEY, 50, 50);
     gl.glTranslated(0, 60, 0);
-    drawBlendedRectangle(gl, TEX_SMILEY, 50, 50);
     gl.glPopMatrix();
     // END TEST BLOCK
-    
+
     drawBackground(gl);
     drawHero(gl);
     drawForeground(gl);
     //drawCollisions(gl); // comment this line after collisions are working
+
+    gl.glPopMatrix(); // return to initial transform
   }
   
   /**
@@ -195,7 +211,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawHero(GL2 gl) {
     gl.glPushMatrix();
     gl.glTranslated(heroX, heroY, 0);  //move the world to respond to user input
-    drawBlendedRectangle(gl, TEX_HERO, textures[TEX_HERO].getWidth(), textures[TEX_HERO].getHeight());
+    drawTexturedRectangle(gl, TEX_HERO, textures[TEX_HERO].getWidth(), textures[TEX_HERO].getHeight());
     gl.glPopMatrix();
   }
    /**
@@ -229,20 +245,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     textures[textureId].disable(gl);
   }
   
-  /**
-   * Draws textures with alpha blending, use for anything that needs transparency.
-   * @param gl
-   * @param textureId
-   * @param width
-   * @param height 
-   */
-  private void drawBlendedRectangle(GL2 gl, int textureId, double width, double height) {
-    gl.glEnable(GL_BLEND);
-    gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    drawTexturedRectangle(gl, textureId, width, height);
-    gl.glDisable(GL_BLEND);
-  }
-  
   /* 
    * Draws a rectangle with the current color based on the given scales, centered at (0,0,0) and
    * facing in the +z direction.
@@ -259,16 +261,20 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
   }
   
+  private void drawText() {
+    // need to add functionality to draw text, preferably using specified fonts and sizes
+  }
+  
   private void drawIntro(GL2 gl) {
-    gl.glPushMatrix();
-    drawBlendedRectangle(gl, TEX_LOGO, textures[TEX_LOGO].getWidth(), textures[TEX_LOGO].getHeight());
-    gl.glPopMatrix();
+    //gl.glPushMatrix();
+    drawTexturedRectangle(gl, TEX_LOGO, textures[TEX_LOGO].getWidth(), textures[TEX_LOGO].getHeight());
+    //gl.glPopMatrix();
   }
   
   private void drawCollisions(GL2 gl) {
-    gl.glPushMatrix();
-    drawBlendedRectangle(gl, TEX_COLLISIONS, textures[TEX_COLLISIONS].getWidth(), textures[TEX_COLLISIONS].getHeight());
-    gl.glPopMatrix();
+    //gl.glPushMatrix();
+    drawTexturedRectangle(gl, TEX_COLLISIONS, textures[TEX_COLLISIONS].getWidth(), textures[TEX_COLLISIONS].getHeight());
+    //gl.glPopMatrix();
   }
   
   /**
@@ -331,6 +337,38 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     return menubar;
   }
 
+  private void drawStartMenu(GL2 gl) {
+    switch(this.startMenuSelection) {
+      case START_GAME:
+        gl.glPushMatrix();
+        gl.glTranslated(0, 50, 0);
+        drawRectangle(gl, 300, 100); // TODO: replace this once drawText() is working
+        gl.glPopMatrix();
+        break;
+      case EXIT:
+        gl.glPushMatrix();
+        gl.glTranslated(0, -50, 0);
+        drawRectangle(gl, 300, 100);  // TODO: replace this once drawText() is working
+        gl.glPopMatrix();
+        break;
+      default: break;
+    }
+  }
+
+  private void drawPauseMenu(GL2 gl) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  private void doStartMenuSelection() {
+    switch(this.startMenuSelection) {
+      case START_GAME: gameMode = GAME_MODES.RUNNING;
+        break;
+      case EXIT: System.exit(0);
+        break;
+      default: break;
+    }
+  }
+
   /**
    * A class to define the ActionListener object that will respond to menu commands.
    */
@@ -360,49 +398,48 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   @Override
   public void keyPressed(KeyEvent e) {
     int key = e.getKeyCode();  // Tells which key was pressed.
-    if(animating) {
-      switch (key) {
+    switch(gameMode) { // controls are based on the game mode
+      case RUNNING:
+        switch (key) {
         case KeyEvent.VK_P: // pause/unpause
-          this.pauseAnimation();
+          gameMode = GAME_MODES.PAUSED;
           break;
         // hero movements
-        case KeyEvent.VK_LEFT:
+        case KeyEvent.VK_A: // move left
           heroX -= speedX;
           break;
-        case KeyEvent.VK_RIGHT:
+        case KeyEvent.VK_D: // move right
           heroX += speedX;
           break;
-        case KeyEvent.VK_UP:
-          heroY += speedY;
+        case KeyEvent.VK_SPACE: // jump
+          // TODO: jump function
           break;
-        case KeyEvent.VK_DOWN:
-          heroY -= speedY;
+        case KeyEvent.VK_S: // crouch
+          // TODO: change to crouch (image and collision rect will shrink)
           break;
-        // global movements
-        case KeyEvent.VK_A:
-          transX -= speedX;
-          break;
-        case KeyEvent.VK_D:
-          transX += speedX;
-          break;
-        case KeyEvent.VK_W:
-          transY += speedY;
-          break;
-        case KeyEvent.VK_S:
-          transY -= speedY;
-          break;
-        default:
-          break;
+        default: break;
       }
-    } else { // then we are paused, so change keyboard options
+      break; // END RUNNING
+    case PAUSED: // then we are paused, so change keyboard options
       switch (key) {
         // hero movements
         case KeyEvent.VK_P: // pause/unpause
-          this.startAnimation();
+          gameMode = GAME_MODES.RUNNING;
           break;
-        default:
-          break;
+        default: break;
       }
+      break; // END PAUSED
+    case START_MENU:
+      switch(key) {
+        case KeyEvent.VK_W: this.startMenuSelection = startMenuSelection.prev(); // scroll upward through menu
+          break;
+        case KeyEvent.VK_S: this.startMenuSelection = startMenuSelection.next(); // scroll downward through menu
+          break;
+        case KeyEvent.VK_ENTER: doStartMenuSelection();
+          break;
+        default: break;
+      }
+      break; // END START_MENU
     }
     display.repaint();  // Causes the display() function to be called.
   }
@@ -446,7 +483,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     if (!animating ) {
       if (animationTimer == null) {
         animationTimer = new Timer(30, this);
-        animationTimer.setInitialDelay(5000); // used to display intro for 5 seconds
       }
       animationTimer.start();
       animating = true;
