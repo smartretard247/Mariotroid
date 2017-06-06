@@ -47,6 +47,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private int frameNumber = 0; // The current frame number for an animation.
   private GAME_MODES gameMode = GAME_MODES.INTRO;
   private START_MENU_OPTIONS startMenuSelection = START_MENU_OPTIONS.START_GAME;
+  private long score = 0;
   
   // variables to translate the scene
   private double transX = 0; // for moving the entire scene
@@ -57,8 +58,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   // these will most likely have to be wrapped in a class
   private double heroX = 0; // for moving the hero only
   private double heroY = 0; // for moving the hero only
-  private double speedX = 1.8; // movement increment
-  private double speedY = 1.8; // movement increment
+  private double speedX = 10.0; // movement increment
+  private double speedY = 10.0; // movement increment
   
   // all images should be listed here, and stored in the textures directory
   private final String[] textureFileNames = {
@@ -221,12 +222,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     * @param gl 
     */
   private void drawForeground(GL2 gl) {
+    //TEST BLOCK /////////////////////
     gl.glPushMatrix();
     float[] red = { 1.0f, 0, 0 };
     gl.glColor3fv(red, 0);
     gl.glTranslated(60, 0, 0);
     drawRectangle(gl, 100, 100); // a basic rectangle
     gl.glPopMatrix();
+    // END TEST BLOCK //////////////
+    
+    //drawHud(gl); // TODO: implement HUD function
+    drawHealth(gl);
+    drawScore(gl);
   }
   
   /**
@@ -387,6 +394,26 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         break;
       default: break;
     }
+  }
+
+  private void drawHud(GL2 gl) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  }
+
+  private void drawHealth(GL2 gl) { // draw health in top left corner
+    double[] textColor = new double[] { 1.0, 1.0, 1.0 };
+    gl.glPushMatrix();
+    gl.glTranslated(-windowDim.width*2, windowDim.height*2, 0);
+    drawText(gl, "HEALTH HERE", textColor, -120, 20); // maybe get hearts for health image?
+    gl.glPopMatrix();
+  }
+
+  private void drawScore(GL2 gl) { // draw score in top right corner
+    double[] textColor = new double[] { 1.0, 1.0, 1.0 };
+    gl.glPushMatrix();
+    gl.glTranslated(windowDim.width*2, windowDim.height*2, 0);
+    drawText(gl, "SCORE: " + Long.toString(score), textColor, -120, 20);
+    gl.glPopMatrix();
   }
 
   /**
