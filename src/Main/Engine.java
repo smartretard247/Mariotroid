@@ -14,6 +14,7 @@ import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.util.awt.ImageUtil;
+import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 import java.awt.BorderLayout;
@@ -39,6 +40,7 @@ import javax.swing.JFrame;
 public class Engine extends JPanel implements GLEventListener, KeyListener, MouseListener, 
         MouseMotionListener, ActionListener {
   //////// VARIBLES
+  private final GLUT glut = new GLUT();
   private final GLJPanel display;
   private final Dimension windowDim = new Dimension(1280,720);
   private Timer animationTimer;
@@ -261,8 +263,20 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
   }
   
-  private void drawText() {
-    // need to add functionality to draw text, preferably using specified fonts and sizes
+  /**
+   * Draws given text on the screen, in the given color.  Use rasterPosX and rasterPosY to adjust
+   * where the text is displayed.
+   * @param gl
+   * @param text
+   * @param color
+   * @param rasterPosX
+   * @param rasterPosY 
+   */
+  private void drawText(GL2 gl, String text, double[] color, double rasterPosX, double rasterPosY) {
+    gl.glColor3d(color[0], color[1], color[2]);
+    gl.glRasterPos2d(rasterPosX, rasterPosY);
+    glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, text);
+
   }
   
   private void drawIntro(GL2 gl) {
@@ -338,17 +352,23 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
 
   private void drawStartMenu(GL2 gl) {
+    double[] selectedTextColor = new double[] { 1.0, 0.0, 0.0 };
+    double[] textColor = new double[] { 0.0, 0.0, 0.0 };
     switch(this.startMenuSelection) {
       case START_GAME:
         gl.glPushMatrix();
         gl.glTranslated(0, 50, 0);
-        drawRectangle(gl, 300, 100); // TODO: replace this once drawText() is working
+        drawText(gl, "START GAME", selectedTextColor, -50, 0);
+        gl.glTranslated(0, -100, 0);
+        drawText(gl, "EXIT", textColor, -20, 0);
         gl.glPopMatrix();
         break;
       case EXIT:
         gl.glPushMatrix();
-        gl.glTranslated(0, -50, 0);
-        drawRectangle(gl, 300, 100);  // TODO: replace this once drawText() is working
+        gl.glTranslated(0, 50, 0);
+        drawText(gl, "START GAME", textColor, -50, 0);
+        gl.glTranslated(0, -100, 0);
+        drawText(gl, "EXIT", selectedTextColor, -20, 0);
         gl.glPopMatrix();
         break;
       default: break;
