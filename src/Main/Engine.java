@@ -194,7 +194,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawBackground(gl);
     drawHero(gl);
     drawForeground(gl);
-    //drawCollisions(gl); // comment this line after collisions are working
+    //drawCollisions(gl); // USE THIS LINE ONLY WHEN TESTING COLLISIONS!!
 
     gl.glPopMatrix(); // return to initial transform
   }
