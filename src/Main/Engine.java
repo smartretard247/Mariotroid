@@ -65,15 +65,29 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final String[] textureFileNames = {
     "hero.png",
     "logo.png",
-    "level.png",
+    "level0.png",
+    "level1.png",
+    "level2.png",
+    "level3.png",
+    "level4.png",
+    "level5.png",
+    "level6.png",
+    "level7.png",
     "cloud.gif",
     "TinySmiley.png"
   };
   private final int TEX_HERO = 0; // easier texture identification
   private final int TEX_LOGO = 1;
-  private final int TEX_COLLISIONS = 2;
-  private final int TEX_CLOUD = 3;
-  private final int TEX_SMILEY = 4;
+  private final int TEX_COLLISIONS0 = 2;
+  private final int TEX_COLLISIONS1 = 3;
+  private final int TEX_COLLISIONS2 = 4;
+  private final int TEX_COLLISIONS3 = 5;
+  private final int TEX_COLLISIONS4 = 6;
+  private final int TEX_COLLISIONS5 = 7;
+  private final int TEX_COLLISIONS6 = 8;
+  private final int TEX_COLLISIONS7 = 9;
+  private final int TEX_CLOUD = 10;
+  private final int TEX_SMILEY = 11;
   private final Texture[] textures = new Texture[textureFileNames.length];
   
   ///// START METHODS
@@ -194,7 +208,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawBackground(gl);
     drawHero(gl);
     drawForeground(gl);
-    //drawCollisions(gl); // USE THIS LINE ONLY WHEN TESTING COLLISIONS!!
+    drawCollisions(gl); // USE THIS LINE ONLY WHEN TESTING COLLISIONS!!
 
     gl.glPopMatrix(); // return to initial transform
   }
@@ -292,10 +306,21 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     //gl.glPopMatrix();
   }
   
-  private void drawCollisions(GL2 gl) {
-    //gl.glPushMatrix();
-    drawTexturedRectangle(gl, TEX_COLLISIONS, textures[TEX_COLLISIONS].getWidth(), textures[TEX_COLLISIONS].getHeight());
-    //gl.glPopMatrix();
+  /**
+   * This is only temporary to display the collision PNG.
+   * @param gl 
+   */
+  private void drawCollisions(GL2 gl) { // TODO: only draw collisions 'close' to character
+    int collisionTexMin = TEX_COLLISIONS0;
+    int collisionTexMax = TEX_COLLISIONS7;
+    gl.glPushMatrix();
+    
+    for(int i = collisionTexMin; i < collisionTexMax; i++) {
+      drawTexturedRectangle(gl, i, textures[i].getWidth(), textures[i].getHeight());
+      gl.glTranslated(textures[i].getWidth(), 0, 0);
+    }
+    
+    gl.glPopMatrix();
   }
   
   /**
@@ -312,8 +337,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             BufferedImage img = ImageIO.read(textureURL);
             ImageUtil.flipImageVertically(img);
             textures[i] = AWTTextureIO.newTexture(GLProfile.getDefault(), img, true);
-            textures[i].setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_S, GL2.GL_REPEAT);
-            textures[i].setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_T, GL2.GL_REPEAT);
+            textures[i].setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
+            textures[i].setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
           }
       }
       catch (IOException | GLException e) {
