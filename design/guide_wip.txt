@@ -1,0 +1,44 @@
+From Wikipedia:
+    The sections of a user manual often include:
+        A cover page
+        A title page and copyright page
+        A preface, containing details of related documents and information on how to navigate the user guide
+        A contents page
+        A guide on how to use at least the main function of the system
+        A troubleshooting section detailing possible errors or problems that may occur, along with how to fix them
+        A FAQ (Frequently Asked Questions)
+        Where to find further help, and contact details
+        A glossary and, for larger documents, an index
+
+        
+I think we can skip the copyright, preface, FAQ (maybe), further help, and glossary.
+
+
+Contents:
+    Brief lore
+    Controls
+    Tips (maybe?)
+    Troubleshooting
+    
+Brief lore:
+    It's the year 2105 on a distant planet in the Alpha Centauri system.  An unknown enemy threatens your newly formed colony on a distant planet.  You must find a way off planet in order to survive.
+
+Controls:
+    W - Climb up
+    S - Climb down
+    A - Walk left
+    D - Walk right
+    F - Interact
+    
+    Shift + A/D - Sprint left/right
+    
+    Mouse - Aim
+    Left Click - Fire primary weapon
+    Right Click - Fire alternate weapon
+
+Tips:
+    - Some power-ups may be hidden
+    - It might be worth revisiting the start before the end
+
+Troubleshooting:
+    - Our code is perfect, it must be your machine.
