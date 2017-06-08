@@ -43,7 +43,7 @@ The mood I had in mind for this game is somewhat dark with a glimmer of home tha
 
 There are some good (free/open-licensed) textures at https://opengameart.org/
 
-I like [this interface](https://opengameart.org/content/sci-fi-platform-tiles) and [this background](https://opengameart.org/content/industrial-parallax-background) to get us started.
+I like [this interface](https://opengameart.org/content/sci-fi-platform-tiles) and [this background](https://opengameart.org/content/industrial-parallax-background) to get us started. https://opengameart.org/content/fantasy-tiles
 
 ###### Background
 
