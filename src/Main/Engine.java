@@ -51,6 +51,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   public Scene scene = new Scene();
   public Hero hero = new Hero();
+  public PhysicsEngine phy = new PhysicsEngine();
   
   // all images should be listed here, and stored in the textures directory
   private final String[] textureFileNames = {
@@ -128,7 +129,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     GL2 gl = drawable.getGL().getGL2();
     gl.glClearColor(0, 0.4f, 0.8f, 0);
     gl.glClear( GL.GL_COLOR_BUFFER_BIT ); // TODO? Omit depth buffer for 2D.
-    gl.glLoadIdentity();             // Set up modelview transform. 
+    gl.glLoadIdentity();             // Set up modelview transform.
     draw(gl);
   }
 
@@ -469,13 +470,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           break;
         // hero movements
         case KeyEvent.VK_A: // move left
-          hero.move(DIRECTION.LEFT);
+          hero.increaseSpeed(-5, 0);
           break;
         case KeyEvent.VK_D: // move right
-          hero.move(DIRECTION.RIGHT);
+          hero.increaseSpeed(5, 0);
           break;
         case KeyEvent.VK_SPACE: // jump
-          // TODO: jump function
+          hero.increaseSpeed(0, 10);
           break;
         case KeyEvent.VK_S: // crouch
           // TODO: change to crouch (image and collision rect will shrink)
@@ -526,6 +527,20 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   @Override
   public void keyReleased(KeyEvent e) { 
+    int key = e.getKeyCode();  // Tells which key was pressed.
+    switch(gameMode) { // controls are based on the game mode
+      case RUNNING:
+        switch (key) {
+        case KeyEvent.VK_A: // stop moving left
+          //hero.setSpeed(0, 0);
+          break;
+        case KeyEvent.VK_D: // stop moving right
+          break;
+        case KeyEvent.VK_SPACE: // stop jump, start fall
+          break;
+        default: break;
+      }
+    }
   }
 
   // --------------------------- animation support ---------------------------
@@ -539,7 +554,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
 
   private void updateFrame() {
     frameNumber++;
-    // TODO:  add any other updating required for the next frame.
+    hero.move();
+    if(!false) { // no collisions after moving then... // TODO: collision detect here
+      phy.fall(hero);// apply gravity
+      System.out.println(Double.toString(hero.getSpeedY()));
+    }
   }
 
   public void startAnimation() {
@@ -619,46 +638,52 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
 
   // Other methods required for MouseListener, MouseMotionListener.
-  @Override public void mouseMoved(MouseEvent evt) { }    
-  @Override public void mouseClicked(MouseEvent evt) {
+  @Override
+  public void mouseMoved(MouseEvent evt) { }    
+  
+  @Override
+  public void mouseClicked(MouseEvent evt) {
     int key = evt.getButton();
     
     switch(gameMode) { // controls are based on the game mode
-      case START_MENU:
-        switch (key) {
-        case MouseEvent.BUTTON1: doStartMenuSelection(); // pick selection
-          break;
-        case MouseEvent.BUTTON3: // right click to select next option
-          this.startMenuSelection = startMenuSelection.next(); // scroll downward through menu
-          break;
-        default: break;
+    case START_MENU:
+      switch (key) {
+      case MouseEvent.BUTTON1: doStartMenuSelection(); // pick selection
+        break;
+      case MouseEvent.BUTTON3: // right click to select next option
+        this.startMenuSelection = startMenuSelection.next(); // scroll downward through menu
+        break;
+      default: break;
       }
-      break; // END RUNNING
+      break; // END START_MENU
     case PAUSED: // then we are paused, so change keyboard options
       switch (key) {
-        default: break;
+      default: break;
       }
       break; // END PAUSED
     case RUNNING:
       switch(key) {
-        case MouseEvent.BUTTON1:
-          try {
-            hero.loseHealth(1); // lose 1 health, TEST
-          } catch (GameOverException ex) {
-            this.gameMode = GAME_MODES.GAME_OVER;
-          }
-          break;
-        case MouseEvent.BUTTON3: // right click to add points
-          hero.addScore(100);
-          break;
-        default: break;
+      case MouseEvent.BUTTON1:
+        try {
+          hero.loseHealth(1); // lose 1 health, TEST
+        } catch (GameOverException ex) {
+          this.gameMode = GAME_MODES.GAME_OVER;
+        }
+        break;
+      case MouseEvent.BUTTON3: // right click to add points
+        hero.addScore(100);
+        break;
+      case MouseEvent.BUTTON2:
+        hero.increaseSpeed(-5, 0);
+        break;
+      default: break;
       }
       break; // END START_MENU
-      case GAME_OVER:
+    case GAME_OVER:
       switch(key) {
-        case MouseEvent.BUTTON1:
-          this.gameMode = GAME_MODES.START_MENU;
-        default: break;
+      case MouseEvent.BUTTON1:
+        this.gameMode = GAME_MODES.START_MENU;
+      default: break;
       }
     }
   }

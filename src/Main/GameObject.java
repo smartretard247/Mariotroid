@@ -7,19 +7,19 @@ import com.jogamp.opengl.util.packrect.Rect;
  * @author Jeezy
  */
 public class GameObject {
-  private static double defSpeedX = 10.0;
-  private static double defSpeedY = 10.0;
+  private static double maxSpeedX = PhysicsEngine.TERMINAL_SPRINT;
+  private static double maxSpeedY = PhysicsEngine.TERMINAL_VELOCITY;
   
   public GameObject(double x, double y, double speedx, double speedy, int w, int h) {
     X = x;
     Y = y;
-    speedX = speedx;
-    speedY = speedy;
+    speedX = 0.0;
+    speedY = 0.0;
     width = w;
     height = h;
   }
   public GameObject() {
-    this(0.0, 0.0, defSpeedX, defSpeedY, 50, 50);
+    this(0.0, 0.0, 0.0, 0.0, 50, 50);
   }
   
   private double X; // for moving x direction
@@ -37,17 +37,21 @@ public class GameObject {
   public void setX(double posX) { X = posX; }
   public void setY(double posY) { Y = posY; }
   public void setPosition(double posX, double posY) { X = posX; Y = posY; }
+  public void setSpeedX(double spdX) { speedX = spdX; }
+  public void setSpeedY(double spdY) { speedY = spdY; }
   public void setSpeed(double spdX, double spdY) { speedX = spdX; speedY = spdY; }
-  public void move(DIRECTION direction) {
-    switch(direction) {
-      case LEFT: X -= speedX; break;
-      case RIGHT: X += speedX; break;
-      case UP: Y += speedY; break;
-      case DOWN: Y -= speedY; break;
-      default: break;
-    }
+  public void move() {
+    X += speedX;
+    Y += speedY;
   }
-  public void increaseSpeed(double deltaX, double deltaY) { speedX += deltaX; speedY += deltaY; }
+  public void increaseSpeed(double deltaX, double deltaY) {
+    speedX += deltaX;
+    speedY += deltaY;
+    if(Math.abs(speedX) > maxSpeedX)
+      speedX = (speedX < 0) ? -maxSpeedX : maxSpeedX;
+    if(Math.abs(speedY) > maxSpeedY)
+      speedY = (speedY < 0) ? -maxSpeedY : maxSpeedY;
+  }
   
   public void setDimensions(int w, int h) {
     width = w;
@@ -73,6 +77,6 @@ public class GameObject {
   
   public void resetAll() {
     this.setPosition(0.0, 0.0);
-    this.setSpeed(defSpeedX, defSpeedY);
+    this.setSpeed(0, 0);
   }
 }
