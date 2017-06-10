@@ -24,6 +24,8 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
@@ -47,19 +49,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private int frameNumber = 0; // The current frame number for an animation.
   private GAME_MODES gameMode = GAME_MODES.INTRO;
   private START_MENU_OPTIONS startMenuSelection = START_MENU_OPTIONS.START_GAME;
-  private long score = 0;
   
-  // variables to translate the scene
-  private double transX = 0; // for moving the entire scene
-  private double transY = 0; // for moving the entire scene
-  private double scaleX = 0.7; // global scaling
-  private double scaleY = 0.7; // global scaling
-  
-  // these will most likely have to be wrapped in a class
-  private double heroX = 0; // for moving the hero only
-  private double heroY = 0; // for moving the hero only
-  private double speedX = 10.0; // movement increment
-  private double speedY = 10.0; // movement increment
+  Scene scene = new Scene();
+  Hero hero = new Hero();
   
   // all images should be listed here, and stored in the textures directory
   private final String[] textureFileNames = {
@@ -115,14 +107,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     display.requestFocusInWindow();
     display.addKeyListener(this);
 
-    // TODO:  Uncomment the next one or two lines to enable mouse event handling
-    //display.addMouseListener(this);
-    //display.addMouseMotionListener(this);
+    display.addMouseListener(this);
+    display.addMouseMotionListener(this);
 
     // start the animation
     this.startAnimation(); // also control pause function (and remove keyboard response)
     
-    Timer introTimer = new Timer(4000, (evt)-> {
+    Timer introTimer = new Timer(1000, (evt)-> {
       this.gameMode = GAME_MODES.START_MENU;
     });
     introTimer.setRepeats(false);
@@ -184,8 +175,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawNormalGamePlay(GL2 gl) {
     gl.glPushMatrix(); // save initial transform
-    gl.glScaled(scaleX, scaleY, 1); // set global scale
-    gl.glTranslated(transX, transY, 0);  //move the world to respond to user input
+    gl.glScaled(scene.scaleX, scene.scaleY, 1); // set global scale
+    gl.glTranslated(scene.transX, scene.transY, 0);  //move the world to respond to user input
     // THIS BLOCK FOR TESTING ONLY ///////////////////////
     // snippet as reference to drawing a textured object
     gl.glPushMatrix();
@@ -215,7 +206,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawHero(GL2 gl) {
     gl.glPushMatrix();
-    gl.glTranslated(heroX, heroY, 0);  //move the world to respond to user input
+    gl.glTranslated(hero.getX(), hero.getY(), 0);  //move the world to respond to user input
     drawTexturedRectangle(gl, TEX_HERO, textures[TEX_HERO].getWidth(), textures[TEX_HERO].getHeight());
     gl.glPopMatrix();
   }
@@ -235,6 +226,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     drawHud(gl);
     drawHealth(gl);
+    drawLives(gl);
     drawScore(gl);
   }
   
@@ -400,6 +392,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void doStartMenuSelection() {
     switch(this.startMenuSelection) {
       case START_GAME: gameMode = GAME_MODES.RUNNING;
+        hero.resetAll();
         break;
       case EXIT: System.exit(0);
         break;
@@ -412,10 +405,21 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
 
   private void drawHealth(GL2 gl) { // draw health in top left corner
+    gl.glPushMatrix();
+    gl.glTranslated(-textures[TEX_HUD].getWidth()/2+textures[TEX_HEALTH].getWidth()/2,
+            textures[TEX_HUD].getHeight()/2-textures[TEX_HEALTH].getHeight()/2, 0);
+    for(int i = 0; i < hero.getHealth(); i++) {
+      drawTexturedRectangle(gl, TEX_HEALTH, textures[TEX_HEALTH].getWidth(), textures[TEX_HEALTH].getHeight());
+      gl.glTranslated(textures[TEX_HEALTH].getWidth(), 0, 0);
+    }
+    gl.glPopMatrix();
+  }
+  
+  private void drawLives(GL2 gl) {
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glPushMatrix();
-    gl.glTranslated(-windowDim.width*2, windowDim.height*2, 0);
-    drawText(gl, "HEALTH HERE", textColor, -120, 20); // maybe get hearts for health image?
+    gl.glTranslated(-textures[TEX_HUD].getWidth()/2, textures[TEX_HUD].getHeight()/2, 0);
+    drawText(gl, Integer.toString(hero.getLives()), textColor, 22, -31);
     gl.glPopMatrix();
   }
 
@@ -423,7 +427,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glPushMatrix();
     gl.glTranslated(windowDim.width*2, windowDim.height*2, 0);
-    drawText(gl, "SCORE: " + Long.toString(score), textColor, -120, 20);
+    drawText(gl, "SCORE: " + Long.toString(hero.getScore()), textColor, -120, 20);
     gl.glPopMatrix();
   }
 
@@ -464,10 +468,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           break;
         // hero movements
         case KeyEvent.VK_A: // move left
-          heroX -= speedX;
+          hero.moveX();
           break;
         case KeyEvent.VK_D: // move right
-          heroX += speedX;
+          hero.moveX();
           break;
         case KeyEvent.VK_SPACE: // jump
           // TODO: jump function
@@ -615,7 +619,45 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
 
   // Other methods required for MouseListener, MouseMotionListener.
   @Override public void mouseMoved(MouseEvent evt) { }    
-  @Override public void mouseClicked(MouseEvent evt) { }
+  @Override public void mouseClicked(MouseEvent evt) {
+    int key = evt.getButton();
+    
+    switch(gameMode) { // controls are based on the game mode
+      case START_MENU:
+        switch (key) {
+        case MouseEvent.BUTTON1: doStartMenuSelection(); // pick selection
+          break;
+        case MouseEvent.BUTTON3: // right click to select next option
+          this.startMenuSelection = startMenuSelection.next(); // scroll downward through menu
+          break;
+        default: break;
+      }
+      break; // END RUNNING
+    case PAUSED: // then we are paused, so change keyboard options
+      switch (key) {
+        default: break;
+      }
+      break; // END PAUSED
+    case RUNNING:
+      switch(key) {
+        case MouseEvent.BUTTON1:
+          try {
+            hero.loseHealth(1); // lose 1 health, TEST
+          } catch (GameOverException ex) {
+            this.gameMode = GAME_MODES.GAME_OVER;
+          }
+          break;
+        default: break;
+      }
+      break; // END START_MENU
+      case GAME_OVER:
+      switch(key) {
+        case MouseEvent.BUTTON1:
+          this.gameMode = GAME_MODES.START_MENU;
+        default: break;
+      }
+    }
+  }
   @Override public void mouseEntered(MouseEvent evt) { }
   @Override public void mouseExited(MouseEvent evt) { }
 }

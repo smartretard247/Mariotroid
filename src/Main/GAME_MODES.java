@@ -8,5 +8,6 @@ public enum GAME_MODES {
   INTRO,
   START_MENU,
   RUNNING,
-  PAUSED
+  PAUSED,
+  GAME_OVER
 }
