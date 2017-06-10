@@ -24,8 +24,6 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
@@ -49,6 +47,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private int frameNumber = 0; // The current frame number for an animation.
   private GAME_MODES gameMode = GAME_MODES.INTRO;
   private START_MENU_OPTIONS startMenuSelection = START_MENU_OPTIONS.START_GAME;
+  private int introLengthMs = 4000;
   
   Scene scene = new Scene();
   Hero hero = new Hero();
@@ -113,7 +112,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // start the animation
     this.startAnimation(); // also control pause function (and remove keyboard response)
     
-    Timer introTimer = new Timer(1000, (evt)-> {
+    Timer introTimer = new Timer(introLengthMs, (evt)-> {
       this.gameMode = GAME_MODES.START_MENU;
     });
     introTimer.setRepeats(false);
@@ -405,9 +404,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
 
   private void drawHealth(GL2 gl) { // draw health in top left corner
+    double xDiff = 10;
     gl.glPushMatrix();
-    gl.glTranslated(-textures[TEX_HUD].getWidth()/2+textures[TEX_HEALTH].getWidth()/2,
-            textures[TEX_HUD].getHeight()/2-textures[TEX_HEALTH].getHeight()/2, 0);
+    gl.glTranslated(-textures[TEX_HUD].getWidth()/2+textures[TEX_HEALTH].getWidth()+xDiff,
+            textures[TEX_HUD].getHeight()/2-textures[TEX_HEALTH].getHeight(), 0);
     for(int i = 0; i < hero.getHealth(); i++) {
       drawTexturedRectangle(gl, TEX_HEALTH, textures[TEX_HEALTH].getWidth(), textures[TEX_HEALTH].getHeight());
       gl.glTranslated(textures[TEX_HEALTH].getWidth(), 0, 0);
@@ -419,7 +419,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glPushMatrix();
     gl.glTranslated(-textures[TEX_HUD].getWidth()/2, textures[TEX_HUD].getHeight()/2, 0);
-    drawText(gl, Integer.toString(hero.getLives()), textColor, 22, -31);
+    drawText(gl, Integer.toString(hero.getLives()), textColor, 30, -50);
     gl.glPopMatrix();
   }
 
