@@ -38,9 +38,15 @@ public class GameObject {
   public void setY(double posY) { Y = posY; }
   public void setPosition(double posX, double posY) { X = posX; Y = posY; }
   public void setSpeed(double spdX, double spdY) { speedX = spdX; speedY = spdY; }
-  public void moveX() { X += speedX; }
-  public void moveY() { Y += speedY; }
-  public void moveXY() { X += speedX; Y += speedY; }
+  public void move(DIRECTION direction) {
+    switch(direction) {
+      case LEFT: X -= speedX; break;
+      case RIGHT: X += speedX; break;
+      case UP: Y += speedY; break;
+      case DOWN: Y -= speedY; break;
+      default: break;
+    }
+  }
   public void increaseSpeed(double deltaX, double deltaY) { speedX += deltaX; speedY += deltaY; }
   
   public void setDimensions(int w, int h) {

@@ -469,10 +469,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           break;
         // hero movements
         case KeyEvent.VK_A: // move left
-          hero.moveX();
+          hero.move(DIRECTION.LEFT);
           break;
         case KeyEvent.VK_D: // move right
-          hero.moveX();
+          hero.move(DIRECTION.RIGHT);
           break;
         case KeyEvent.VK_SPACE: // jump
           // TODO: jump function
