@@ -49,8 +49,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private START_MENU_OPTIONS startMenuSelection = START_MENU_OPTIONS.START_GAME;
   private int introLengthMs = 4000;
   
-  Scene scene = new Scene();
-  Hero hero = new Hero();
+  public Scene scene = new Scene();
+  public Hero hero = new Hero();
   
   // all images should be listed here, and stored in the textures directory
   private final String[] textureFileNames = {
