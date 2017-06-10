@@ -52,8 +52,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   // variables to translate the scene
   private double transX = 0; // for moving the entire scene
   private double transY = 0; // for moving the entire scene
-  private double scaleX = 0.2; // global scaling
-  private double scaleY = 0.2; // global scaling
+  private double scaleX = 0.7; // global scaling
+  private double scaleY = 0.7; // global scaling
   
   // these will most likely have to be wrapped in a class
   private double heroX = 0; // for moving the hero only
@@ -64,30 +64,26 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   // all images should be listed here, and stored in the textures directory
   private final String[] textureFileNames = {
     "hero.png",
-    "logo.png",
-    "level0.png",
-    "level1.png",
-    "level2.png",
-    "level3.png",
-    "level4.png",
-    "level5.png",
-    "level6.png",
-    "level7.png",
-    "cloud.gif",
-    "TinySmiley.png"
+    "art/logo.png",
+    "art/hud/health.png",
+    "art/hud/hud.png",
+    "art/hud/shell.png",
+    "art/level/level0.png",
+    "art/level/level1.png",
+    "art/level/level2.png",
+    "art/level/level3.png",
+    "art/level/level4.png",
+    "art/level/level5.png",
+    "art/level/level6.png",
+    "art/level/level7.png"
   };
   private final int TEX_HERO = 0; // easier texture identification
   private final int TEX_LOGO = 1;
-  private final int TEX_COLLISIONS0 = 2;
-  private final int TEX_COLLISIONS1 = 3;
-  private final int TEX_COLLISIONS2 = 4;
-  private final int TEX_COLLISIONS3 = 5;
-  private final int TEX_COLLISIONS4 = 6;
-  private final int TEX_COLLISIONS5 = 7;
-  private final int TEX_COLLISIONS6 = 8;
-  private final int TEX_COLLISIONS7 = 9;
-  private final int TEX_CLOUD = 10;
-  private final int TEX_SMILEY = 11;
+  private final int TEX_HEALTH = 2;
+  private final int TEX_HUD = 3;
+  private final int TEX_SHELL = 4;
+  private final int TEX_COLLISIONS_START = 5; // collision textures between this
+  private final int TEX_COLLISIONS_END = 12;  // and this
   private final Texture[] textures = new Texture[textureFileNames.length];
   
   ///// START METHODS
@@ -193,22 +189,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // THIS BLOCK FOR TESTING ONLY ///////////////////////
     // snippet as reference to drawing a textured object
     gl.glPushMatrix();
-    gl.glTranslated(0, 100, 0);
-    drawTexturedRectangle(gl, TEX_CLOUD, 200, 80);
-    gl.glPopMatrix();
-    // end reference
-
-    gl.glPushMatrix();
-    gl.glTranslated(-300, 0, 0);
-    drawTexturedRectangle(gl, TEX_SMILEY, 50, 50);
-    gl.glTranslated(0, 60, 0);
+    
     gl.glPopMatrix();
     // END TEST BLOCK
 
     drawBackground(gl);
     drawHero(gl);
-    drawForeground(gl);
     drawCollisions(gl); // USE THIS LINE ONLY WHEN TESTING COLLISIONS!!
+    drawForeground(gl);
 
     gl.glPopMatrix(); // return to initial transform
   }
@@ -245,7 +233,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
     // END TEST BLOCK //////////////
     
-    //drawHud(gl); // TODO: implement HUD function
+    drawHud(gl);
     drawHealth(gl);
     drawScore(gl);
   }
@@ -311,11 +299,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawCollisions(GL2 gl) { // TODO: only draw collisions 'close' to character
-    int collisionTexMin = TEX_COLLISIONS0;
-    int collisionTexMax = TEX_COLLISIONS7;
     gl.glPushMatrix();
     
-    for(int i = collisionTexMin; i < collisionTexMax; i++) {
+    for(int i = TEX_COLLISIONS_START; i < TEX_COLLISIONS_END; i++) {
       drawTexturedRectangle(gl, i, textures[i].getWidth(), textures[i].getHeight());
       gl.glTranslated(textures[i].getWidth(), 0, 0);
     }
@@ -422,7 +408,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
 
   private void drawHud(GL2 gl) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    drawTexturedRectangle(gl, TEX_HUD, textures[TEX_HUD].getWidth(), textures[TEX_HUD].getHeight());
   }
 
   private void drawHealth(GL2 gl) { // draw health in top left corner
