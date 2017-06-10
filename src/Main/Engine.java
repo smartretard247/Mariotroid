@@ -424,10 +424,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
 
   private void drawScore(GL2 gl) { // draw score in top right corner
+    double diffX = 30;
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glPushMatrix();
-    gl.glTranslated(windowDim.width*2, windowDim.height*2, 0);
-    drawText(gl, "SCORE: " + Long.toString(hero.getScore()), textColor, -120, 20);
+    gl.glTranslated(textures[TEX_HUD].getWidth()/2-diffX, textures[TEX_HUD].getHeight()/2, 0);
+    drawText(gl, "SCORE: " + Long.toString(hero.getScore()), textColor, -120, -20);
     gl.glPopMatrix();
   }
 
@@ -646,6 +647,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           } catch (GameOverException ex) {
             this.gameMode = GAME_MODES.GAME_OVER;
           }
+          break;
+        case MouseEvent.BUTTON3: // right click to add points
+          hero.addScore(100);
           break;
         default: break;
       }
