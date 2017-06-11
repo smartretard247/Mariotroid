@@ -10,5 +10,5 @@ package Main;
  * @author Jeezy
  */
 public enum DIRECTION {
-  UP, DOWN, LEFT, RIGHT
+  TOP, BOTTOM, LEFT, RIGHT, NONE
 }

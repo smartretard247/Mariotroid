@@ -12,6 +12,13 @@ public class Hero extends GameObject {
   public Hero() {
     this(3,0);
   }
+  public Hero(double x, double y, double w, double h) {
+    this(3,0);
+    X = x;
+    Y = y;
+    width = w;
+    height = h;
+  }
   
   private long score;
   private int lives;

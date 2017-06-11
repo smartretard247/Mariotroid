@@ -48,10 +48,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private GAME_MODES gameMode = GAME_MODES.INTRO;
   private START_MENU_OPTIONS startMenuSelection = START_MENU_OPTIONS.START_GAME;
   private int introLengthMs = 4000;
-  
-  public Scene scene = new Scene();
-  public Hero hero = new Hero();
-  public PhysicsEngine phy = new PhysicsEngine();
+  private final int MAX_GAME_OBJECTS = 128;
   
   // all images should be listed here, and stored in the textures directory
   private final String[] textureFileNames = {
@@ -78,6 +75,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final int TEX_COLLISIONS_END = 12;  // and this
   private final Texture[] textures = new Texture[textureFileNames.length];
   
+  public Scene scene = new Scene();
+  public Hero hero = new Hero();
+  public PhysicsEngine phy = new PhysicsEngine();
+  public GameObject[] gameObjects = new GameObject[MAX_GAME_OBJECTS];
+  
   ///// START METHODS
 
   public static void main(String[] args) {
@@ -90,7 +92,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     window.setLocation(10,10);
     window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     window.setVisible(true);
-    panel.requestFocusInWindow(); //
+    panel.requestFocusInWindow();
   }
 
   @SuppressWarnings("LeakingThisInConstructor")
@@ -118,6 +120,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     });
     introTimer.setRepeats(false);
     introTimer.start();
+    
+    for(int i = 0; i < MAX_GAME_OBJECTS; i++) {
+      gameObjects[i] = new GameObject();
+    }
+    
+    gameObjects[0].setPosition(-50, -480); // test object
+    gameObjects[0].setDimensions(400, 50);
   }
 
   /**
@@ -154,6 +163,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     //gl.glEnable(GL2.GL_NORMALIZE);       // OpenGL will make all normal vectors into unit normals
     //gl.glEnable(GL2.GL_COLOR_MATERIAL);  // Material ambient and diffuse colors can be set by glColor*
     this.loadTextures(gl);
+    hero.setDimensions(textures[TEX_HERO].getWidth(), textures[TEX_HERO].getHeight());
   }
   
   /* 
@@ -206,8 +216,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawHero(GL2 gl) {
     gl.glPushMatrix();
-    gl.glTranslated(hero.getX(), hero.getY(), 0);  //move the world to respond to user input
-    drawTexturedRectangle(gl, TEX_HERO, textures[TEX_HERO].getWidth(), textures[TEX_HERO].getHeight());
+    gl.glTranslated(hero.getX(), hero.getY(), 0);
+    drawTexturedRectangle(gl, TEX_HERO, hero.getW(), hero.getH());
     gl.glPopMatrix();
   }
    /**
@@ -292,12 +302,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawCollisions(GL2 gl) { // TODO: only draw collisions 'close' to character
     gl.glPushMatrix();
-    
     for(int i = TEX_COLLISIONS_START; i < TEX_COLLISIONS_END; i++) {
       drawTexturedRectangle(gl, i, textures[i].getWidth(), textures[i].getHeight());
       gl.glTranslated(textures[i].getWidth(), 0, 0);
     }
+    gl.glPopMatrix();
     
+    // draw test object
+    gl.glPushMatrix();
+    gl.glTranslated(gameObjects[0].getX(), gameObjects[0].getY(), 0);
+    drawRectangle(gl, gameObjects[0].getW(), gameObjects[0].getH());
     gl.glPopMatrix();
   }
   
@@ -554,7 +568,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
 
   private void updateFrame() {
     frameNumber++;
-    hero.move();
+    switch(gameMode) {
+    case RUNNING: hero.move(gameObjects);
+      break;
+    default: break;
+    }
   }
 
   public void startAnimation() {
