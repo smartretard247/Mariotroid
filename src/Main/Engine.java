@@ -51,7 +51,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final int TEX_COLLISIONS_START = 5; // collision textures between this
   private final int TEX_COLLISIONS_END = 12;  // and this
   
-  public Scene scene = new Scene(60, 135, 1, 1); // trans x & y, scale x & y
+  public Scene scene; // trans x & y, scale x & y
   public Hero hero;
   public PhysicsEngine phy = new PhysicsEngine();
   public DrawableGameObject[] gameObjects = new DrawableGameObject[MAX_GAME_OBJECTS];
@@ -133,7 +133,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     //gl.glEnable(GL2.GL_COLOR_MATERIAL);  // Material ambient and diffuse colors can be set by glColor*
     
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
-    
+    scene = new Scene(60, 135, 0.5, 0.5);
     hero = new Hero(3, 0, 10, TEX_HERO, -150, 0, // 3 lives, 0 score, 10 health, texId, x, y
           DrawLib.getTexture(TEX_HERO).getWidth(), // width
           DrawLib.getTexture(TEX_HERO).getHeight()); // height
@@ -164,22 +164,20 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawNormalGamePlay(GL2 gl) {
     gl.glPushMatrix(); // save initial transform
-    gl.glTranslated(scene.transX, scene.transY, 0);  //move the world to respond to user input
     gl.glScaled(scene.scaleX, scene.scaleY, 1); // set global scale
+    gl.glTranslated(scene.transX, scene.transY, 0);  //move the world to respond to user input
     
-    // THIS BLOCK FOR TESTING ONLY ///////////////////////
-    // snippet as reference to drawing a textured object
-    gl.glPushMatrix();
-    
-    gl.glPopMatrix();
-    // END TEST BLOCK
-
     drawBackground(gl);
     drawHero(gl);
     drawCollisions(gl); // USE THIS LINE ONLY WHEN TESTING COLLISIONS!!
     drawForeground(gl);
-
+    
     gl.glPopMatrix(); // return to initial transform
+
+    drawHud(gl);
+    drawHealth(gl);
+    drawLives(gl);
+    drawScore(gl);
   }
   
   /**
@@ -211,13 +209,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
     // END TEST BLOCK //////////////
     
-    drawHud(gl);
-    drawHealth(gl);
-    drawLives(gl);
-    drawScore(gl);
+    
   }
-  
-  
   
   private void drawIntro(GL2 gl) {
     DrawLib.drawTexturedRectangle(TEX_LOGO);
@@ -315,7 +308,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
 
   private void drawHud(GL2 gl) {
     gl.glPushMatrix();
-    gl.glTranslated(-scene.transX, -scene.transY, 0); // should not move with the scene
     DrawLib.drawTexturedRectangle(TEX_HUD);
     gl.glPopMatrix();
   }
@@ -323,7 +315,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawHealth(GL2 gl) { // draw health in top left corner
     double xDiff = 10;
     gl.glPushMatrix();
-    gl.glTranslated(-scene.transX, -scene.transY, 0); // should not move with the scene
     gl.glTranslated(-DrawLib.getTexture(TEX_HUD).getWidth()/2+DrawLib.getTexture(TEX_HEALTH).getWidth()+xDiff,
             DrawLib.getTexture(TEX_HUD).getHeight()/2-DrawLib.getTexture(TEX_HEALTH).getHeight(), 0);
     for(int i = 0; i < hero.getHealth(); i++) {
@@ -336,7 +327,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawLives(GL2 gl) {
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glPushMatrix();
-    gl.glTranslated(-scene.transX, -scene.transY, 0); // should not move with the scene
     gl.glTranslated(-DrawLib.getTexture(TEX_HUD).getWidth()/2, DrawLib.getTexture(TEX_HUD).getHeight()/2, 0);
     DrawLib.drawText(Integer.toString(hero.getLives()), textColor, 30, -50);
     gl.glPopMatrix();
@@ -346,7 +336,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     double diffX = 30;
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glPushMatrix();
-    gl.glTranslated(-scene.transX, -scene.transY, 0); // should not move with the scene
     gl.glTranslated(DrawLib.getTexture(TEX_HUD).getWidth()/2-diffX, DrawLib.getTexture(TEX_HUD).getHeight()/2, 0);
     DrawLib.drawText("SCORE: " + Long.toString(hero.getScore()), textColor, -120, -20);
     gl.glPopMatrix();
