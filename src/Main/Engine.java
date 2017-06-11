@@ -378,47 +378,46 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void keyPressed(KeyEvent e) {
     int key = e.getKeyCode();  // Tells which key was pressed.
     switch(gameMode) { // controls are based on the game mode
-      case RUNNING:
-        switch (key) {
-        case KeyEvent.VK_P: // pause/unpause
-          gameMode = GAME_MODES.PAUSED;
-          break;
-        // hero movements
-        case KeyEvent.VK_A: // move left
-          hero.increaseSpeed(-10, 0);
-          break;
-        case KeyEvent.VK_D: // move right
-          hero.increaseSpeed(10, 0);
-          break;
-        case KeyEvent.VK_SPACE: // jump
-          hero.increaseSpeed(0, 30);
-          break;
-        case KeyEvent.VK_S: // crouch
-          // TODO: change to crouch (image and collision rect will shrink)
-          break;
-        default: break;
+    case RUNNING:
+      switch (key) {
+      case KeyEvent.VK_P: // pause/unpause
+        gameMode = GAME_MODES.PAUSED;
+        break;
+      case KeyEvent.VK_A: // move left
+        hero.increaseSpeed(-10, 0);
+        break;
+      case KeyEvent.VK_D: // move right
+        hero.increaseSpeed(10, 0);
+        break;
+      case KeyEvent.VK_SPACE: // jump
+        hero.increaseSpeed(0, 30);
+        break;
+      case KeyEvent.VK_S: // crouch
+        // TODO: change to crouch (image and collision rect will shrink)
+        break;
+      default: break;
       }
       break; // END RUNNING
     case PAUSED: // then we are paused, so change keyboard options
       switch (key) {
-        // hero movements
-        case KeyEvent.VK_P: // pause/unpause
-          gameMode = GAME_MODES.RUNNING;
-          break;
-        default: break;
+      case KeyEvent.VK_P: // pause/unpause
+        gameMode = GAME_MODES.RUNNING;
+        break;
+      default: break;
       }
       break; // END PAUSED
     case START_MENU:
       switch(key) {
-        case KeyEvent.VK_W: this.startMenuSelection = startMenuSelection.prev(); // scroll upward through menu
-          break;
-        case KeyEvent.VK_S: this.startMenuSelection = startMenuSelection.next(); // scroll downward through menu
-          break;
-        case KeyEvent.VK_ENTER: doStartMenuSelection();
-          break;
-        default: break;
+      case KeyEvent.VK_W: this.startMenuSelection = startMenuSelection.prev(); // scroll upward through menu
+        break;
+      case KeyEvent.VK_S: this.startMenuSelection = startMenuSelection.next(); // scroll downward through menu
+        break;
+      case KeyEvent.VK_ENTER: doStartMenuSelection();
+        break;
+      default: break;
       }
       break; // END START_MENU
+    default: break;
     }
     display.repaint();  // Causes the display() function to be called.
   }
@@ -444,7 +443,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void keyReleased(KeyEvent e) { 
     int key = e.getKeyCode();  // Tells which key was pressed.
     switch(gameMode) { // controls are based on the game mode
-      case RUNNING:
+    case RUNNING:
         switch (key) {
         case KeyEvent.VK_A: // stop moving left
           //hero.setSpeed(0, 0);
@@ -455,6 +454,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           break;
         default: break;
       }
+      break;
+    default: break;
     }
   }
 
