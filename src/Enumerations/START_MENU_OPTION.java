@@ -1,13 +1,13 @@
-package Main;
+package Enumerations;
 
 /**
  *
  * @author Jeezy
  */
-public enum START_MENU_OPTIONS {
+public enum START_MENU_OPTION {
   START_GAME {
     @Override
-    public START_MENU_OPTIONS prev() {
+    public START_MENU_OPTION prev() {
         return EXIT;
     };
   },
@@ -16,16 +16,16 @@ public enum START_MENU_OPTIONS {
   
   EXIT {
     @Override
-    public START_MENU_OPTIONS next() {
+    public START_MENU_OPTION next() {
         return START_GAME;
     };
   };
   
-  public START_MENU_OPTIONS next() {
+  public START_MENU_OPTION next() {
         return values()[ordinal() + 1];
   }
   
-  public START_MENU_OPTIONS prev() {
+  public START_MENU_OPTION prev() {
         return values()[ordinal() - 1];
   }
 }

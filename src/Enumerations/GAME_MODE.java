@@ -1,10 +1,10 @@
-package Main;
+package Enumerations;
 
 /**
  *
  * @author Jeezy
  */
-public enum GAME_MODES {
+public enum GAME_MODE {
   INTRO,
   START_MENU,
   RUNNING,

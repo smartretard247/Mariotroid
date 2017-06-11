@@ -1,5 +1,7 @@
 package Main;
 
+import Enumerations.DIRECTION;
+
 /**
  *
  * @author Jeezy
@@ -11,6 +13,8 @@ public class GameObject {
   public GameObject(double x, double y, double w, double h) {
     X = x;
     Y = y;
+    defX = x;
+    defY = y;
     width = w;
     height = h;
     speedX = 0.0;
@@ -19,10 +23,12 @@ public class GameObject {
   
   protected String name = "Default";
   
-  protected double X; // for moving x direction
-  protected double Y; // for moving y direction
+  private double X; // for moving x direction
+  private double Y; // for moving y direction
   private double speedX; // movement increment x
   private double speedY; // movement increment y
+  private final double defX;
+  private final double defY;
   
   protected double width, height; // for building the collision rect
   
@@ -59,13 +65,13 @@ public class GameObject {
           case NONE:
             if(speedY <= 0) PhysicsEngine.fall(this);// apply gravity
             return; // no collision so move is valid
-          case TOP: System.out.println("Collision from top detected.");
+          case TOP: //System.out.println("Collision from top detected.");
             Y = near.getBottom() - height/2; break; // collision on top, set to bottom of near object
-          case BOTTOM: System.out.println("Collision from bottom detected.");
+          case BOTTOM: //System.out.println("Collision from bottom detected.");
             Y = near.getTop() + height/2; break; // collision on bottom
-          case LEFT: System.out.println("Collision from left side detected.");
+          case LEFT: //System.out.println("Collision from left side detected.");
             X = near.getRight() + width/2; break; // collision at left side
-          case RIGHT: System.out.println("Collision from right side detected.");
+          case RIGHT: //System.out.println("Collision from right side detected.");
             X = near.getLeft() - width/2; break; // collision at right side
           default: System.out.println("Invalid intersection.") ;break;
         }
@@ -125,7 +131,7 @@ public class GameObject {
   }
   
   public void resetAll() {
-    this.setPosition(0.0, 0.0);
+    this.setPosition(defX, defY);
     this.setSpeed(0, 0);
   }
   
