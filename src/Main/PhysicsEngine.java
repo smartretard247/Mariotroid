@@ -20,7 +20,7 @@ public class PhysicsEngine {
    * Apply gravity to given object.
    * @param obj 
    */
-  public void fall(GameObject obj) {
+  public static void fall(GameObject obj) {
     double vertSpeed = Math.abs(obj.getSpeedY()) + GRAVITY;
     if (vertSpeed > TERMINAL_VELOCITY) {
       vertSpeed = TERMINAL_VELOCITY;

@@ -41,8 +41,11 @@ public class GameObject {
   public void setSpeedY(double spdY) { speedY = spdY; }
   public void setSpeed(double spdX, double spdY) { speedX = spdX; speedY = spdY; }
   public void move() {
-    X += speedX;
-    Y += speedY;
+    if(!false) { // if no collisions
+      X += speedX;
+      Y += speedY;
+      PhysicsEngine.fall(this);// apply gravity
+    }
   }
   public void increaseSpeed(double deltaX, double deltaY) {
     speedX += deltaX;

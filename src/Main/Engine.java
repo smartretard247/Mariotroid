@@ -555,10 +555,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void updateFrame() {
     frameNumber++;
     hero.move();
-    if(!false) { // no collisions after moving then... // TODO: collision detect here
-      phy.fall(hero);// apply gravity
-      System.out.println(Double.toString(hero.getSpeedY()));
-    }
   }
 
   public void startAnimation() {
