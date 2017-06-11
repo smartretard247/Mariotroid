@@ -10,21 +10,11 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
-import com.jogamp.opengl.GLException;
-import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLJPanel;
-import com.jogamp.opengl.util.awt.ImageUtil;
-import com.jogamp.opengl.util.gl2.GLUT;
-import com.jogamp.opengl.util.texture.Texture;
-import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 /**
@@ -40,32 +30,16 @@ import javax.swing.JFrame;
 public class Engine extends JPanel implements GLEventListener, KeyListener, MouseListener, 
         MouseMotionListener, ActionListener {
   //////// VARIBLES
-  private final GLUT glut = new GLUT();
   private final GLJPanel display;
   private final Dimension windowDim = new Dimension(1280,720);
   private Timer animationTimer;
   private int frameNumber = 0; // The current frame number for an animation.
+  private DrawLib drawLib;
   private GAME_MODES gameMode = GAME_MODES.INTRO;
   private START_MENU_OPTIONS startMenuSelection = START_MENU_OPTIONS.START_GAME;
-  private int introLengthMs = 4000;
-  private final int MAX_GAME_OBJECTS = 128;
-  
-  // all images should be listed here, and stored in the textures directory
-  private final String[] textureFileNames = {
-    "hero.png",
-    "art/logo.png",
-    "art/hud/health.png",
-    "art/hud/hud.png",
-    "art/hud/shell.png",
-    "art/level/level0.png",
-    "art/level/level1.png",
-    "art/level/level2.png",
-    "art/level/level3.png",
-    "art/level/level4.png",
-    "art/level/level5.png",
-    "art/level/level6.png",
-    "art/level/level7.png"
-  };
+  private final int introLengthMs = 4000;
+  private final int MAX_GAME_OBJECTS = 1;
+  private final int TEX_NONE = -1;
   private final int TEX_HERO = 0; // easier texture identification
   private final int TEX_LOGO = 1;
   private final int TEX_HEALTH = 2;
@@ -73,12 +47,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final int TEX_SHELL = 4;
   private final int TEX_COLLISIONS_START = 5; // collision textures between this
   private final int TEX_COLLISIONS_END = 12;  // and this
-  private final Texture[] textures = new Texture[textureFileNames.length];
   
   public Scene scene = new Scene();
-  public Hero hero = new Hero();
+  public Hero hero;
   public PhysicsEngine phy = new PhysicsEngine();
-  public GameObject[] gameObjects = new GameObject[MAX_GAME_OBJECTS];
+  public DrawableGameObject[] gameObjects = new DrawableGameObject[MAX_GAME_OBJECTS];
   
   ///// START METHODS
 
@@ -120,13 +93,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     });
     introTimer.setRepeats(false);
     introTimer.start();
-    
-    for(int i = 0; i < MAX_GAME_OBJECTS; i++) {
-      gameObjects[i] = new GameObject();
-    }
-    
-    gameObjects[0].setPosition(-50, -480); // test object
-    gameObjects[0].setDimensions(400, 50);
   }
 
   /**
@@ -162,8 +128,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     //gl.glEnable(GL2.GL_LIGHT0);          // Turn on a light.  By default, shines from direction of viewer.
     //gl.glEnable(GL2.GL_NORMALIZE);       // OpenGL will make all normal vectors into unit normals
     //gl.glEnable(GL2.GL_COLOR_MATERIAL);  // Material ambient and diffuse colors can be set by glColor*
-    this.loadTextures(gl);
-    hero.setDimensions(textures[TEX_HERO].getWidth(), textures[TEX_HERO].getHeight());
+    
+    drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
+    
+    hero = new Hero(3, 0, 10, TEX_HERO, 0, 0, // 3 lives, 0 score, 10 health, texId, x, y
+          DrawLib.getTexture(TEX_HERO).getWidth(), // width
+          DrawLib.getTexture(TEX_HERO).getHeight()); // height
+    
+    // initialize all game objects here
+    for(int i = 0; i < MAX_GAME_OBJECTS; i++) {
+      gameObjects[i] = new DrawableGameObject(TEX_NONE, -50, -505, 400, 50);
+    }
+    
   }
   
   /* 
@@ -215,10 +191,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawHero(GL2 gl) {
-    gl.glPushMatrix();
-    gl.glTranslated(hero.getX(), hero.getY(), 0);
-    drawTexturedRectangle(gl, TEX_HERO, hero.getW(), hero.getH());
-    gl.glPopMatrix();
+    hero.draw();
   }
    /**
     * Draws any foreground objects to simulate depth.
@@ -230,7 +203,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     float[] red = { 1.0f, 0, 0 };
     gl.glColor3fv(red, 0);
     gl.glTranslated(60, 0, 0);
-    drawRectangle(gl, 100, 100); // a basic rectangle
+    DrawLib.drawRectangle(100, 100); // a basic rectangle
     gl.glPopMatrix();
     // END TEST BLOCK //////////////
     
@@ -240,60 +213,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawScore(gl);
   }
   
-  /**
-   * Draws a rectangle using the texture and dimensions specified.
-   * @param gl
-   * @param textureId is an integer matching the array index of the texture
-   * @param width
-   * @param height 
-   */
-  private void drawTexturedRectangle(GL2 gl, int textureId, double width, double height) {
-    gl.glColor3f(1.0f, 1.0f, 1.0f); // remove color before applying texture 
-    textures[textureId].enable(gl);
-    textures[textureId].bind(gl);  // set texture to use
-    gl.glPushMatrix();
-    gl.glScaled(width, height, 1);
-    TexturedShapes.square(gl, 1, true);
-    gl.glPopMatrix();
-    textures[textureId].disable(gl);
-  }
   
-  /* 
-   * Draws a rectangle with the current color based on the given scales, centered at (0,0,0) and
-   * facing in the +z direction.
-  */
-  private void drawRectangle(GL2 gl, double width, double height) {
-    gl.glPushMatrix();
-    gl.glScaled(width, height, 1);
-    gl.glBegin(GL.GL_TRIANGLE_FAN);
-    gl.glVertex3d(-0.5, -0.5, 0);
-    gl.glVertex3d(0.5, -0.5, 0);
-    gl.glVertex3d(0.5, 0.5, 0);
-    gl.glVertex3d(-0.5, 0.5, 0);
-    gl.glEnd();
-    gl.glPopMatrix();
-  }
-  
-  /**
-   * Draws given text on the screen, in the given color.  Use rasterPosX and rasterPosY to adjust
-   * where the text is displayed.
-   * @param gl
-   * @param text
-   * @param color
-   * @param rasterPosX
-   * @param rasterPosY 
-   */
-  private void drawText(GL2 gl, String text, double[] color, double rasterPosX, double rasterPosY) {
-    gl.glColor3d(color[0], color[1], color[2]);
-    gl.glRasterPos2d(rasterPosX, rasterPosY);
-    glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, text);
-
-  }
   
   private void drawIntro(GL2 gl) {
-    //gl.glPushMatrix();
-    drawTexturedRectangle(gl, TEX_LOGO, textures[TEX_LOGO].getWidth(), textures[TEX_LOGO].getHeight());
-    //gl.glPopMatrix();
+    DrawLib.drawTexturedRectangle(TEX_LOGO);
   }
   
   /**
@@ -303,43 +226,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawCollisions(GL2 gl) { // TODO: only draw collisions 'close' to character
     gl.glPushMatrix();
     for(int i = TEX_COLLISIONS_START; i < TEX_COLLISIONS_END; i++) {
-      drawTexturedRectangle(gl, i, textures[i].getWidth(), textures[i].getHeight());
-      gl.glTranslated(textures[i].getWidth(), 0, 0);
+      DrawLib.drawTexturedRectangle(i);
+      gl.glTranslated(DrawLib.getTexture(i).getWidth(), 0, 0);
     }
     gl.glPopMatrix();
     
     // draw test object
-    gl.glPushMatrix();
-    gl.glTranslated(gameObjects[0].getX(), gameObjects[0].getY(), 0);
-    drawRectangle(gl, gameObjects[0].getW(), gameObjects[0].getH());
-    gl.glPopMatrix();
+    gameObjects[0].draw();
   }
   
-  /**
-   * Loads all the listed images in textureFileNames, as long as they are stored in the textures
-   * folder.  Should only be called once during initialization.
-   * @param gl 
-   */
-  private void loadTextures(GL2 gl) {
-    for (int i = 0; i < textureFileNames.length; i++) {
-      try {
-          URL textureURL;
-          textureURL = getClass().getClassLoader().getResource(textureFileNames[i]);
-          if (textureURL != null) {
-            BufferedImage img = ImageIO.read(textureURL);
-            ImageUtil.flipImageVertically(img);
-            textures[i] = AWTTextureIO.newTexture(GLProfile.getDefault(), img, true);
-            textures[i].setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
-            textures[i].setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
-          }
-      }
-      catch (IOException | GLException e) {
-        e.printStackTrace();
-      }
-    }
-    textures[0].enable(gl);
-  }
-
   /**
    * Called when the size of the GLJPanel changes.  Note:  glViewport(x,y,width,height)
    * has already been called before this method is called!
@@ -382,17 +277,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case START_GAME:
         gl.glPushMatrix();
         gl.glTranslated(0, 50, 0);
-        drawText(gl, "START GAME", selectedTextColor, -50, 0);
+        DrawLib.drawText("START GAME", selectedTextColor, -50, 0);
         gl.glTranslated(0, -100, 0);
-        drawText(gl, "EXIT", textColor, -20, 0);
+        DrawLib.drawText("EXIT", textColor, -20, 0);
         gl.glPopMatrix();
         break;
       case EXIT:
         gl.glPushMatrix();
         gl.glTranslated(0, 50, 0);
-        drawText(gl, "START GAME", textColor, -50, 0);
+        DrawLib.drawText("START GAME", textColor, -50, 0);
         gl.glTranslated(0, -100, 0);
-        drawText(gl, "EXIT", selectedTextColor, -20, 0);
+        DrawLib.drawText("EXIT", selectedTextColor, -20, 0);
         gl.glPopMatrix();
         break;
       default: break;
@@ -415,17 +310,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
 
   private void drawHud(GL2 gl) {
-    drawTexturedRectangle(gl, TEX_HUD, textures[TEX_HUD].getWidth(), textures[TEX_HUD].getHeight());
+    DrawLib.drawTexturedRectangle(TEX_HUD);
   }
 
   private void drawHealth(GL2 gl) { // draw health in top left corner
     double xDiff = 10;
     gl.glPushMatrix();
-    gl.glTranslated(-textures[TEX_HUD].getWidth()/2+textures[TEX_HEALTH].getWidth()+xDiff,
-            textures[TEX_HUD].getHeight()/2-textures[TEX_HEALTH].getHeight(), 0);
+    gl.glTranslated(-DrawLib.getTexture(TEX_HUD).getWidth()/2+DrawLib.getTexture(TEX_HEALTH).getWidth()+xDiff,
+            DrawLib.getTexture(TEX_HUD).getHeight()/2-DrawLib.getTexture(TEX_HEALTH).getHeight(), 0);
     for(int i = 0; i < hero.getHealth(); i++) {
-      drawTexturedRectangle(gl, TEX_HEALTH, textures[TEX_HEALTH].getWidth(), textures[TEX_HEALTH].getHeight());
-      gl.glTranslated(textures[TEX_HEALTH].getWidth(), 0, 0);
+      DrawLib.drawTexturedRectangle(TEX_HEALTH);
+      gl.glTranslated(DrawLib.getTexture(TEX_HEALTH).getWidth(), 0, 0);
     }
     gl.glPopMatrix();
   }
@@ -433,8 +328,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawLives(GL2 gl) {
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glPushMatrix();
-    gl.glTranslated(-textures[TEX_HUD].getWidth()/2, textures[TEX_HUD].getHeight()/2, 0);
-    drawText(gl, Integer.toString(hero.getLives()), textColor, 30, -50);
+    gl.glTranslated(-DrawLib.getTexture(TEX_HUD).getWidth()/2, DrawLib.getTexture(TEX_HUD).getHeight()/2, 0);
+    DrawLib.drawText(Integer.toString(hero.getLives()), textColor, 30, -50);
     gl.glPopMatrix();
   }
 
@@ -442,8 +337,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     double diffX = 30;
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glPushMatrix();
-    gl.glTranslated(textures[TEX_HUD].getWidth()/2-diffX, textures[TEX_HUD].getHeight()/2, 0);
-    drawText(gl, "SCORE: " + Long.toString(hero.getScore()), textColor, -120, -20);
+    gl.glTranslated(DrawLib.getTexture(TEX_HUD).getWidth()/2-diffX, DrawLib.getTexture(TEX_HUD).getHeight()/2, 0);
+    DrawLib.drawText("SCORE: " + Long.toString(hero.getScore()), textColor, -120, -20);
     gl.glPopMatrix();
   }
 

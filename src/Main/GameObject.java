@@ -5,19 +5,16 @@ package Main;
  * @author Jeezy
  */
 public class GameObject {
-  private static double maxSpeedX = PhysicsEngine.TERMINAL_SPRINT;
-  private static double maxSpeedY = PhysicsEngine.TERMINAL_VELOCITY;
+  private static final double MAX_SPEED_X = PhysicsEngine.TERMINAL_SPRINT;
+  private static final double MAX_SPEED_Y = PhysicsEngine.TERMINAL_VELOCITY;
   
-  public GameObject(double x, double y, int w, int h, double speedx, double speedy) {
+  public GameObject(double x, double y, double w, double h) {
     X = x;
     Y = y;
-    speedX = 0.0;
-    speedY = 0.0;
     width = w;
     height = h;
-  }
-  public GameObject() {
-    this(0.0, 0.0, 50, 50, 0.0, 0.0);
+    speedX = 0.0;
+    speedY = 0.0;
   }
   
   protected String name = "Default";
@@ -78,10 +75,10 @@ public class GameObject {
   public void increaseSpeed(double deltaX, double deltaY) {
     speedX += deltaX;
     speedY += deltaY;
-    if(Math.abs(speedX) > maxSpeedX)
-      speedX = (speedX < 0) ? -maxSpeedX : maxSpeedX;
-    if(Math.abs(speedY) > maxSpeedY)
-      speedY = (speedY < 0) ? -maxSpeedY : maxSpeedY;
+    if(Math.abs(speedX) > MAX_SPEED_X)
+      speedX = (speedX < 0) ? -MAX_SPEED_X : MAX_SPEED_X;
+    if(Math.abs(speedY) > MAX_SPEED_Y)
+      speedY = (speedY < 0) ? -MAX_SPEED_Y : MAX_SPEED_Y;
   }
   
   public Rectangle getCollisionRect() {
@@ -95,16 +92,17 @@ public class GameObject {
    */
   public DIRECTION intersect(Rectangle dest) {
     Rectangle src = this.getCollisionRect();
-    if(src.x() > dest.x() + dest.w() // src is right of dest
-            || src.x() + src.w() < dest.x() // src is left of dest
-            || src.y() < dest.y() - dest.h() // dest is above src
-            || src.y() - src.h() > dest.y()) { // src is above dest
+    boolean impossibleRight = src.x() > dest.x() + dest.w(); // src is right of dest
+    boolean impossibleLeft =  src.x() + src.w() < dest.x(); // src is left of dest
+    boolean impossibleTop =  src.y() < dest.y() - dest.h(); // dest is above src
+    boolean impossibleBottom = src.y() - src.h() > dest.y(); // src is above dest
+    if(impossibleRight || impossibleLeft || impossibleTop || impossibleBottom) {
       return DIRECTION.NONE;
     } else { // some collision occurred, figure it out
       // check if objects are in same y space
-      /*if(((src.y() < dest.y()) && (src.y() > dest.y() - dest.h()))
-              || ((src.y() - src.h() < dest.y()) && (src.y() - src.h() > dest.y() - dest.h()))) {
-        if(src.x() + src.w() > dest.x()) {
+      if(((src.y() < dest.y()) && (src.y() > dest.y() - dest.h()))
+              && ((src.y() - src.h() < dest.y()) && (src.y() - src.h() > dest.y() - dest.h()))) {
+        if(src.x() + src.w() >= dest.x()) {
           return DIRECTION.RIGHT;
         }
         if(src.x() < dest.x() + dest.w()) {
@@ -114,14 +112,14 @@ public class GameObject {
       
       // check if objects are contain the same x space
       if(((src.x() > dest.x()) && (src.x() < dest.x() + dest.w()))
-              || ((src.x() + src.w() > dest.x()) && (src.x() + src.w() < dest.x() + dest.w()))) {
-        if(src.y() - src.h() < dest.y()) {
+              && ((src.x() + src.w() > dest.x()) && (src.x() + src.w() < dest.x() + dest.w()))) {
+        if(src.y() - src.h() <= dest.y()) {
           return DIRECTION.BOTTOM;
         }
         if(src.y() > dest.y() - dest.h()) {
           return DIRECTION.TOP;
         }
-      }*/
+      }
     }
     return null;
   }

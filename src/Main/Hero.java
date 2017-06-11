@@ -4,25 +4,17 @@ package Main;
  *
  * @author Jeezy
  */
-public class Hero extends GameObject {
-  public Hero(int startLives, long startScore) {
+public class Hero extends DrawableGameObject {
+  public Hero(int startLives, long startScore, int startHealth, int texId, double x, double y, double w, double h) {
+    super(texId, x, y, w, h);
     lives = startLives;
     score = startScore;
-  }
-  public Hero() {
-    this(3,0);
-  }
-  public Hero(double x, double y, double w, double h) {
-    this(3,0);
-    X = x;
-    Y = y;
-    width = w;
-    height = h;
+    health = startHealth;
   }
   
   private long score;
   private int lives;
-  private int health = 10;
+  private int health;
   
   public long getScore() { return score; }
   public void resetScore() { score = 0; }
