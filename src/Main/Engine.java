@@ -310,12 +310,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
 
   private void drawHud(GL2 gl) {
+    gl.glPushMatrix();
+    gl.glTranslated(scene.transX, -scene.transY, 0);
     DrawLib.drawTexturedRectangle(TEX_HUD);
+    gl.glPopMatrix();
   }
 
   private void drawHealth(GL2 gl) { // draw health in top left corner
     double xDiff = 10;
     gl.glPushMatrix();
+    gl.glTranslated(scene.transX, -scene.transY, 0);
     gl.glTranslated(-DrawLib.getTexture(TEX_HUD).getWidth()/2+DrawLib.getTexture(TEX_HEALTH).getWidth()+xDiff,
             DrawLib.getTexture(TEX_HUD).getHeight()/2-DrawLib.getTexture(TEX_HEALTH).getHeight(), 0);
     for(int i = 0; i < hero.getHealth(); i++) {
@@ -328,6 +332,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawLives(GL2 gl) {
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glPushMatrix();
+    gl.glTranslated(scene.transX, -scene.transY, 0);
     gl.glTranslated(-DrawLib.getTexture(TEX_HUD).getWidth()/2, DrawLib.getTexture(TEX_HUD).getHeight()/2, 0);
     DrawLib.drawText(Integer.toString(hero.getLives()), textColor, 30, -50);
     gl.glPopMatrix();
@@ -337,6 +342,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     double diffX = 30;
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glPushMatrix();
+    gl.glTranslated(scene.transX, -scene.transY, 0);
     gl.glTranslated(DrawLib.getTexture(TEX_HUD).getWidth()/2-diffX, DrawLib.getTexture(TEX_HUD).getHeight()/2, 0);
     DrawLib.drawText("SCORE: " + Long.toString(hero.getScore()), textColor, -120, -20);
     gl.glPopMatrix();
@@ -379,13 +385,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           break;
         // hero movements
         case KeyEvent.VK_A: // move left
-          hero.increaseSpeed(-5, 0);
+          hero.increaseSpeed(-10, 0);
           break;
         case KeyEvent.VK_D: // move right
-          hero.increaseSpeed(5, 0);
+          hero.increaseSpeed(10, 0);
           break;
         case KeyEvent.VK_SPACE: // jump
-          hero.increaseSpeed(0, 10);
+          hero.increaseSpeed(0, 30);
           break;
         case KeyEvent.VK_S: // crouch
           // TODO: change to crouch (image and collision rect will shrink)
