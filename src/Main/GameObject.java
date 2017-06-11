@@ -73,7 +73,7 @@ public class GameObject {
             X = near.getRight() + width/2; break; // collision at left side
           case RIGHT: //System.out.println("Collision from right side detected.");
             X = near.getLeft() - width/2; break; // collision at right side
-          default: System.out.println("Invalid intersection.") ;break;
+          default: System.out.println("Invalid intersection.") ; break;
         }
       }
     }
@@ -103,29 +103,13 @@ public class GameObject {
     boolean impossibleTop =  src.y() < dest.y() - dest.h(); // dest is above src
     boolean impossibleBottom = src.y() - src.h() > dest.y(); // src is above dest
     if(impossibleRight || impossibleLeft || impossibleTop || impossibleBottom) {
-      return DIRECTION.NONE;
+      return DIRECTION.NONE; // no collisions
     } else { // some collision occurred, figure it out
-      // check if objects are in same y space
-      if(((src.y() < dest.y()) && (src.y() > dest.y() - dest.h()))
-              && ((src.y() - src.h() < dest.y()) && (src.y() - src.h() > dest.y() - dest.h()))) {
-        if(src.x() + src.w() >= dest.x()) {
-          return DIRECTION.RIGHT;
-        }
-        if(src.x() < dest.x() + dest.w()) {
-          return DIRECTION.LEFT;
-        }
-      }
+      if(speedY < 0) return DIRECTION.BOTTOM;
+      if(speedX > 0) return DIRECTION.RIGHT;
+      if(speedX < 0) return DIRECTION.LEFT;
+      if(speedY > 0) return DIRECTION.TOP;
       
-      // check if objects are contain the same x space
-      if(((src.x() > dest.x()) && (src.x() < dest.x() + dest.w()))
-              && ((src.x() + src.w() > dest.x()) && (src.x() + src.w() < dest.x() + dest.w()))) {
-        if(src.y() - src.h() <= dest.y()) {
-          return DIRECTION.BOTTOM;
-        }
-        if(src.y() > dest.y() - dest.h()) {
-          return DIRECTION.TOP;
-        }
-      }
     }
     return null;
   }

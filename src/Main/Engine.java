@@ -450,9 +450,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case RUNNING:
         switch (key) {
         case KeyEvent.VK_A: // stop moving left
-          //hero.setSpeed(0, 0);
+          hero.setSpeedX(0);
           break;
         case KeyEvent.VK_D: // stop moving right
+          hero.setSpeedX(0);
           break;
         case KeyEvent.VK_SPACE: // stop jump, start fall
           break;
@@ -583,18 +584,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       break; // END PAUSED
     case RUNNING:
       switch(key) {
-      case MouseEvent.BUTTON1:
+      case MouseEvent.BUTTON1: // left click
+        hero.increaseSpeed(-5, 0);
+        break;
+      case MouseEvent.BUTTON2: // middle click
         try {
           hero.loseHealth(1); // lose 1 health, TEST
         } catch (GameOverException ex) {
           this.gameMode = GAME_MODE.GAME_OVER;
         }
         break;
-      case MouseEvent.BUTTON3: // right click to add points
-        hero.addScore(100);
-        break;
-      case MouseEvent.BUTTON2:
-        hero.increaseSpeed(-5, 0);
+      case MouseEvent.BUTTON3: // right click
+        hero.increaseSpeed(5, 0);
         break;
       default: break;
       }
