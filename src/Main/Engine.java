@@ -41,7 +41,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private DrawLib drawLib;
   private GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
-  private final int introLengthMs = 4000;
+  private final int INTROLENGTHMS = 4000;
   private final int MAX_GAME_OBJECTS = 1;
   private final int TEX_NONE = -1;
   private final int TEX_HERO = 0; // easier texture identification
@@ -93,7 +93,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // start the animation
     this.startAnimation(); // also control pause function (and remove keyboard response)
     
-    Timer introTimer = new Timer(introLengthMs, (evt)-> {
+    Timer introTimer = new Timer(INTROLENGTHMS, (evt)-> {
       this.gameMode = GAME_MODE.START_MENU;
     });
     introTimer.setRepeats(false);
