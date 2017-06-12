@@ -39,7 +39,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final Timer messageTimer = new Timer(5000, this);
   private int frameNumber = 0; // The current frame number for an animation.
   private DrawLib drawLib;
-  private GAME_MODE gameMode = GAME_MODE.INTRO;
+  public static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
   private final int INTROLENGTHMS = 4000;
   private final int MAX_GAME_OBJECTS = 1;
@@ -70,7 +70,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     window.setLocation(10,10);
     window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     window.setVisible(true);
-    panel.requestFocusInWindow();
+    panel.setFocusable(false);
   }
 
   @SuppressWarnings("LeakingThisInConstructor")
@@ -81,12 +81,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     display.addGLEventListener(this);
     setLayout(new BorderLayout());
     add(display,BorderLayout.CENTER);
-    // TODO:  Other components could be added to the main panel.
 
-    // enable keyboard event handling
+    // enable keyboard and mouse event handling
     display.requestFocusInWindow();
     display.addKeyListener(this);
-
     display.addMouseListener(this);
     display.addMouseMotionListener(this);
 
@@ -156,6 +154,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case START_MENU: drawStartMenu(gl); break; // END START MENU
       case RUNNING: drawNormalGamePlay(gl); break; // END RUNNING
       case PAUSED: drawPauseMenu(gl); break; // END PAUSED
+      case GAME_OVER: drawGameOver(gl); break;
       default: break;
     }
   }
@@ -193,6 +192,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     } else {
       statusMessage = "";
     }
+  }
+  
+  private void drawGameOver(GL2 gl) {
+    gl.glPushMatrix();
+    gl.glTranslated(-DrawLib.getTexture(TEX_HUD).getWidth()/2, 0, 0);
+    DrawLib.drawText("GAME OVER", new double[] { 1.0, 0.0, 0.0 }, 100+(frameNumber%500*2), 0);
+    gl.glPopMatrix();
   }
   
   /**
@@ -400,7 +406,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         hero.increaseSpeed(10, 0);
         break;
       case KeyEvent.VK_SPACE: // jump
-        hero.increaseSpeed(0, 30);
+        hero.setSpeedY(60);
         break;
       case KeyEvent.VK_S: // crouch
         // TODO: change to crouch (image and collision rect will shrink)
@@ -427,6 +433,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       default: break;
       }
       break; // END START_MENU
+    case GAME_OVER:
+      if(key == KeyEvent.VK_ENTER) gameMode = GAME_MODE.START_MENU;
+      break;
     default: break;
     }
     display.repaint();  // Causes the display() function to be called.
@@ -454,22 +463,23 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     int key = e.getKeyCode();  // Tells which key was pressed.
     switch(gameMode) { // controls are based on the game mode
     case RUNNING:
-        switch (key) {
-        case KeyEvent.VK_SHIFT:
-          if(hero.isSprinting())
-            hero.toggleSprint();
-          break;
-        case KeyEvent.VK_A: // stop moving left
-          hero.setSpeedX(0);
-          break;
-        case KeyEvent.VK_D: // stop moving right
-          hero.setSpeedX(0);
-          break;
-        case KeyEvent.VK_SPACE: // stop jump, start fall
-          break;
-        default: break;
-      }
-      break;
+      switch (key) {
+      case KeyEvent.VK_SHIFT:
+        if(hero.isSprinting())
+          hero.toggleSprint();
+        break;
+      case KeyEvent.VK_A: // stop moving left
+        hero.setSpeedX(0);
+        break;
+      case KeyEvent.VK_D: // stop moving right
+        hero.setSpeedX(0);
+        break;
+      case KeyEvent.VK_SPACE: // stop jump, start fall
+        hero.setSpeedY(0);
+        break;
+      default: break;
+    }
+    break;
     default: break;
     }
   }
@@ -598,19 +608,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case RUNNING:
       switch(key) {
       case MouseEvent.BUTTON1: // left click
-        //hero.increaseSpeed(-5, 0);
-        gameMode = GAME_MODE.PAUSED;
-        break;
-      case MouseEvent.BUTTON2: // middle click
-        /*try {
+        try {
           hero.loseHealth(1); // lose 1 health, TEST
         } catch (GameOverException ex) {
           this.gameMode = GAME_MODE.GAME_OVER;
-        }*/
+        }
+        break;
+      case MouseEvent.BUTTON2: // middle click
         setStatus("HERO!");
         break;
       case MouseEvent.BUTTON3: // right click
-        hero.increaseSpeed(5, 0);
+        hero.addScore(100);
         break;
       default: break;
       }

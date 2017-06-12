@@ -1,5 +1,7 @@
 package Main;
 
+import Enumerations.GAME_MODE;
+
 /**
  *
  * @author Jeezy
@@ -45,5 +47,20 @@ public class Hero extends DrawableGameObject {
     this.resetScore();
     this.resetHealth();
     this.resetLives();
+  }
+  
+  @Override
+  public void move(GameObject[] nearObjects)  {
+    super.move(nearObjects);
+    if(this.getY() < -1000) { //fell off map
+      try {
+        resetPosition();
+        setSpeed(0, 0);
+        die();
+        resetHealth();
+      } catch (GameOverException ex) {
+        Engine.gameMode = GAME_MODE.GAME_OVER;
+      }
+    }
   }
 }

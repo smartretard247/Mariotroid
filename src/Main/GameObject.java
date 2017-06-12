@@ -29,8 +29,8 @@ public class GameObject {
   private double Y; // for moving y direction
   private double speedX; // movement increment x
   private double speedY; // movement increment y
-  private final double defX;
-  private final double defY;
+  private double defX; // can only change if new level, or 'continue' option chosen
+  private double defY;
   
   protected double width, height; // for building the collision rect
   
@@ -114,6 +114,21 @@ public class GameObject {
       
     }
     return null;
+  }
+  
+  /**
+   * Used to update the objects default position.  This may be used to resume from a continue point,
+   * for example.  After setting the default position, use resetPosition to move object to its
+   * default position.
+   * @param x
+   * @param y 
+   */
+  public void setDefaultPosition(double x, double y) {
+    defX = x; defY = y;
+  } 
+  
+  public void resetPosition() {
+    this.setPosition(defX, defY);
   }
   
   public void resetAll() {
