@@ -36,6 +36,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final GLJPanel display;
   private final Dimension windowDim = new Dimension(1280,720);
   private Timer animationTimer;
+  private final Timer messageTimer = new Timer(5000, this);
   private int frameNumber = 0; // The current frame number for an animation.
   private DrawLib drawLib;
   private GAME_MODE gameMode = GAME_MODE.INTRO;
@@ -55,6 +56,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public Hero hero;
   public PhysicsEngine phy = new PhysicsEngine();
   public DrawableGameObject[] gameObjects = new DrawableGameObject[MAX_GAME_OBJECTS];
+  private String statusMessage = "";
   
   ///// START METHODS
 
@@ -131,7 +133,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     //gl.glEnable(GL2.GL_LIGHT0);          // Turn on a light.  By default, shines from direction of viewer.
     //gl.glEnable(GL2.GL_NORMALIZE);       // OpenGL will make all normal vectors into unit normals
     //gl.glEnable(GL2.GL_COLOR_MATERIAL);  // Material ambient and diffuse colors can be set by glColor*
-    
+    messageTimer.setRepeats(false);
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     scene = new Scene(60, 135, 0.5, 0.5);
     hero = new Hero(3, 0, 10, TEX_HERO, -150, 0, // 3 lives, 0 score, 10 health, texId, x, y
@@ -178,6 +180,19 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawHealth(gl);
     drawLives(gl);
     drawScore(gl);
+    drawStatus(gl); // will only draw status' of new messages, for x seconds
+  }
+  
+  private void drawStatus(GL2 gl) {
+    // check if we need to display a message
+    if(messageTimer.isRunning()) {
+      gl.glPushMatrix();
+      gl.glTranslated(0, -DrawLib.getTexture(TEX_HUD).getHeight()/2, 0);
+      DrawLib.drawText(statusMessage, new double[] { 1.0, 1.0, 0.0 }, -60, 20);
+      gl.glPopMatrix();
+    } else {
+      statusMessage = "";
+    }
   }
   
   /**
@@ -208,8 +223,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     DrawLib.drawRectangle(100, 100); // a basic rectangle
     gl.glPopMatrix();
     // END TEST BLOCK //////////////
-    
-    
   }
   
   private void drawIntro(GL2 gl) {
@@ -292,7 +305,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
 
   private void drawPauseMenu(GL2 gl) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    DrawLib.drawText("GAME PAUSED", new double[] { 1.0, 1.0, 0.0 }, -60, 0);
   }
 
   private void doStartMenuSelection() {
@@ -373,6 +386,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(gameMode) { // controls are based on the game mode
     case RUNNING:
       switch (key) {
+      case KeyEvent.VK_SHIFT:
+        if(!hero.isSprinting())
+          hero.toggleSprint();
+        break;
       case KeyEvent.VK_P: // pause/unpause
         gameMode = GAME_MODE.PAUSED;
         break;
@@ -438,6 +455,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(gameMode) { // controls are based on the game mode
     case RUNNING:
         switch (key) {
+        case KeyEvent.VK_SHIFT:
+          if(hero.isSprinting())
+            hero.toggleSprint();
+          break;
         case KeyEvent.VK_A: // stop moving left
           hero.setSpeedX(0);
           break;
@@ -566,22 +587,27 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       default: break;
       }
       break; // END START_MENU
-    case PAUSED: // then we are paused, so change keyboard options
+    case PAUSED: // then we are paused
       switch (key) {
+      case MouseEvent.BUTTON1:
+        gameMode = GAME_MODE.RUNNING;
+        break;
       default: break;
       }
       break; // END PAUSED
     case RUNNING:
       switch(key) {
       case MouseEvent.BUTTON1: // left click
-        hero.increaseSpeed(-5, 0);
+        //hero.increaseSpeed(-5, 0);
+        gameMode = GAME_MODE.PAUSED;
         break;
       case MouseEvent.BUTTON2: // middle click
-        try {
+        /*try {
           hero.loseHealth(1); // lose 1 health, TEST
         } catch (GameOverException ex) {
           this.gameMode = GAME_MODE.GAME_OVER;
-        }
+        }*/
+        setStatus("HERO!");
         break;
       case MouseEvent.BUTTON3: // right click
         hero.increaseSpeed(5, 0);
@@ -599,4 +625,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   @Override public void mouseEntered(MouseEvent evt) { }
   @Override public void mouseExited(MouseEvent evt) { }
+  
+  /**
+   * Game will automatically display this message at the bottom of the screen for x seconds.
+   * @param message 
+   */
+  public void setStatus(String message) {
+    this.statusMessage = message;
+    messageTimer.start();
+  }
 }

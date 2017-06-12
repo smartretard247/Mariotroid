@@ -7,8 +7,10 @@ import Enumerations.DIRECTION;
  * @author Jeezy
  */
 public class GameObject {
-  private static final double MAX_SPEED_X = PhysicsEngine.TERMINAL_SPRINT;
-  private static final double MAX_SPEED_Y = PhysicsEngine.TERMINAL_VELOCITY;
+  private static final double SPRINT = 10;
+  private static final int SPRINT_MULTIPLIER = 2;
+  private double MAX_SPEED_X = PhysicsEngine.TERMINAL_SPRINT;
+  private double MAX_SPEED_Y = PhysicsEngine.TERMINAL_VELOCITY;
   
   public GameObject(double x, double y, double w, double h) {
     X = x;
@@ -121,4 +123,18 @@ public class GameObject {
   
   public String getName() { return name; }
   public void setName(String to) { name = to; }
+  
+  /**
+   * Toggles between maximum running speeds.
+   */
+  public void toggleSprint() {
+    if(MAX_SPEED_X == PhysicsEngine.TERMINAL_SPRINT)
+      MAX_SPEED_X *= SPRINT_MULTIPLIER;
+    else
+      MAX_SPEED_X /= SPRINT_MULTIPLIER;
+  }
+  
+  public boolean isSprinting() {
+    return (MAX_SPEED_X > PhysicsEngine.TERMINAL_SPRINT);
+  }
 }
