@@ -7,16 +7,22 @@ import Enumerations.GAME_MODE;
  * @author Jeezy
  */
 public class Hero extends DrawableGameObject {
+  private static final int MAX_SECONDARY_AMMO = 10;
+  
   public Hero(int startLives, long startScore, int startHealth, int texId, double x, double y, double w, double h) {
     super(texId, x, y, w, h);
     lives = startLives;
     score = startScore;
     health = startHealth;
+    hasSecondaryWeapon = false;
+    secondaryAmmoCount = MAX_SECONDARY_AMMO;
   }
   
   private long score;
   private int lives;
   private int health;
+  private boolean hasSecondaryWeapon;
+  private int secondaryAmmoCount;
   
   public long getScore() { return score; }
   public void resetScore() { score = 0; }
@@ -47,6 +53,8 @@ public class Hero extends DrawableGameObject {
     this.resetScore();
     this.resetHealth();
     this.resetLives();
+    hasSecondaryWeapon = false;
+    secondaryAmmoCount = MAX_SECONDARY_AMMO;
   }
   
   @Override
@@ -61,6 +69,16 @@ public class Hero extends DrawableGameObject {
       } catch (GameOverException ex) {
         Engine.gameMode = GAME_MODE.GAME_OVER;
       }
+    }
+  }
+  
+  public void pickupSecondaryWeapon() { hasSecondaryWeapon = true; }
+  public void firePrimaryWeapon() {
+    //fire primary
+  }
+  public void fireSecondaryWeapon() {
+    if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
+      //fire
     }
   }
 }
