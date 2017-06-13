@@ -1,6 +1,7 @@
 package Main;
 
 import Enumerations.DIRECTION;
+import java.util.ArrayList;
 
 /**
  *
@@ -35,7 +36,8 @@ public class GameObject extends Collidable {
    * @param nearObjects
    * @return 
    */
-  public DIRECTION move(Collidable[] nearObjects) {
+  public ArrayList<Collidable> move(Collidable[] nearObjects) {
+    ArrayList<Collidable> collisions = new ArrayList<>();
     X += speedX;
     Y += speedY;
     
@@ -47,19 +49,27 @@ public class GameObject extends Collidable {
         switch(ofCollision) {
           case NONE: break; // continue looking through objects for collision
           case TOP: //System.out.println("Collision from top detected.");
-            Y = near.getBottom() - height/2; return DIRECTION.TOP; // collision on top, set to bottom of near object
+            Y = near.getBottom() - height/2;
+            collisions.add(near);
+            break;
           case BOTTOM: //System.out.println("Collision from bottom detected.");
-            Y = near.getTop() + height/2; return DIRECTION.BOTTOM; // collision on bottom
+            Y = near.getTop() + height/2;
+            collisions.add(near); // collision on bottom
+            break;
           case LEFT: //System.out.println("Collision from left side detected.");
-            X = near.getRight() + width/2; return DIRECTION.LEFT; // collision at left side
+            X = near.getRight() + width/2;
+            collisions.add(near); // collision at left side
+            break;
           case RIGHT: //System.out.println("Collision from right side detected.");
-            X = near.getLeft() - width/2; return DIRECTION.RIGHT; // collision at right side
+            X = near.getLeft() - width/2;
+            collisions.add(near); // collision at right side
+            break;
           default: System.out.println("Invalid intersection.") ; return null;
         }
       }
     }
-    if(speedY <= 0) PhysicsEngine.fall(this);// apply gravity
-    return DIRECTION.NONE;
+    if(speedY <= 0 && collisions.isEmpty()) PhysicsEngine.fall(this);// apply gravity
+    return collisions;
   }
   public void increaseSpeed(double deltaX, double deltaY) {
     speedX += deltaX;

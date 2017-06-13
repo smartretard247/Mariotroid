@@ -11,6 +11,10 @@ public class Collidable extends Drawable {
     super(texId, x, y, w, h);
   }
   
+  public Collidable() {
+    super(-1, 0, 0, 0, 0);
+  }
+  
   /**
    * Returns a rectangle surrounding the object.
    * @return 

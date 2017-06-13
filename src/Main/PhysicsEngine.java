@@ -23,7 +23,6 @@ public class PhysicsEngine {
     if (vertSpeed > TERMINAL_VELOCITY) {
       vertSpeed = TERMINAL_VELOCITY;
     }
-    //obj.setY((obj.getSpeedY() < 0) ? obj.getY() + vertSpeed : obj.getY() - vertSpeed);
     obj.setSpeedY(-vertSpeed);
   }
 }

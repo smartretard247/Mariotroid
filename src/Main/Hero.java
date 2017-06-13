@@ -3,6 +3,7 @@ package Main;
 import Drawing.DrawLib;
 import Enumerations.DIRECTION;
 import Enumerations.GAME_MODE;
+import java.util.ArrayList;
 
 /**
  *
@@ -11,14 +12,18 @@ import Enumerations.GAME_MODE;
 public class Hero extends GameObject {
   private static final int MAX_SECONDARY_AMMO = 10;
   private static final int JUMP_SPEED = 60;
+  private static final int MAX_JUMP_HEIGHT = 300;
   public int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
   private long score;
   private int lives;
   private int health;
   private boolean jumped;
+  private boolean hasDoubleJump;
   private boolean doubleJumped;
+  private boolean maxJumpExceeded;
   private boolean hasSecondaryWeapon;
   private int secondaryAmmoCount;
+  private double landHeight; // for calculating jump and double jump heights
   
   public Hero(int startLives, long startScore, int startHealth, int texId, double x, double y, double w, double h) {
     super(texId, x, y, w, h);
@@ -29,7 +34,10 @@ public class Hero extends GameObject {
     hasSecondaryWeapon = false;
     secondaryAmmoCount = MAX_SECONDARY_AMMO;
     jumped = false;
+    hasDoubleJump = false;
     doubleJumped = false;
+    maxJumpExceeded = false;
+    landHeight = Y;
   }
   
   public long getScore() { return score; }
@@ -59,12 +67,19 @@ public class Hero extends GameObject {
     resetHealth();
     resetLives();
     resetAmmo();
-    doLand(); // reset double jump as if on ground
+    dropSecondaryWeapon();
+    dropJetpack();
+    doLand(); // reset jump as if on ground
   }
   
   @Override
-  public DIRECTION move(Collidable[] nearObjects)  {
-    DIRECTION ofCollision = super.move(nearObjects);
+  public ArrayList<Collidable> move(Collidable[] nearObjects)  {
+    if(getY() >= getMaxJumpHeight() && !maxJumpExceeded) {
+      setSpeedY(0);
+      maxJumpExceeded = true;
+    }
+    
+    ArrayList<Collidable> collisions = super.move(nearObjects);
     if(this.getY() < -2000) { //fell off map
       try {
         resetPosition();
@@ -75,22 +90,38 @@ public class Hero extends GameObject {
         Engine.gameMode = GAME_MODE.GAME_OVER;
       }
     }
-    if(ofCollision == DIRECTION.BOTTOM)
-      doLand();
-    if(getSpeedX() != 0) this.setTextureId(DrawLib.TEX_HERO_RUN1);
-    return ofCollision;
+    
+    // additional things that the hero should do with each of the collided objects
+    for(Collidable objects : collisions) {
+      switch(objects.getTextureId()) {
+      case DrawLib.TEX_FLOOR:
+        doLand();
+        break;
+      case DrawLib.TEX_TEST:
+        pickupJetpack(); // TODO: for now just call it the jetpack, fix later
+        Engine.setStatusMessage("Got double jump!");
+        break;
+      default: break;
+      }
+    }
+    
+    if(getSpeedX() != 0 && didLand()) this.setTextureId(DrawLib.TEX_HERO_RUN1);
+    return collisions;
   }
   
   public boolean canJump() { return !jumped; }
   public void doJump() {
     jumped = true;
     setSpeedY(JUMP_SPEED);
+    //this.setTextureId(DrawLib.TEX_HERO_JUMP);
   }
-  public boolean canDoubleJump() { return !doubleJumped && jumped; }
+  public boolean canDoubleJump() { return !doubleJumped && jumped && hasDoubleJump; }
   public void doDoubleJump() {
     doubleJumped = true;
     setSpeedY(JUMP_SPEED);
     this.setTextureId(DrawLib.TEX_HERO_BACKPACK1);
+    maxJumpExceeded = false;
+    landHeight = getY();
   }
   public boolean didLand() {
     return !jumped && !doubleJumped;
@@ -100,9 +131,12 @@ public class Hero extends GameObject {
     doubleJumped = false;
     fallCount = 0; // reset fall count, see fallCount in Engine for definition
     this.setTextureId(DrawLib.TEX_HERO);
+    maxJumpExceeded = false;
+    landHeight = getY();
   }
   
   public void pickupSecondaryWeapon() { hasSecondaryWeapon = true; }
+  public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
   public void firePrimaryWeapon() {
     //fire primary
   }
@@ -113,7 +147,17 @@ public class Hero extends GameObject {
   }
   
   public void resetAmmo() {
-    hasSecondaryWeapon = false;
     secondaryAmmoCount = MAX_SECONDARY_AMMO;
+  }
+  
+  public void pickupJetpack() { hasDoubleJump = true; };
+  public void dropJetpack() { hasDoubleJump = false; };
+  
+  /**
+   * Returns the maximum height the current jump (single or double) can go.
+   * @return 
+   */
+  public double getMaxJumpHeight() {
+    return landHeight + MAX_JUMP_HEIGHT;
   }
 }

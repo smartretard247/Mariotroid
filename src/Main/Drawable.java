@@ -16,6 +16,7 @@ public class Drawable {
   private double defX;
   private double defY;
   private boolean flipY;
+  private double color[]; // rgb color for non-sprites
   
   public Drawable(int texId, double x, double y, double w, double h) {
     textureId = texId;
@@ -26,6 +27,7 @@ public class Drawable {
     width = w;
     height = h;
     flipY = false;
+    color = new double[] { 0.0, 0.0, 0.0 };
   }
   
   public int getTextureId() { return textureId; }
@@ -43,7 +45,7 @@ public class Drawable {
   public void setPosition(double posX, double posY) { X = posX; Y = posY; }
   public void setW(int w) { width = w; }
   public void setH(int h) { height = h; }
-  public void setDimensions(int w, int h) { width = w; height = h; }
+  public void setDimensions(int w, int h) { width = w; height = h; } // only applies to rectangle, NOT image
   
   /**
    * Used to update the objects default position.  This may be used to resume from a continue point,
@@ -69,6 +71,12 @@ public class Drawable {
    */
   public void setFlipY(boolean to) { flipY = to; }
   
+  public void setColor(double r, double g, double b) {
+    color[0] = r;
+    color[1] = g;
+    color[2] = b;
+  }
+  
   /**
    * Draws the game object using a valid textureId, if one is not present it will draw a plain
    * rectangle in its place.
@@ -81,6 +89,7 @@ public class Drawable {
         GL.glRotated(180, 0, 1, 0);
       DrawLib.drawTexturedRectangle(textureId);
     } else {
+      GL.glColor3d(color[0], color[1], color[2]);
       DrawLib.drawRectangle(width, height);
     }
     GL.glPopMatrix();

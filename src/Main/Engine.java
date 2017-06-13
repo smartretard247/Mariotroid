@@ -36,19 +36,19 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final GLJPanel display;
   private final Dimension windowDim = new Dimension(1280,720);
   private Timer animationTimer;
-  private final Timer messageTimer = new Timer(5000, this);
+  private static final Timer messageTimer = new Timer(5000, null);
   private int frameNumber = 0; // The current frame number for an animation.
   private DrawLib drawLib;
   public static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
   private final int INTROLENGTHMS = 4000;
-  private final int MAX_GAME_OBJECTS = 1;
+  private final int MAX_GAME_OBJECTS = 2;
   
   public Scene scene; // trans x & y, scale x & y
   public Hero hero;
   public PhysicsEngine phy = new PhysicsEngine();
   public Collidable[] gameObjects = new Collidable[MAX_GAME_OBJECTS];
-  private String statusMessage = "";
+  private static String statusMessage = "";
   
   ///// START METHODS
 
@@ -132,9 +132,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     // initialize all game objects here
     for(int i = 0; i < MAX_GAME_OBJECTS; i++) {
-      gameObjects[i] = new Collidable(DrawLib.TEX_NONE, -450, -505, 1000, 50);
+      gameObjects[i] = new Collidable();
     }
     
+    gameObjects[0].setTextureId(DrawLib.TEX_FLOOR);
+    gameObjects[0].setPosition(-450, -505);
+    gameObjects[0].setDimensions(1000, 50);
+    gameObjects[0].setColor(1.0, 1.0, 1.0);
+    
+    gameObjects[1].setTextureId(DrawLib.TEX_TEST);
+    gameObjects[1].setPosition(-850, -400);
+    gameObjects[1].setDimensions(75, 75);
+    gameObjects[1].setColor(0.8, 0.5, 0.1);
   }
   
   /* 
@@ -239,43 +248,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
     gl.glPopMatrix();
     
-    // draw test object
-    gameObjects[0].draw();
-  }
-  
-  /**
-   * Called when the size of the GLJPanel changes.  Note:  glViewport(x,y,width,height)
-   * has already been called before this method is called!
-   * @param drawable
-   * @param x
-   * @param y
-   * @param width
-   * @param height
-   */
-  @Override
-  public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-  }
-
-  /**
-   * This is called before the GLJPanel is destroyed.  It can be used to release OpenGL resources.
-   * @param drawable
-   */
-  @Override
-  public void dispose(GLAutoDrawable drawable) {
-  }
-
-  // ------------ Support for a menu -----------------------
-  public JMenuBar createMenuBar() {
-    JMenuBar menubar = new JMenuBar();
-    MenuHandler menuHandler = new MenuHandler(); // An object to respond to menu commands.
-    JMenu menu = new JMenu("Menu"); // Create a menu and add it to the menu bar
-    menubar.add(menu);
-    JMenuItem item = new JMenuItem("Quit");  // Create a menu command.
-    item.addActionListener(menuHandler);  // Set up handling for this command.
-    menu.add(item);  // Add the command to the menu.
-
-    // TODO:  Add additional menu commands and menus.
-    return menubar;
+    // draw game objects
+    for(int i = 0; i < MAX_GAME_OBJECTS; i++) {
+      gameObjects[i].draw();
+    }
   }
 
   private void drawStartMenu(GL2 gl) {
@@ -352,6 +328,41 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
     DrawLib.drawText("SCORE: " + Long.toString(hero.getScore()), textColor, -120, -20);
     gl.glPopMatrix();
+  }
+  
+  /**
+   * Called when the size of the GLJPanel changes.  Note:  glViewport(x,y,width,height)
+   * has already been called before this method is called!
+   * @param drawable
+   * @param x
+   * @param y
+   * @param width
+   * @param height
+   */
+  @Override
+  public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+  }
+
+  /**
+   * This is called before the GLJPanel is destroyed.  It can be used to release OpenGL resources.
+   * @param drawable
+   */
+  @Override
+  public void dispose(GLAutoDrawable drawable) {
+  }
+
+  // ------------ Support for a menu -----------------------
+  public JMenuBar createMenuBar() {
+    JMenuBar menubar = new JMenuBar();
+    MenuHandler menuHandler = new MenuHandler(); // An object to respond to menu commands.
+    JMenu menu = new JMenu("Menu"); // Create a menu and add it to the menu bar
+    menubar.add(menu);
+    JMenuItem item = new JMenuItem("Quit");  // Create a menu command.
+    item.addActionListener(menuHandler);  // Set up handling for this command.
+    menu.add(item);  // Add the command to the menu.
+
+    // TODO:  Add additional menu commands and menus.
+    return menubar;
   }
 
   /**
@@ -645,8 +656,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * Game will automatically display this message at the bottom of the screen for x seconds.
    * @param message 
    */
-  public void setStatusMessage(String message) {
-    this.statusMessage = message;
+  public static void setStatusMessage(String message) {
+    statusMessage = message;
     messageTimer.start();
   }
 }
