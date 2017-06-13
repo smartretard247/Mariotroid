@@ -43,14 +43,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
   private final int INTROLENGTHMS = 4000;
   private final int MAX_GAME_OBJECTS = 1;
-  private final int TEX_NONE = -1;
-  private final int TEX_HERO = 0; // easier texture identification
-  private final int TEX_LOGO = 1;
-  private final int TEX_HEALTH = 2;
-  private final int TEX_HUD = 3;
-  private final int TEX_SHELL = 4;
-  private final int TEX_COLLISIONS_START = 5; // collision textures between this
-  private final int TEX_COLLISIONS_END = 12;  // and this
   
   public Scene scene; // trans x & y, scale x & y
   public Hero hero;
@@ -134,13 +126,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     messageTimer.setRepeats(false);
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     scene = new Scene(60, 135, 0.5, 0.5);
-    hero = new Hero(3, 0, 10, TEX_HERO, -150, 0, // 3 lives, 0 score, 10 health, texId, x, y
-          DrawLib.getTexture(TEX_HERO).getWidth(), // width
-          DrawLib.getTexture(TEX_HERO).getHeight()); // height
+    hero = new Hero(3, 0, 10, DrawLib.TEX_HERO, -150, 0, // 3 lives, 0 score, 10 health, texId, x, y
+          DrawLib.getTexture(DrawLib.TEX_HERO).getWidth(), // width
+          DrawLib.getTexture(DrawLib.TEX_HERO).getHeight()); // height
     
     // initialize all game objects here
     for(int i = 0; i < MAX_GAME_OBJECTS; i++) {
-      gameObjects[i] = new Collidable(TEX_NONE, -450, -505, 1000, 50);
+      gameObjects[i] = new Collidable(DrawLib.TEX_NONE, -450, -505, 1000, 50);
     }
     
   }
@@ -186,7 +178,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // check if we need to display a message
     if(messageTimer.isRunning()) {
       gl.glPushMatrix();
-      gl.glTranslated(0, -DrawLib.getTexture(TEX_HUD).getHeight()/2, 0);
+      gl.glTranslated(0, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
       DrawLib.drawText(statusMessage, new double[] { 1.0, 1.0, 0.0 }, -60, 20);
       gl.glPopMatrix();
     } else {
@@ -196,7 +188,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   private void drawGameOver(GL2 gl) {
     gl.glPushMatrix();
-    gl.glTranslated(-DrawLib.getTexture(TEX_HUD).getWidth()/2, 0, 0);
+    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
     DrawLib.drawText("GAME OVER", new double[] { 1.0, 0.0, 0.0 }, 100+(frameNumber%500*2), 0);
     gl.glPopMatrix();
   }
@@ -232,7 +224,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   private void drawIntro(GL2 gl) {
-    DrawLib.drawTexturedRectangle(TEX_LOGO);
+    DrawLib.drawTexturedRectangle(DrawLib.TEX_LOGO);
   }
   
   /**
@@ -241,7 +233,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawCollisions(GL2 gl) { // TODO: only draw collisions 'close' to character
     gl.glPushMatrix();
-    for(int i = TEX_COLLISIONS_START; i < TEX_COLLISIONS_END; i++) {
+    for(int i = DrawLib.TEX_COLLISIONS_START; i < DrawLib.TEX_COLLISIONS_END; i++) {
       DrawLib.drawTexturedRectangle(i);
       gl.glTranslated(DrawLib.getTexture(i).getWidth(), 0, 0);
     }
@@ -327,18 +319,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
 
   private void drawHud(GL2 gl) {
     gl.glPushMatrix();
-    DrawLib.drawTexturedRectangle(TEX_HUD);
+    DrawLib.drawTexturedRectangle(DrawLib.TEX_HUD);
     gl.glPopMatrix();
   }
 
   private void drawHealth(GL2 gl) { // draw health in top left corner
     double xDiff = 10;
     gl.glPushMatrix();
-    gl.glTranslated(-DrawLib.getTexture(TEX_HUD).getWidth()/2+DrawLib.getTexture(TEX_HEALTH).getWidth()+xDiff,
-            DrawLib.getTexture(TEX_HUD).getHeight()/2-DrawLib.getTexture(TEX_HEALTH).getHeight(), 0);
+    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2+DrawLib.getTexture(DrawLib.TEX_HEALTH).getWidth()+xDiff,
+            DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2-DrawLib.getTexture(DrawLib.TEX_HEALTH).getHeight(), 0);
     for(int i = 0; i < hero.getHealth(); i++) {
-      DrawLib.drawTexturedRectangle(TEX_HEALTH);
-      gl.glTranslated(DrawLib.getTexture(TEX_HEALTH).getWidth(), 0, 0);
+      DrawLib.drawTexturedRectangle(DrawLib.TEX_HEALTH);
+      gl.glTranslated(DrawLib.getTexture(DrawLib.TEX_HEALTH).getWidth(), 0, 0);
     }
     gl.glPopMatrix();
   }
@@ -346,7 +338,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawLives(GL2 gl) {
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glPushMatrix();
-    gl.glTranslated(-DrawLib.getTexture(TEX_HUD).getWidth()/2, DrawLib.getTexture(TEX_HUD).getHeight()/2, 0);
+    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2,
+            DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
     DrawLib.drawText(Integer.toString(hero.getLives()), textColor, 30, -50);
     gl.glPopMatrix();
   }
@@ -355,7 +348,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     double diffX = 30;
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glPushMatrix();
-    gl.glTranslated(DrawLib.getTexture(TEX_HUD).getWidth()/2-diffX, DrawLib.getTexture(TEX_HUD).getHeight()/2, 0);
+    gl.glTranslated(DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2-diffX,
+            DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
     DrawLib.drawText("SCORE: " + Long.toString(hero.getScore()), textColor, -120, -20);
     gl.glPopMatrix();
   }

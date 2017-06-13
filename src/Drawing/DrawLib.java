@@ -11,6 +11,8 @@ import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import javax.imageio.ImageIO;
 
 /**
@@ -21,30 +23,46 @@ public class DrawLib {
   public static GL2 gl;
   public static final GLUT glut = new GLUT();
   
-  // all images should be listed here, and stored in the textures directory
-  private static final String[] textureFileNames = {
-    "art/sprites/hero/hero.png",
-    "art/logo.png",
-    "art/hud/health.png",
-    "art/hud/hud.png",
-    "art/hud/shell.png",
-    "art/level/level0.png",
-    "art/level/level1.png",
-    "art/level/level2.png",
-    "art/level/level3.png",
-    "art/level/level4.png",
-    "art/level/level5.png",
-    "art/level/level6.png",
-    "art/level/level7.png"
-  };
-  private static final Texture[] textures = new Texture[textureFileNames.length];
-  
-  public static Texture getTexture(int id) { return textures[id]; }
+  private static final Map<Integer, String> textureIdMap = new HashMap<>();
+  public static final int TEX_NONE = -1;
+  public static final int TEX_HERO = 0; // easier texture identification
+  public static final int TEX_HERO_RUN1 = 1;
+  public static final int TEX_HERO_RUN2 = 2;
+  public static final int TEX_HERO_BACKPACK1 = 3;
+  public static final int TEX_LOGO = 4;
+  public static final int TEX_HEALTH = 5;
+  public static final int TEX_HUD = 6;
+  public static final int TEX_SHELL = 7;
+  public static final int TEX_COLLISIONS_START = 8; // collision textures between this
+  public static final int TEX_COLLISIONS_END = 14;  // and this
   
   public DrawLib(GL2 context) {
     gl = context;
-    loadTextures();
+    
+  // all images should be listed here, and stored in the textures directory
+    textureIdMap.put(TEX_HERO, "art/sprites/hero/hero.png");
+    textureIdMap.put(TEX_HERO_RUN1, "art/sprites/hero/hero_run_step_1.png");
+    textureIdMap.put(TEX_HERO_RUN2, "art/sprites/hero/hero_run_step_2.png");
+    textureIdMap.put(TEX_HERO_BACKPACK1, "art/sprites/hero/hero_backpack_run_step_1.png");
+    textureIdMap.put(TEX_LOGO, "art/logo.png");
+    textureIdMap.put(TEX_HEALTH, "art/hud/health.png");
+    textureIdMap.put(TEX_HUD, "art/hud/hud.png");
+    textureIdMap.put(TEX_SHELL, "art/hud/shell.png");
+    textureIdMap.put(TEX_COLLISIONS_START, "art/level/level0.png");
+    textureIdMap.put(TEX_COLLISIONS_START+1, "art/level/level1.png");
+    textureIdMap.put(TEX_COLLISIONS_START+2, "art/level/level2.png");
+    textureIdMap.put(TEX_COLLISIONS_START+3, "art/level/level3.png");
+    textureIdMap.put(TEX_COLLISIONS_START+4, "art/level/level4.png");
+    textureIdMap.put(TEX_COLLISIONS_START+5, "art/level/level5.png");
+    textureIdMap.put(TEX_COLLISIONS_START+6, "art/level/level6.png");
+    textureIdMap.put(TEX_COLLISIONS_END, "art/level/level7.png");
+    
+    loadTextures(); // must load after filename 'puts' above
   }
+
+  private static Map<Integer, Texture> textures = new HashMap<>();
+  
+  public static Texture getTexture(int id) { return textures.get(id); }
   
   /**
    * Loads all the listed images in textureFileNames, as long as they are stored in the textures
@@ -52,23 +70,24 @@ public class DrawLib {
    * @param gl 
    */
   private void loadTextures() {
-    for (int i = 0; i < textureFileNames.length; i++) {
+    textureIdMap.keySet().forEach((i) -> {
+    //for (int i = 0; i < textureFileNames.length; i++) {
       try {
           URL textureURL;
-          textureURL = getClass().getClassLoader().getResource(textureFileNames[i]);
+          textureURL = getClass().getClassLoader().getResource(textureIdMap.get(i));
           if (textureURL != null) {
             BufferedImage img = ImageIO.read(textureURL);
             ImageUtil.flipImageVertically(img);
-            textures[i] = AWTTextureIO.newTexture(GLProfile.getDefault(), img, true);
-            textures[i].setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
-            textures[i].setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
+            Texture temp = AWTTextureIO.newTexture(GLProfile.getDefault(), img, true);
+            temp.setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
+            temp.setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
+            textures.put(i, temp);
           }
-      }
-      catch (IOException | GLException e) {
+      } catch (IOException | GLException e) {
         e.printStackTrace();
       }
-    }
-    textures[0].enable(gl);
+    });
+    textures.get(0).enable(gl);
   }
   
   /**
@@ -108,16 +127,16 @@ public class DrawLib {
    * @param textureId is an integer matching the array index of the texture
    */
   public static void drawTexturedRectangle(int textureId) {
-    double width = textures[textureId].getWidth();
-    double height = textures[textureId].getHeight();
+    double width = textures.get(textureId).getWidth();
+    double height = textures.get(textureId).getHeight();
     
     gl.glColor3f(1.0f, 1.0f, 1.0f); // remove color before applying texture 
-    textures[textureId].enable(gl);
-    textures[textureId].bind(gl);  // set texture to use
+    textures.get(textureId).enable(gl);
+    textures.get(textureId).bind(gl);  // set texture to use
     gl.glPushMatrix();
     gl.glScaled(width, height, 1);
     TexturedShapes.square(gl, 1, true);
     gl.glPopMatrix();
-    textures[textureId].disable(gl);
+    textures.get(textureId).disable(gl);
   }
 }

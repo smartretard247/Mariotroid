@@ -15,6 +15,7 @@ public class Drawable {
   protected double width, height; // for building the collision rect
   private double defX;
   private double defY;
+  private boolean flipY;
   
   public Drawable(int texId, double x, double y, double w, double h) {
     textureId = texId;
@@ -24,6 +25,7 @@ public class Drawable {
     defY = y;
     width = w;
     height = h;
+    flipY = false;
   }
   
   public int getTextureId() { return textureId; }
@@ -62,16 +64,25 @@ public class Drawable {
   }
   
   /**
+   * Call this to make images flip along the Y-axis, making them seem to turn around.
+   * @param to
+   */
+  public void setFlipY(boolean to) { flipY = to; }
+  
+  /**
    * Draws the game object using a valid textureId, if one is not present it will draw a plain
    * rectangle in its place.
    */
   public void draw() {
     GL.glPushMatrix();
     GL.glTranslated(getX(), getY(), 0);
-    if(textureId >= 0)
+    if(textureId >= 0) {
+      if(flipY)
+        GL.glRotated(180, 0, 1, 0);
       DrawLib.drawTexturedRectangle(textureId);
-    else
+    } else {
       DrawLib.drawRectangle(width, height);
+    }
     GL.glPopMatrix();
   }
 }

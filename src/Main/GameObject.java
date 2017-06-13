@@ -39,6 +39,8 @@ public class GameObject extends Collidable {
     X += speedX;
     Y += speedY;
     
+    if(speedX != 0) setFlipY(speedX < 0); // this reverses the sprite with direction changes
+    
     for(Collidable near : nearObjects) {
       DIRECTION ofCollision = this.intersect(near.getBoundary(), speedX, speedY);
       if(ofCollision != null) {

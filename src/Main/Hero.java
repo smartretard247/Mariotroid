@@ -1,5 +1,6 @@
 package Main;
 
+import Drawing.DrawLib;
 import Enumerations.DIRECTION;
 import Enumerations.GAME_MODE;
 
@@ -76,6 +77,7 @@ public class Hero extends GameObject {
     }
     if(ofCollision == DIRECTION.BOTTOM)
       doLand();
+    if(getSpeedX() != 0) this.setTextureId(DrawLib.TEX_HERO_RUN1);
     return ofCollision;
   }
   
@@ -88,6 +90,7 @@ public class Hero extends GameObject {
   public void doDoubleJump() {
     doubleJumped = true;
     setSpeedY(JUMP_SPEED);
+    this.setTextureId(DrawLib.TEX_HERO_BACKPACK1);
   }
   public boolean didLand() {
     return !jumped && !doubleJumped;
@@ -96,6 +99,7 @@ public class Hero extends GameObject {
     jumped = false;
     doubleJumped = false;
     fallCount = 0; // reset fall count, see fallCount in Engine for definition
+    this.setTextureId(DrawLib.TEX_HERO);
   }
   
   public void pickupSecondaryWeapon() { hasSecondaryWeapon = true; }
