@@ -23,7 +23,7 @@ public class DrawLib {
   
   // all images should be listed here, and stored in the textures directory
   private static final String[] textureFileNames = {
-    "hero.png",
+    "art/sprites/hero/hero.png",
     "art/logo.png",
     "art/hud/health.png",
     "art/hud/hud.png",
