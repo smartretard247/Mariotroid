@@ -1,28 +1,35 @@
 package Main;
 
+import Enumerations.DIRECTION;
 import Enumerations.GAME_MODE;
 
 /**
  *
  * @author Jeezy
  */
-public class Hero extends DrawableGameObject {
+public class Hero extends GameObject {
   private static final int MAX_SECONDARY_AMMO = 10;
+  private static final int JUMP_SPEED = 60;
+  public int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
+  private long score;
+  private int lives;
+  private int health;
+  private boolean jumped;
+  private boolean doubleJumped;
+  private boolean hasSecondaryWeapon;
+  private int secondaryAmmoCount;
   
   public Hero(int startLives, long startScore, int startHealth, int texId, double x, double y, double w, double h) {
     super(texId, x, y, w, h);
     lives = startLives;
     score = startScore;
     health = startHealth;
+    fallCount = 0;
     hasSecondaryWeapon = false;
     secondaryAmmoCount = MAX_SECONDARY_AMMO;
+    jumped = false;
+    doubleJumped = false;
   }
-  
-  private long score;
-  private int lives;
-  private int health;
-  private boolean hasSecondaryWeapon;
-  private int secondaryAmmoCount;
   
   public long getScore() { return score; }
   public void resetScore() { score = 0; }
@@ -32,10 +39,7 @@ public class Hero extends DrawableGameObject {
   public void setLives(int to) { lives = to; }
   public void resetLives() { lives = 3; }
   public void addLive() { ++lives; }
-  private void die() throws GameOverException {
-    if(--lives <= 0) throw new GameOverException();
-  }
-  
+  private void die() throws GameOverException { if(--lives <= 0) throw new GameOverException(); }
   public int getHealth() { return health; }
   public void setHealth(int to) { health = to; }
   private void resetHealth() { health = 10; }
@@ -50,17 +54,17 @@ public class Hero extends DrawableGameObject {
   @Override
   public void resetAll() {
     super.resetAll();
-    this.resetScore();
-    this.resetHealth();
-    this.resetLives();
-    hasSecondaryWeapon = false;
-    secondaryAmmoCount = MAX_SECONDARY_AMMO;
+    resetScore();
+    resetHealth();
+    resetLives();
+    resetAmmo();
+    doLand(); // reset double jump as if on ground
   }
   
   @Override
-  public void move(GameObject[] nearObjects)  {
-    super.move(nearObjects);
-    if(this.getY() < -1000) { //fell off map
+  public DIRECTION move(Collidable[] nearObjects)  {
+    DIRECTION ofCollision = super.move(nearObjects);
+    if(this.getY() < -2000) { //fell off map
       try {
         resetPosition();
         setSpeed(0, 0);
@@ -70,6 +74,28 @@ public class Hero extends DrawableGameObject {
         Engine.gameMode = GAME_MODE.GAME_OVER;
       }
     }
+    if(ofCollision == DIRECTION.BOTTOM)
+      doLand();
+    return ofCollision;
+  }
+  
+  public boolean canJump() { return !jumped; }
+  public void doJump() {
+    jumped = true;
+    setSpeedY(JUMP_SPEED);
+  }
+  public boolean canDoubleJump() { return !doubleJumped && jumped; }
+  public void doDoubleJump() {
+    doubleJumped = true;
+    setSpeedY(JUMP_SPEED);
+  }
+  public boolean didLand() {
+    return !jumped && !doubleJumped;
+  }
+  public void doLand() {
+    jumped = false;
+    doubleJumped = false;
+    fallCount = 0; // reset fall count, see fallCount in Engine for definition
   }
   
   public void pickupSecondaryWeapon() { hasSecondaryWeapon = true; }
@@ -80,5 +106,10 @@ public class Hero extends DrawableGameObject {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
       //fire
     }
+  }
+  
+  public void resetAmmo() {
+    hasSecondaryWeapon = false;
+    secondaryAmmoCount = MAX_SECONDARY_AMMO;
   }
 }

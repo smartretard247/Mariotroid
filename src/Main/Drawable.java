@@ -1,0 +1,77 @@
+package Main;
+
+import Drawing.DrawLib;
+import com.jogamp.opengl.GL2;
+
+/**
+ *
+ * @author Jeezy
+ */
+public class Drawable {
+  private final static GL2 GL = DrawLib.gl;
+  private int textureId;
+  protected double X; // for moving x direction
+  protected double Y; // for moving y direction
+  protected double width, height; // for building the collision rect
+  private double defX;
+  private double defY;
+  
+  public Drawable(int texId, double x, double y, double w, double h) {
+    textureId = texId;
+    X = x;
+    Y = y;
+    defX = x;
+    defY = y;
+    width = w;
+    height = h;
+  }
+  
+  public int getTextureId() { return textureId; }
+  public double getX() { return X; }
+  public double getY() { return Y; }
+  public double getW() { return width; }
+  public double getH() { return height; }
+  public double getLeft() { return X-width/2; }
+  public double getRight() { return X+width/2; }
+  public double getBottom() { return Y-height/2; }
+  public double getTop() { return Y+height/2; }
+  public void setTextureId(int id) { textureId = id; }
+  public void setX(double posX) { X = posX; }
+  public void setY(double posY) { Y = posY; }
+  public void setPosition(double posX, double posY) { X = posX; Y = posY; }
+  public void setW(int w) { width = w; }
+  public void setH(int h) { height = h; }
+  public void setDimensions(int w, int h) { width = w; height = h; }
+  
+  /**
+   * Used to update the objects default position.  This may be used to resume from a continue point,
+   * for example.  After setting the default position, use resetPosition to move object to its
+   * default position.
+   * @param x
+   * @param y 
+   */
+  public void setDefaultPosition(double x, double y) {
+    defX = x; defY = y;
+  } 
+  
+  /**
+   * Reset the position back to the initial x and y coordinates.
+   */
+  public void resetPosition() {
+    this.setPosition(defX, defY);
+  }
+  
+  /**
+   * Draws the game object using a valid textureId, if one is not present it will draw a plain
+   * rectangle in its place.
+   */
+  public void draw() {
+    GL.glPushMatrix();
+    GL.glTranslated(getX(), getY(), 0);
+    if(textureId >= 0)
+      DrawLib.drawTexturedRectangle(textureId);
+    else
+      DrawLib.drawRectangle(width, height);
+    GL.glPopMatrix();
+  }
+}

@@ -55,7 +55,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public Scene scene; // trans x & y, scale x & y
   public Hero hero;
   public PhysicsEngine phy = new PhysicsEngine();
-  public DrawableGameObject[] gameObjects = new DrawableGameObject[MAX_GAME_OBJECTS];
+  public Collidable[] gameObjects = new Collidable[MAX_GAME_OBJECTS];
   private String statusMessage = "";
   
   ///// START METHODS
@@ -140,7 +140,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     // initialize all game objects here
     for(int i = 0; i < MAX_GAME_OBJECTS; i++) {
-      gameObjects[i] = new DrawableGameObject(TEX_NONE, -50, -505, 400, 50);
+      gameObjects[i] = new Collidable(TEX_NONE, -450, -505, 1000, 50);
     }
     
   }
@@ -393,8 +393,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case RUNNING:
       switch (key) {
       case KeyEvent.VK_SHIFT:
-        if(!hero.isSprinting())
+        if(!hero.isSprinting()) {
           hero.toggleSprint();
+          hero.setSpeedX(hero.getSpeedX()*2); // double current speed
+        }
         break;
       case KeyEvent.VK_P: // pause/unpause
         gameMode = GAME_MODE.PAUSED;
@@ -406,7 +408,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         hero.increaseSpeed(10, 0);
         break;
       case KeyEvent.VK_SPACE: // jump
-        hero.setSpeedY(60);
+        if(hero.canJump()) {
+          hero.doJump();
+        } else {
+          if(hero.canDoubleJump()) {
+            hero.doDoubleJump();
+          }
+        }
         break;
       case KeyEvent.VK_S: // crouch
         // TODO: change to crouch (image and collision rect will shrink)
@@ -465,8 +473,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case RUNNING:
       switch (key) {
       case KeyEvent.VK_SHIFT:
-        if(hero.isSprinting())
+        if(hero.isSprinting()) {
           hero.toggleSprint();
+          hero.setSpeedX(hero.getSpeedX()/2); // halve current speed
+        }
         break;
       case KeyEvent.VK_A: // stop moving left
         hero.setSpeedX(0);
@@ -475,7 +485,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         hero.setSpeedX(0);
         break;
       case KeyEvent.VK_SPACE: // stop jump, start fall
-        hero.setSpeedY(0);
+        ++hero.fallCount;
+        if(!hero.didLand() && hero.fallCount <= 2) hero.setSpeedY(0);
         break;
       default: break;
     }
@@ -608,17 +619,19 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case RUNNING:
       switch(key) {
       case MouseEvent.BUTTON1: // left click
-        try {
+        /*try {
           hero.loseHealth(1); // lose 1 health, TEST
         } catch (GameOverException ex) {
           this.gameMode = GAME_MODE.GAME_OVER;
-        }
+        }*/
+        hero.firePrimaryWeapon();
         break;
       case MouseEvent.BUTTON2: // middle click
-        setStatus("HERO!");
+        setStatusMessage("HERO!");
         break;
       case MouseEvent.BUTTON3: // right click
-        hero.addScore(100);
+        //hero.addScore(100);
+        hero.fireSecondaryWeapon();
         break;
       default: break;
       }
@@ -638,7 +651,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * Game will automatically display this message at the bottom of the screen for x seconds.
    * @param message 
    */
-  public void setStatus(String message) {
+  public void setStatusMessage(String message) {
     this.statusMessage = message;
     messageTimer.start();
   }
