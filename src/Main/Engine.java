@@ -181,9 +181,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix(); // return to initial transform
 
     drawHud(gl);
-    drawHealth(gl);
-    drawLives(gl);
-    drawScore(gl);
     drawStatus(gl); // will only draw status' of new messages, for x seconds
   }
   
@@ -233,6 +230,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       if(Math.abs(p.getValue().getX()) > Math.abs(hero.getX()) + 1500) toRemove.add(p.getKey());
     });
     
+    // remove all projectiles that were flagged in previous step
     toRemove.forEach((id) -> {
       projectiles.remove(id);
     });
@@ -312,6 +310,28 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPushMatrix();
     DrawLib.drawTexturedRectangle(DrawLib.TEX_HUD);
     gl.glPopMatrix();
+    
+    drawHealth(gl);
+    drawLives(gl);
+    drawScore(gl);
+    drawAmmoCount(gl);
+  }
+  
+  private void drawAmmoCount(GL2 gl) {
+    if(hero.hasSecondaryWeapon()) {
+      double xDiff = 5;
+      double[] textColor = new double[] { 1.0, 1.0, 1.0 };
+      gl.glPushMatrix();
+      gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2+DrawLib.getTexture(DrawLib.TEX_SHELL).getWidth()*3/2+xDiff,
+              DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2
+                      -DrawLib.getTexture(DrawLib.TEX_HEALTH).getHeight()
+                      -DrawLib.getTexture(DrawLib.TEX_SHELL).getHeight()*6, 0);
+      DrawLib.drawTexturedRectangle(DrawLib.TEX_SHELL,
+              DrawLib.getTexture(DrawLib.TEX_SHELL).getWidth()*3,
+              DrawLib.getTexture(DrawLib.TEX_SHELL).getHeight()*3);
+      DrawLib.drawText(Integer.toString(hero.getAmmoCount()), textColor, 17, -4);
+      gl.glPopMatrix();
+    }
   }
 
   private void drawHealth(GL2 gl) { // draw health in top left corner

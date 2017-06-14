@@ -1,9 +1,7 @@
 package Main;
 
 import Drawing.DrawLib;
-import Enumerations.DIRECTION;
 import Enumerations.GAME_MODE;
-import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -11,7 +9,7 @@ import java.util.Map;
  * @author Jeezy
  */
 public class Hero extends GameObject {
-  private static final int MAX_SECONDARY_AMMO = 10;
+  private static final int MAX_SECONDARY_AMMO = 5;
   private static final int JUMP_SPEED = 60;
   private static final int MAX_JUMP_HEIGHT = 300;
   public int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
@@ -139,6 +137,7 @@ public class Hero extends GameObject {
     landHeight = getY();
   }
   
+  public boolean hasSecondaryWeapon() { return hasSecondaryWeapon; }
   public void pickupSecondaryWeapon() { hasSecondaryWeapon = true; }
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
   public Projectile firePrimaryWeapon() {
@@ -155,11 +154,12 @@ public class Hero extends GameObject {
   public Projectile fireSecondaryWeapon() {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
       double speed = 25;
-      --secondaryAmmoCount;
+      if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
       return new Projectile(DrawLib.TEX_SHELL, 0, getX(), getY(), speed, isFlippedOnY()); //fire
     }
     return null;
   }
+  public int getAmmoCount() { return secondaryAmmoCount; }
   
   public void resetAmmo() {
     secondaryAmmoCount = MAX_SECONDARY_AMMO;
