@@ -18,6 +18,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFrame;
@@ -225,9 +226,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawHero(GL2 gl) {
     hero.draw();
+    ArrayList<Integer> toRemove = new ArrayList<>();
+    
     projectiles.entrySet().forEach((p) -> {
       p.getValue().draw();
-      if(Math.abs(p.getValue().getX()) > Math.abs(hero.getX()) + 1000) projectiles.remove(p.getKey());
+      if(Math.abs(p.getValue().getX()) > Math.abs(hero.getX()) + 1500) toRemove.add(p.getKey());
+    });
+    
+    toRemove.forEach((id) -> {
+      projectiles.remove(id);
     });
   }
    /**
