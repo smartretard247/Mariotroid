@@ -4,6 +4,7 @@ import Drawing.DrawLib;
 import Enumerations.DIRECTION;
 import Enumerations.GAME_MODE;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  *
@@ -73,13 +74,13 @@ public class Hero extends GameObject {
   }
   
   @Override
-  public ArrayList<Collidable> move(Collidable[] nearObjects)  {
+  public Map<Integer, Collidable> move(Map<Integer,Collidable> nearObjects)  {
     if(getY() >= getMaxJumpHeight() && !maxJumpExceeded) {
       setSpeedY(0);
       maxJumpExceeded = true;
     }
     
-    ArrayList<Collidable> collisions = super.move(nearObjects);
+    Map<Integer, Collidable> collisions = super.move(nearObjects);
     if(this.getY() < -2000) { //fell off map
       try {
         resetPosition();
@@ -92,14 +93,17 @@ public class Hero extends GameObject {
     }
     
     // additional things that the hero should do with each of the collided objects
-    for(Collidable objects : collisions) {
-      switch(objects.getTextureId()) {
+    for(Integer id : collisions.keySet()) {
+      switch(id) {
       case DrawLib.TEX_FLOOR:
+        Y = collisions.get(id).getTop() + height/2;
         doLand();
         break;
-      case DrawLib.TEX_TEST:
-        pickupJetpack(); // TODO: for now just call it the jetpack, fix later
-        Engine.setStatusMessage("Got double jump!");
+      case DrawLib.TEX_JETPACK:
+        pickupJetpack();
+        break;
+      case DrawLib.TEX_ALT_WEAPON:
+        pickupSecondaryWeapon();
         break;
       default: break;
       }
@@ -137,13 +141,15 @@ public class Hero extends GameObject {
   
   public void pickupSecondaryWeapon() { hasSecondaryWeapon = true; }
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
-  public void firePrimaryWeapon() {
-    //fire primary
+  public Projectile firePrimaryWeapon() {
+    return new Projectile(DrawLib.TEX_NONE, getX(), getY(), width, height, 0); //fire primary
   }
-  public void fireSecondaryWeapon() {
+  public Projectile fireSecondaryWeapon() {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
-      //fire
+      --secondaryAmmoCount;
+      return new Projectile(DrawLib.TEX_SHELL, getX(), getY(), width, height, 0); //fire
     }
+    return null;
   }
   
   public void resetAmmo() {

@@ -14,10 +14,13 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
+import com.jogamp.opengl.util.texture.Texture;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JFrame;
 
 /**
@@ -47,7 +50,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public Scene scene; // trans x & y, scale x & y
   public Hero hero;
   public PhysicsEngine phy = new PhysicsEngine();
-  public Collidable[] gameObjects = new Collidable[MAX_GAME_OBJECTS];
+  public Map<Integer, Collidable> gameObjects = new HashMap<>();
+  public Map<Integer, Collidable> visibleObjects = new HashMap<>();
   private static String statusMessage = "";
   
   ///// START METHODS
@@ -131,19 +135,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           DrawLib.getTexture(DrawLib.TEX_HERO).getHeight()); // height
     
     // initialize all game objects here
-    for(int i = 0; i < MAX_GAME_OBJECTS; i++) {
-      gameObjects[i] = new Collidable();
-    }
+    gameObjects.put(DrawLib.TEX_FLOOR, new Collidable(DrawLib.TEX_FLOOR, -450, -505, 1000, 50));
+    gameObjects.get(DrawLib.TEX_FLOOR).setColor(1.0, 1.0, 1.0);
+    gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, -850, -400, 75, 75));
+    gameObjects.get(DrawLib.TEX_JETPACK).setColor(0.8, 0.5, 0.1);
+    gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, -600, 0, 75, 75));
+    gameObjects.put(DrawLib.TEX_SHELL, new Collidable(DrawLib.TEX_SHELL));
     
-    gameObjects[0].setTextureId(DrawLib.TEX_FLOOR);
-    gameObjects[0].setPosition(-450, -505);
-    gameObjects[0].setDimensions(1000, 50);
-    gameObjects[0].setColor(1.0, 1.0, 1.0);
-    
-    gameObjects[1].setTextureId(DrawLib.TEX_TEST);
-    gameObjects[1].setPosition(-850, -400);
-    gameObjects[1].setDimensions(75, 75);
-    gameObjects[1].setColor(0.8, 0.5, 0.1);
+    // only add currently visible objects to this map
+    visibleObjects.put(DrawLib.TEX_FLOOR, gameObjects.get(DrawLib.TEX_FLOOR));
+    visibleObjects.put(DrawLib.TEX_JETPACK, gameObjects.get(DrawLib.TEX_JETPACK));
+    visibleObjects.put(DrawLib.TEX_ALT_WEAPON, gameObjects.get(DrawLib.TEX_ALT_WEAPON));
   }
   
   /* 
@@ -167,6 +169,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawNormalGamePlay(GL2 gl) {
     gl.glPushMatrix(); // save initial transform
     gl.glScaled(scene.scaleX, scene.scaleY, 1); // set global scale
+    
+    //if(hero.getX() - windowDim.width/2 < 200) scene.transX--;// apply scroll with hero
     gl.glTranslated(scene.transX, scene.transY, 0);  //move the world to respond to user input
     
     drawBackground(gl);
@@ -208,6 +212,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawBackground(GL2 gl) {
     // back ground objects
+    // draw game objects
+    visibleObjects.values().forEach((c) -> {
+      c.draw();
+    });
   }
   
   /**
@@ -242,16 +250,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawCollisions(GL2 gl) { // TODO: only draw collisions 'close' to character
     gl.glPushMatrix();
-    for(int i = DrawLib.TEX_COLLISIONS_START; i < DrawLib.TEX_COLLISIONS_END; i++) {
+    for(int i = DrawLib.TEX_COLLISIONS_START; i <= DrawLib.TEX_COLLISIONS_END; i++) {
       DrawLib.drawTexturedRectangle(i);
       gl.glTranslated(DrawLib.getTexture(i).getWidth(), 0, 0);
     }
     gl.glPopMatrix();
-    
-    // draw game objects
-    for(int i = 0; i < MAX_GAME_OBJECTS; i++) {
-      gameObjects[i].draw();
-    }
   }
 
   private void drawStartMenu(GL2 gl) {
@@ -511,8 +514,23 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
 
   private void updateFrame() {
     frameNumber++;
+    
     switch(gameMode) {
-    case RUNNING: hero.move(gameObjects);
+    case RUNNING: Map<Integer, Collidable> collidedObjects = hero.move(visibleObjects);
+      // additional things that the hero should do with each of the collided objects
+      for(Integer id : collidedObjects.keySet()) {
+        switch(id) {
+        case DrawLib.TEX_JETPACK:
+          Engine.setStatusMessage("Got double jump!");
+          visibleObjects.remove(id); // remove the jetpack image from the screen
+          break;
+        case DrawLib.TEX_ALT_WEAPON:
+          Engine.setStatusMessage("Got missles!");
+          visibleObjects.remove(id); // remove the shell image from the screen
+          break;
+        default: break;
+        }
+      }
       break;
     default: break;
     }

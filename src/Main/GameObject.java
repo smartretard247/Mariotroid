@@ -2,6 +2,8 @@ package Main;
 
 import Enumerations.DIRECTION;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -36,38 +38,18 @@ public class GameObject extends Collidable {
    * @param nearObjects
    * @return 
    */
-  public ArrayList<Collidable> move(Collidable[] nearObjects) {
-    ArrayList<Collidable> collisions = new ArrayList<>();
+  public Map<Integer, Collidable> move(Map<Integer, Collidable> nearObjects) {
+    Map<Integer, Collidable> collisions = new HashMap<>();
     X += speedX;
     Y += speedY;
     
     if(speedX != 0) setFlipY(speedX < 0); // this reverses the sprite with direction changes
     
-    for(Collidable near : nearObjects) {
-      DIRECTION ofCollision = this.intersect(near.getBoundary(), speedX, speedY);
-      if(ofCollision != null) {
-        switch(ofCollision) {
-          case NONE: break; // continue looking through objects for collision
-          case TOP: //System.out.println("Collision from top detected.");
-            Y = near.getBottom() - height/2;
-            collisions.add(near);
-            break;
-          case BOTTOM: //System.out.println("Collision from bottom detected.");
-            Y = near.getTop() + height/2;
-            collisions.add(near); // collision on bottom
-            break;
-          case LEFT: //System.out.println("Collision from left side detected.");
-            X = near.getRight() + width/2;
-            collisions.add(near); // collision at left side
-            break;
-          case RIGHT: //System.out.println("Collision from right side detected.");
-            X = near.getLeft() - width/2;
-            collisions.add(near); // collision at right side
-            break;
-          default: System.out.println("Invalid intersection.") ; return null;
-        }
-      }
+    for(Collidable near : nearObjects.values()) {
+      if(collidesWith(near.getBoundary()))
+        collisions.put(near.getTextureId(), near);
     }
+    
     if(speedY <= 0 && collisions.isEmpty()) PhysicsEngine.fall(this);// apply gravity
     return collisions;
   }

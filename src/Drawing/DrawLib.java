@@ -35,8 +35,17 @@ public class DrawLib {
   public static final int TEX_HEALTH = 5;
   public static final int TEX_HUD = 6;
   public static final int TEX_SHELL = 7;
-  public static final int TEX_COLLISIONS_START = 8; // collision textures between this
-  public static final int TEX_COLLISIONS_END = 14;  // and this
+  public static final int TEX_JETPACK = -8;
+  public static final int TEX_ALT_WEAPON = 9;
+  public static final int TEX_COLLISIONS_START = 10; // collision textures between this
+  public static final int TEX_COLLISIONS_END = 16;  // and this
+
+  public static void drawLine(double fromX, double fromY, double toX, double toY) {
+    gl.glBegin (GL2.GL_LINES);
+    gl.glVertex3d(fromX, fromY, 0);
+    gl.glVertex3d(toX, toY, 0);
+    gl.glEnd();
+  }
   
   public DrawLib(GL2 context) {
     gl = context;
@@ -50,6 +59,8 @@ public class DrawLib {
     textureIdMap.put(TEX_HEALTH, "art/hud/health.png");
     textureIdMap.put(TEX_HUD, "art/hud/hud.png");
     textureIdMap.put(TEX_SHELL, "art/hud/shell.png");
+    //textureIdMap.put(TEX_JETPACK, "art/hud/shell.png");
+    textureIdMap.put(TEX_ALT_WEAPON, "art/hud/shell.png");
     textureIdMap.put(TEX_COLLISIONS_START, "art/level/level0.png");
     textureIdMap.put(TEX_COLLISIONS_START+1, "art/level/level1.png");
     textureIdMap.put(TEX_COLLISIONS_START+2, "art/level/level2.png");
@@ -125,13 +136,12 @@ public class DrawLib {
   }
   
   /**
-   * Draws a non-repeating rectangle using the texture specified.
+   * Draws a non-repeating rectangle using the texture and dimensions specified.
    * @param textureId is an integer matching the array index of the texture
+   * @param width
+   * @param height
    */
-  public static void drawTexturedRectangle(int textureId) {
-    double width = textures.get(textureId).getWidth();
-    double height = textures.get(textureId).getHeight();
-    
+  public static void drawTexturedRectangle(int textureId, double width, double height) {
     gl.glColor3f(1.0f, 1.0f, 1.0f); // remove color before applying texture 
     textures.get(textureId).enable(gl);
     textures.get(textureId).bind(gl);  // set texture to use
@@ -140,5 +150,15 @@ public class DrawLib {
     TexturedShapes.square(gl, 1, true);
     gl.glPopMatrix();
     textures.get(textureId).disable(gl);
+  }
+  
+  /**
+   * Draws the texture with textureId with its default dimensions
+   * @param textureId 
+   */
+  public static void drawTexturedRectangle(int textureId) {
+    double width = textures.get(textureId).getWidth();
+    double height = textures.get(textureId).getHeight();
+    drawTexturedRectangle(textureId, width, height);
   }
 }

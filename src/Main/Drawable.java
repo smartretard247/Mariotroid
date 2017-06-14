@@ -8,7 +8,7 @@ import com.jogamp.opengl.GL2;
  * @author Jeezy
  */
 public class Drawable {
-  private final static GL2 GL = DrawLib.gl;
+  public final static GL2 GL = DrawLib.gl;
   private int textureId;
   protected double X; // for moving x direction
   protected double Y; // for moving y direction
@@ -16,7 +16,7 @@ public class Drawable {
   private double defX;
   private double defY;
   private boolean flipY;
-  private double color[]; // rgb color for non-sprites
+  public final double color[]; // rgb color for non-sprites
   
   public Drawable(int texId, double x, double y, double w, double h) {
     textureId = texId;
@@ -87,7 +87,7 @@ public class Drawable {
     if(textureId >= 0) {
       if(flipY)
         GL.glRotated(180, 0, 1, 0);
-      DrawLib.drawTexturedRectangle(textureId);
+      DrawLib.drawTexturedRectangle(textureId, width, height);
     } else {
       GL.glColor3d(color[0], color[1], color[2]);
       DrawLib.drawRectangle(width, height);
