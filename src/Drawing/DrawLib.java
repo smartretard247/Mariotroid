@@ -40,13 +40,6 @@ public class DrawLib {
   public static final int TEX_COLLISIONS_START = 10; // collision textures between this
   public static final int TEX_COLLISIONS_END = 16;  // and this
 
-  public static void drawLine(double fromX, double fromY, double toX, double toY) {
-    gl.glBegin (GL2.GL_LINES);
-    gl.glVertex3d(fromX, fromY, 0);
-    gl.glVertex3d(toX, toY, 0);
-    gl.glEnd();
-  }
-  
   public DrawLib(GL2 context) {
     gl = context;
     
@@ -101,6 +94,13 @@ public class DrawLib {
       }
     });
     textures.get(0).enable(gl);
+  }
+  
+  public static void drawLine(double fromX, double fromY, double toX, double toY) {
+    gl.glBegin (GL2.GL_LINES);
+    gl.glVertex3d(fromX, fromY, 0);
+    gl.glVertex3d(toX, toY, 0);
+    gl.glEnd();
   }
   
   /**

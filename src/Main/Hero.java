@@ -142,12 +142,21 @@ public class Hero extends GameObject {
   public void pickupSecondaryWeapon() { hasSecondaryWeapon = true; }
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
   public Projectile firePrimaryWeapon() {
-    return new Projectile(DrawLib.TEX_NONE, getX(), getY(), width, height, 0); //fire primary
+    int zRot = 0;
+    double xOffset = 40;
+    double w = 75;
+    double h = 3;
+    double speed = 40;
+    //(isFlippedOnY()) ? getX()-w-xOffset : getX()+xOffset
+    return new Projectile(DrawLib.TEX_NONE, zRot,
+            (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
+            getY(), w, h, speed, isFlippedOnY()); //fire primary
   }
   public Projectile fireSecondaryWeapon() {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
+      double speed = 25;
       --secondaryAmmoCount;
-      return new Projectile(DrawLib.TEX_SHELL, getX(), getY(), width, height, 0); //fire
+      return new Projectile(DrawLib.TEX_SHELL, 0, getX(), getY(), speed, isFlippedOnY()); //fire
     }
     return null;
   }

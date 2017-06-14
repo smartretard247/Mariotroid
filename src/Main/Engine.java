@@ -14,7 +14,6 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
-import com.jogamp.opengl.util.texture.Texture;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
@@ -52,6 +51,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public PhysicsEngine phy = new PhysicsEngine();
   public Map<Integer, Collidable> gameObjects = new HashMap<>();
   public Map<Integer, Collidable> visibleObjects = new HashMap<>();
+  public Map<Integer, Collidable> projectiles = new HashMap<>();
   private static String statusMessage = "";
   
   ///// START METHODS
@@ -175,7 +175,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     drawBackground(gl);
     drawHero(gl);
-    drawCollisions(gl); // USE THIS LINE ONLY WHEN TESTING COLLISIONS!!
     drawForeground(gl);
     
     gl.glPopMatrix(); // return to initial transform
@@ -212,6 +211,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawBackground(GL2 gl) {
     // back ground objects
+    drawCollisions(gl); // USE THIS LINE ONLY WHEN TESTING COLLISIONS!!
+    
     // draw game objects
     visibleObjects.values().forEach((c) -> {
       c.draw();
@@ -224,6 +225,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawHero(GL2 gl) {
     hero.draw();
+    projectiles.entrySet().forEach((p) -> {
+      p.getValue().draw();
+      if(Math.abs(p.getValue().getX()) > Math.abs(hero.getX()) + 1000) projectiles.remove(p.getKey());
+    });
   }
    /**
     * Draws any foreground objects to simulate depth.
@@ -639,7 +644,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       default: break;
       }
       break; // END PAUSED
-    case RUNNING:
+    case RUNNING: Projectile fired;
       switch(key) {
       case MouseEvent.BUTTON1: // left click
         /*try {
@@ -647,14 +652,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         } catch (GameOverException ex) {
           this.gameMode = GAME_MODE.GAME_OVER;
         }*/
-        hero.firePrimaryWeapon();
+        fired = hero.firePrimaryWeapon();
+        projectiles.put(frameNumber, fired);
         break;
       case MouseEvent.BUTTON2: // middle click
-        setStatusMessage("HERO!");
         break;
       case MouseEvent.BUTTON3: // right click
         //hero.addScore(100);
-        hero.fireSecondaryWeapon();
+        fired = hero.fireSecondaryWeapon();
+        if(fired != null) projectiles.put(frameNumber, fired);
         break;
       default: break;
       }

@@ -15,7 +15,7 @@ public class Drawable {
   protected double width, height; // for building the collision rect
   private double defX;
   private double defY;
-  private boolean flipY;
+  protected boolean flipY;
   public final double color[]; // rgb color for non-sprites
   
   public Drawable(int texId, double x, double y, double w, double h) {
@@ -94,4 +94,6 @@ public class Drawable {
     }
     GL.glPopMatrix();
   }
+  
+  public boolean isFlippedOnY() { return flipY; }
 }
