@@ -128,7 +128,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     messageTimer.setRepeats(false);
     
-    scene = new Scene(-300, -500, 0.5, 0.5);
+    scene = new Scene(-300, -500, 0.5, 0.5); // initial scale set to 0.5
     hero = new Hero(3, 0, 10, DrawLib.TEX_HERO, -150, 200, // 3 lives, 0 score, 10 health, texId, x, y
           DrawLib.getTexture(DrawLib.TEX_HERO).getWidth(), // width
           DrawLib.getTexture(DrawLib.TEX_HERO).getHeight()); // height
@@ -136,7 +136,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // initialize all game objects here
     gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, -750, 100, 75, 75));
     gameObjects.get(DrawLib.TEX_JETPACK).setColor(0.8, 0.5, 0.1);
-    gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, 100, 200, 75, 75));
+    gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, -300, 700, 75, 75));
     gameObjects.put(DrawLib.TEX_SHELL, new Collidable(DrawLib.TEX_SHELL));
     
     // only add currently visible objects to this map
