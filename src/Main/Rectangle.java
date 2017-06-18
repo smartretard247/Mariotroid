@@ -30,4 +30,14 @@ public class Rectangle {
   public double y() { return y; }
   public double w() { return w; }
   public double h() { return h; }
+  
+  public void setX(double to) { x = to; }
+  public void setY(double to) { y = to; }
+  public void setW(double to) { w = to; }
+  public void setH(double to) { h = to; }
+  
+  @Override
+  public String toString() {
+    return "Rectangle@( " + x + ", " + y + " ), width: " + w + ", height: " + h;
+  }
 }

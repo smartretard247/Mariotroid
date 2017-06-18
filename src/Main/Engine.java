@@ -116,6 +116,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   @Override
   public void init(GLAutoDrawable drawable) { // called when the panel is created
     GL2 gl = drawable.getGL().getGL2();
+    drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
+    
     //gl.glEnable(GL2.GL_DEPTH_TEST);  // required for 3D drawing, not usually for 2D.
     gl.glMatrixMode(GL2.GL_PROJECTION);
     gl.glLoadIdentity();
@@ -124,29 +126,46 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glClearColor( 0, 0, 0, 1 );
     gl.glEnable(GL_BLEND);
     gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    //gl.glEnable(GL2.GL_LIGHTING);        // Enable lighting.
-    //gl.glEnable(GL2.GL_LIGHT0);          // Turn on a light.  By default, shines from direction of viewer.
-    //gl.glEnable(GL2.GL_NORMALIZE);       // OpenGL will make all normal vectors into unit normals
-    //gl.glEnable(GL2.GL_COLOR_MATERIAL);  // Material ambient and diffuse colors can be set by glColor*
     messageTimer.setRepeats(false);
-    drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
-    scene = new Scene(60, 135, 0.5, 0.5);
-    hero = new Hero(3, 0, 10, DrawLib.TEX_HERO, -150, 0, // 3 lives, 0 score, 10 health, texId, x, y
+    
+    scene = new Scene(-300, -500, 0.5, 0.5);
+    hero = new Hero(3, 0, 10, DrawLib.TEX_HERO, -150, 200, // 3 lives, 0 score, 10 health, texId, x, y
           DrawLib.getTexture(DrawLib.TEX_HERO).getWidth(), // width
           DrawLib.getTexture(DrawLib.TEX_HERO).getHeight()); // height
     
     // initialize all game objects here
-    gameObjects.put(DrawLib.TEX_FLOOR, new Collidable(DrawLib.TEX_FLOOR, -450, -505, 1000, 50));
-    gameObjects.get(DrawLib.TEX_FLOOR).setColor(1.0, 1.0, 1.0);
-    gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, -850, -400, 75, 75));
+    gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, -750, 100, 75, 75));
     gameObjects.get(DrawLib.TEX_JETPACK).setColor(0.8, 0.5, 0.1);
-    gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, -600, 0, 75, 75));
+    gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, 100, 200, 75, 75));
     gameObjects.put(DrawLib.TEX_SHELL, new Collidable(DrawLib.TEX_SHELL));
     
     // only add currently visible objects to this map
-    visibleObjects.put(DrawLib.TEX_FLOOR, gameObjects.get(DrawLib.TEX_FLOOR));
     visibleObjects.put(DrawLib.TEX_JETPACK, gameObjects.get(DrawLib.TEX_JETPACK));
     visibleObjects.put(DrawLib.TEX_ALT_WEAPON, gameObjects.get(DrawLib.TEX_ALT_WEAPON));
+    
+    loadLevel("design/art/level/level1.png");
+  }
+  
+  /**
+   * Loads all black rectangles in the supplied PNG as collision boundaries for the level.  Will
+   * remove all collision boundaries from previous level if found.
+   * @param fileName 
+   */
+  public void loadLevel(String fileName) {
+    int lastId = 99999;
+    
+    // check if a level was previously loaded.  If so remove it first.
+    while(visibleObjects.containsKey(lastId)) {
+      visibleObjects.remove(lastId--);
+    }
+    
+    lastId = 99999; // start at last id
+    
+    LevelBuilder levelBuilder = new LevelBuilder(fileName);
+    ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
+    for(Rectangle r : level) {
+      visibleObjects.put(lastId--, new Collidable(DrawLib.TEX_FLOOR, r.x(), r.y(), r.w(), r.h()));
+    }
   }
   
   /* 
@@ -209,7 +228,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawBackground(GL2 gl) {
     // back ground objects
-    drawCollisions(gl); // USE THIS LINE ONLY WHEN TESTING COLLISIONS!!
+    //drawCollisions(gl); // USE THIS LINE ONLY WHEN TESTING COLLISIONS!!
     
     // draw game objects
     visibleObjects.values().forEach((c) -> {
@@ -240,14 +259,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     * @param gl 
     */
   private void drawForeground(GL2 gl) {
-    //TEST BLOCK /////////////////////
-    gl.glPushMatrix();
-    float[] red = { 1.0f, 0, 0 };
-    gl.glColor3fv(red, 0);
-    gl.glTranslated(60, 0, 0);
-    DrawLib.drawRectangle(100, 100); // a basic rectangle
-    gl.glPopMatrix();
-    // END TEST BLOCK //////////////
+    // draw foreground objects here
   }
   
   private void drawIntro(GL2 gl) {
@@ -432,6 +444,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(gameMode) { // controls are based on the game mode
     case RUNNING:
       switch (key) {
+      case KeyEvent.VK_UP:
+        scene.transY -= 20;
+        break;
+      case KeyEvent.VK_DOWN:
+        scene.transY += 20;
+        break;
+      case KeyEvent.VK_LEFT:
+        scene.transX += 20;
+        break;
+      case KeyEvent.VK_RIGHT:
+        scene.transX -= 20;
+        break;
       case KeyEvent.VK_SHIFT:
         if(!hero.isSprinting()) {
           hero.toggleSprint();
