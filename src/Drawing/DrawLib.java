@@ -25,7 +25,7 @@ public class DrawLib {
   
   private static final Map<Integer, String> textureIdMap = new HashMap<>();
   public static final int TEX_TEST = -3;
-  public static final int TEX_FLOOR = -2;
+  public static final int TEX_LEVEL = -2;
   public static final int TEX_NONE = -1;
   public static final int TEX_HERO = 0; // easier texture identification
   public static final int TEX_HERO_RUN1 = 1;

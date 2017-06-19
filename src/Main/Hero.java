@@ -93,9 +93,21 @@ public class Hero extends GameObject {
     // additional things that the hero should do with each of the collided objects
     for(Integer id : collisions.keySet()) {
       switch(id) {
-      case DrawLib.TEX_FLOOR:
-        Y = collisions.get(id).getTop() + height/2;
-        doLand();
+      case DrawLib.TEX_LEVEL:
+        if(speedY < 0) {
+          Y = collisions.get(id).getTop() + height/2 + 1;
+          speedY = 0;
+          doLand();
+        } else if (speedY > 1) {
+          Y = collisions.get(id).getBottom() - height/2 - 1;
+          speedY = 0;
+        } else if (speedX < 0) {
+          X = collisions.get(id).getRight() + width/2 + 1;
+          speedX = 0;
+        } else if (speedX > 0) {
+          X = collisions.get(id).getLeft() - width/2 - 1;
+          speedX = 0;
+        }
         break;
       case DrawLib.TEX_JETPACK:
         pickupJetpack();

@@ -1,7 +1,5 @@
 package Main;
 
-import Enumerations.DIRECTION;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,8 +13,8 @@ public class GameObject extends Collidable {
   private double MAX_SPEED_X = PhysicsEngine.TERMINAL_SPRINT;
   private double MAX_SPEED_Y = PhysicsEngine.TERMINAL_VELOCITY;
   protected String name = "Default";
-  private double speedX; // movement increment x
-  private double speedY; // movement increment y
+  protected double speedX; // movement increment x
+  protected double speedY; // movement increment y
   private boolean isSprinting;
   
   public GameObject(int texId, double x, double y, double w, double h) {

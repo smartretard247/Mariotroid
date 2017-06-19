@@ -166,7 +166,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
     for(Rectangle r : level) {
       // need to scale the rectangle before adding it to the visible objects.....
-      visibleObjects.put(lastId--, new Collidable(DrawLib.TEX_FLOOR,
+      visibleObjects.put(lastId--, new Collidable(DrawLib.TEX_LEVEL,
               r.x(),
               r.y(),
               r.w(),
@@ -197,7 +197,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPushMatrix(); // save initial transform
     gl.glScaled(scene.scaleX, scene.scaleY, 1); // set global scale
     
-    //if(hero.getX() - windowDim.width/2 < 200) scene.transX--;// apply scroll with hero
+    //if(hero.getX()/2 < scene.transX+1000) scene.transX++;// apply scroll with hero
+    //else if(hero.getX()/2 > scene.transX-1000) scene.transX--;// apply scroll with hero
     gl.glTranslated(scene.transX, scene.transY, 0);  //move the world to respond to user input
     
     drawBackground(gl);
