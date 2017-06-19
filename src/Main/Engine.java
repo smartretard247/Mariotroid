@@ -116,7 +116,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   @Override
   public void init(GLAutoDrawable drawable) { // called when the panel is created
     GL2 gl = drawable.getGL().getGL2();
-    drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     
     //gl.glEnable(GL2.GL_DEPTH_TEST);  // required for 3D drawing, not usually for 2D.
     gl.glMatrixMode(GL2.GL_PROJECTION);
@@ -128,30 +127,33 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     messageTimer.setRepeats(false);
     
-    scene = new Scene(-300, -500, 0.5, 0.5); // initial scale set to 0.5
-    hero = new Hero(3, 0, 10, DrawLib.TEX_HERO, -150, 200, // 3 lives, 0 score, 10 health, texId, x, y
+    drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
+    
+    scene = new Scene(-600, -600, 0.5, 0.5); // initial scale set to 0.5
+    hero = new Hero(3, 0, 10, DrawLib.TEX_HERO, 300, 400, // 3 lives, 0 score, 10 health, texId, x, y
           DrawLib.getTexture(DrawLib.TEX_HERO).getWidth(), // width
           DrawLib.getTexture(DrawLib.TEX_HERO).getHeight()); // height
     
     // initialize all game objects here
-    gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, -750, 100, 75, 75));
+    gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, 1400, 300, 75, 75));
     gameObjects.get(DrawLib.TEX_JETPACK).setColor(0.8, 0.5, 0.1);
-    gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, -300, 700, 75, 75));
+    gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, 300, 1000, 75, 75));
     gameObjects.put(DrawLib.TEX_SHELL, new Collidable(DrawLib.TEX_SHELL));
     
     // only add currently visible objects to this map
     visibleObjects.put(DrawLib.TEX_JETPACK, gameObjects.get(DrawLib.TEX_JETPACK));
     visibleObjects.put(DrawLib.TEX_ALT_WEAPON, gameObjects.get(DrawLib.TEX_ALT_WEAPON));
     
-    loadLevel("design/art/level/level1.png");
+    loadLevel(gl, "design/art/level/level0.png");
   }
   
   /**
    * Loads all black rectangles in the supplied PNG as collision boundaries for the level.  Will
    * remove all collision boundaries from previous level if found.
+   * @param gl
    * @param fileName 
    */
-  public void loadLevel(String fileName) {
+  public void loadLevel(GL2 gl, String fileName) {
     int lastId = 99999;
     
     // check if a level was previously loaded.  If so remove it first.
@@ -164,7 +166,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     LevelBuilder levelBuilder = new LevelBuilder(fileName);
     ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
     for(Rectangle r : level) {
-      visibleObjects.put(lastId--, new Collidable(DrawLib.TEX_FLOOR, r.x(), r.y(), r.w(), r.h()));
+      // need to scale the rectangle before adding it to the visible objects.....
+      visibleObjects.put(lastId--, new Collidable(DrawLib.TEX_FLOOR,
+              r.x(),
+              r.y(),
+              r.w(),
+              r.h()));
+      //visibleObjects.get(lastId+1).setColor(Math.random(), Math.random(), Math.random());
     }
   }
   

@@ -47,6 +47,7 @@ public class LevelBuilder {
     
     System.out.println("Loading level: " + bounds);
 
+    // search for rectangles with the raster
     for(int y = 0; y < bounds.height; y++) {
       for(int x = 0; x < bounds.width; x++) {
         //if not dead pixel, then we can check for new rectangle
@@ -58,8 +59,11 @@ public class LevelBuilder {
             r.setW(findWidth(x, y, bounds.width)); // find width
             r.setH(findHeight(r, bounds.height)); //height
             System.out.println(r); // found rectangle
-            found.add(r);
             markPixels(marked, r); // mark dead pixels
+            // adjust to center before adding to found
+            r.setX(r.x()+r.w()/2);
+            r.setY(bounds.height-r.y()-r.h()/2);
+            found.add(r);
           }
         }
       }
@@ -73,8 +77,7 @@ public class LevelBuilder {
       if(isTransparentAt(i, yPos))
         return i - xPos; // return width of rectangle
     }
-    System.out.print("Found rectangle with max width: ");
-    return maxX- xPos;
+    return maxX - xPos;
   }
   
   // 1535x97, 193x289
@@ -83,7 +86,7 @@ public class LevelBuilder {
       if(verifyHeight((int)r.x(), (int)r.y(), (int)r.w(), height))
         return (int) (height - r.y());
     }
-    return (int) (maxY- r.y());
+    return (int) (maxY - r.y());
   }
   
   /**
@@ -112,6 +115,7 @@ public class LevelBuilder {
   private void markPixels(boolean mat[][], Rectangle r) {
     int rows = (int) (r.y() + r.h());
     int cols = (int) (r.x() + r.w());
+    
     for(int y = (int) r.y(); y < rows; y++) {
       for(int x = (int) r.x(); x < cols; x++) {
         mat[x][y] = true;
@@ -133,10 +137,6 @@ public class LevelBuilder {
         System.out.println("Successfully converted to TYPE_INT_RGB.  Use this type to conserve time "
                 + "to load.");
       }
-      //ImageUtil.flipImageVertically(image);
-      //tex = AWTTextureIO.newTexture(GLProfile.getDefault(), image, true);
-      //tex.setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
-      //tex.setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
       raster = image.getData();
     } catch (IOException ex) {
       Logger.getLogger(LevelBuilder.class.getName()).log(Level.SEVERE, null, ex);
@@ -150,6 +150,7 @@ public class LevelBuilder {
           convertedImage.setRGB(x, y, src.getRGB(x, y));
       }
     }
+    //ImageUtil.flipImageVertically(convertedImage);
     return convertedImage;
   }
 }
