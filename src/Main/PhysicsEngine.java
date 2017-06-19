@@ -12,7 +12,7 @@ package Main;
 public class PhysicsEngine {
   public static final int GRAVITY = 10;
   public static final int TERMINAL_VELOCITY = 300;
-  public static final int TERMINAL_SPRINT = 40;
+  public static final int TERMINAL_SPRINT = 10;
 
   /**
    * Apply gravity to given object.
