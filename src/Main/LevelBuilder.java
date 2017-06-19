@@ -1,17 +1,13 @@
 package Main;
 
-import static Drawing.DrawLib.gl;
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLProfile;
-import com.jogamp.opengl.util.awt.ImageUtil;
-import com.jogamp.opengl.util.texture.Texture;
-import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 import java.awt.image.BufferedImage;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -22,9 +18,19 @@ import javax.imageio.ImageIO;
  */
 public class LevelBuilder {
   private Raster raster;
+  private final DataLoader dl;
+  private final String imageFileName;
+  private final String dataFileName;
+  private boolean firstLoad = true;
   
-  public LevelBuilder(String textureFileName) {
-    loadImage(textureFileName);
+  public LevelBuilder(String fileName) {
+    imageFileName = fileName;
+    dataFileName = imageFileName.substring(0, imageFileName.length()-3) + "txt";
+    dl = new DataLoader(dataFileName);
+    if(dl.getData().isEmpty())
+      loadImage(imageFileName);
+    else
+      firstLoad = false;
   }
   
   /**
@@ -34,39 +40,60 @@ public class LevelBuilder {
   public ArrayList<Rectangle> scanForBoundaries() {
     ArrayList<Rectangle> found = new ArrayList<>();
     
-    // initialize boolean matrix
-    java.awt.Rectangle bounds = raster.getBounds();
-    //java.awt.Rectangle bounds = new java.awt.Rectangle(0, 0, tex.getWidth(), tex.getHeight());
-    
-    boolean[][] marked = new boolean[bounds.width][bounds.height]; // pixels already part of other rectangles
-    for (boolean[] marked1 : marked) {
-      for (int x = 0; x < marked[0].length; x++) {
-        marked1[x] = false;
-      }
-    }
-    
-    System.out.println("Loading level: " + bounds);
+    //if text file does not exist
+    if(firstLoad) {
+      java.awt.Rectangle bounds = raster.getBounds();
 
-    // search for rectangles with the raster
-    for(int y = 0; y < bounds.height; y++) {
-      for(int x = 0; x < bounds.width; x++) {
-        //if not dead pixel, then we can check for new rectangle
-        if(!marked[x][y]) {
-          if(!isTransparentAt(x,y)) {
-            Rectangle r = new Rectangle();
-            r.setX(x);
-            r.setY(y);
-            r.setW(findWidth(x, y, bounds.width)); // find width
-            r.setH(findHeight(r, bounds.height)); //height
-            System.out.println(r); // found rectangle
-            markPixels(marked, r); // mark dead pixels
-            // adjust to center before adding to found
-            r.setX(r.x()+r.w()/2);
-            r.setY(bounds.height-r.y()-r.h()/2);
-            found.add(r);
+      // initialize boolean matrix
+      boolean[][] marked = new boolean[bounds.width][bounds.height]; // pixels already part of other rectangles
+      for (boolean[] marked1 : marked) {
+        for (int x = 0; x < marked[0].length; x++) {
+          marked1[x] = false;
+        }
+      }
+
+      System.out.println("Loading level: " + bounds);
+
+      // search for rectangles with the raster
+      for(int y = 0; y < bounds.height; y++) {
+        for(int x = 0; x < bounds.width; x++) {
+          //if not dead pixel, then we can check for new rectangle
+          if(!marked[x][y]) {
+            if(!isTransparentAt(x,y)) {
+              Rectangle r = new Rectangle();
+              r.setX(x);
+              r.setY(y);
+              r.setW(findWidth(x, y, bounds.width)); // find width
+              r.setH(findHeight(r, bounds.height)); //height
+              System.out.println(r); // found rectangle
+              markPixels(marked, r); // mark dead pixels
+              // adjust to center before adding to found
+              r.setX(r.x()+r.w()/2);
+              r.setY(bounds.height-r.y()-r.h()/2);
+              found.add(r);
+              dl.addLine(r.toString());
+            }
           }
         }
       }
+      //save the rectangles to a file for future use
+      if(!dl.getData().isEmpty())
+        dl.saveToFile(dataFileName);
+    } else { // otherwise load the rectangles already in the file
+      dl.getData().forEach((st) -> {
+        // st == Rectangle@( 773.0, 1103.5 ), width: 1524.0, height: 97.0
+        Scanner sc = new Scanner(st);
+        ArrayList<Double> var = new ArrayList<>();
+        while (var.size() < 4) { // untill we have all four variables for the rectangle
+          if(sc.hasNextDouble())
+            var.add(var.size(), sc.nextDouble()); // use the double
+          else
+            sc.next(); // else no double found so skip ahead
+        }
+        Rectangle r = new Rectangle(var.get(0), var.get(1), var.get(2), var.get(3));
+        found.add(r); // add to found rectangles
+        System.out.println(r); // log rectangle
+      });
     }
     
     return found;
@@ -150,7 +177,6 @@ public class LevelBuilder {
           convertedImage.setRGB(x, y, src.getRGB(x, y));
       }
     }
-    //ImageUtil.flipImageVertically(convertedImage);
     return convertedImage;
   }
 }

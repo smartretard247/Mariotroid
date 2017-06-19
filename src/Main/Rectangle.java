@@ -38,6 +38,6 @@ public class Rectangle {
   
   @Override
   public String toString() {
-    return "Rectangle@( " + x + ", " + y + " ), width: " + w + ", height: " + h;
+    return "Rectangle@( " + x + " , " + y + " ), width: " + w + " , height: " + h;
   }
 }

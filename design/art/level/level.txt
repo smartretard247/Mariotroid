@@ -1,0 +1,40 @@
+Rectangle@( 5760.5 , 1103.5 ), width: 11499.0 , height: 97.0
+
+Rectangle@( 60.0 , 528.0 ), width: 98.0 , height: 1054.0
+
+Rectangle@( 11461.0 , 528.0 ), width: 98.0 , height: 1054.0
+
+Rectangle@( 300.5 , 720.0 ), width: 383.0 , height: 98.0
+
+Rectangle@( 5952.0 , 337.0 ), width: 768.0 , height: 672.0
+
+Rectangle@( 7485.5 , 337.0 ), width: 385.0 , height: 672.0
+
+Rectangle@( 8059.5 , 337.0 ), width: 385.0 , height: 672.0
+
+Rectangle@( 1066.0 , 241.0 ), width: 194.0 , height: 480.0
+
+Rectangle@( 3461.5 , 241.0 ), width: 385.0 , height: 480.0
+
+Rectangle@( 4131.5 , 241.0 ), width: 385.0 , height: 480.0
+
+Rectangle@( 4802.5 , 241.0 ), width: 385.0 , height: 480.0
+
+Rectangle@( 5952.0 , 241.0 ), width: 1152.0 , height: 480.0
+
+Rectangle@( 6910.5 , 241.0 ), width: 385.0 , height: 480.0
+
+Rectangle@( 8826.5 , 241.0 ), width: 193.0 , height: 480.0
+
+Rectangle@( 970.5 , 145.5 ), width: 385.0 , height: 289.0
+
+Rectangle@( 1832.5 , 145.5 ), width: 193.0 , height: 289.0
+
+Rectangle@( 2982.0 , 145.5 ), width: 194.0 , height: 289.0
+
+Rectangle@( 5473.0 , 145.5 ), width: 576.0 , height: 289.0
+
+Rectangle@( 8730.5 , 145.5 ), width: 385.0 , height: 289.0
+
+Rectangle@( 5809.5 , 49.5 ), width: 11401.0 , height: 97.0
+

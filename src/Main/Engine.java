@@ -143,7 +143,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     visibleObjects.put(DrawLib.TEX_JETPACK, gameObjects.get(DrawLib.TEX_JETPACK));
     visibleObjects.put(DrawLib.TEX_ALT_WEAPON, gameObjects.get(DrawLib.TEX_ALT_WEAPON));
     
-    loadLevel(gl, "design/art/level/level0.png");
+    loadLevel(gl, "design/art/level/level.png");
   }
   
   /**
