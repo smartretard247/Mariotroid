@@ -136,7 +136,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     // initialize all game objects here
     gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, 1400, 300, 75, 75));
-    gameObjects.get(DrawLib.TEX_JETPACK).setColor(0.8, 0.5, 0.1);
     gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, 300, 1000, 75, 75));
     gameObjects.put(DrawLib.TEX_SHELL, new Collidable(DrawLib.TEX_SHELL));
     
@@ -280,10 +279,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawCollisions(GL2 gl) { // TODO: only draw collisions 'close' to character
     gl.glPushMatrix();
-    for(int i = DrawLib.TEX_COLLISIONS_START; i <= DrawLib.TEX_COLLISIONS_END; i++) {
+    /*for(int i = DrawLib.TEX_COLLISIONS_START; i <= DrawLib.TEX_COLLISIONS_END; i++) {
       DrawLib.drawTexturedRectangle(i);
       gl.glTranslated(DrawLib.getTexture(i).getWidth(), 0, 0);
-    }
+    }*/
     gl.glPopMatrix();
   }
 

@@ -35,10 +35,8 @@ public class DrawLib {
   public static final int TEX_HEALTH = 5;
   public static final int TEX_HUD = 6;
   public static final int TEX_SHELL = 7;
-  public static final int TEX_JETPACK = -8;
+  public static final int TEX_JETPACK = 8;
   public static final int TEX_ALT_WEAPON = 9;
-  public static final int TEX_COLLISIONS_START = 10; // collision textures between this
-  public static final int TEX_COLLISIONS_END = 16;  // and this
 
   public DrawLib(GL2 context) {
     gl = context;
@@ -52,16 +50,8 @@ public class DrawLib {
     textureIdMap.put(TEX_HEALTH, "art/hud/health.png");
     textureIdMap.put(TEX_HUD, "art/hud/hud.png");
     textureIdMap.put(TEX_SHELL, "art/hud/shell.png");
-    //textureIdMap.put(TEX_JETPACK, "art/hud/shell.png");
+    textureIdMap.put(TEX_JETPACK, "art/sprites/items/jetpack.png");
     textureIdMap.put(TEX_ALT_WEAPON, "art/hud/shell.png");
-    textureIdMap.put(TEX_COLLISIONS_START, "art/level/level0.png");
-    textureIdMap.put(TEX_COLLISIONS_START+1, "art/level/level1.png");
-    textureIdMap.put(TEX_COLLISIONS_START+2, "art/level/level2.png");
-    textureIdMap.put(TEX_COLLISIONS_START+3, "art/level/level3.png");
-    textureIdMap.put(TEX_COLLISIONS_START+4, "art/level/level4.png");
-    textureIdMap.put(TEX_COLLISIONS_START+5, "art/level/level5.png");
-    textureIdMap.put(TEX_COLLISIONS_START+6, "art/level/level6.png");
-    textureIdMap.put(TEX_COLLISIONS_END, "art/level/level7.png");
     
     loadTextures(); // must load after filename 'puts' above
   }
