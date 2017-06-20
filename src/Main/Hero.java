@@ -82,7 +82,7 @@ public class Hero extends GameObject {
     if(this.getY() < -3000) { //fell off map
       try {
         resetPosition();
-        setSpeed(0, 0);
+        setSpeed(0, -10);
         die();
         resetHealth();
       } catch (GameOverException ex) {
@@ -92,7 +92,7 @@ public class Hero extends GameObject {
     
     // additional things that the hero should do with each of the collided objects
     for(Integer id : collisions.keySet()) {
-      System.out.println("Collision, source object coord/speed: " + X + ", " + Y + " / " + speedX + ", " + speedY);
+      //System.out.println("Collision, source object coord/speed: " + X + ", " + Y + " / " + speedX + ", " + speedY);
       switch(id) {
       case DrawLib.TEX_LEVEL:
         if (speedX < 0 && speedY == 0) {
@@ -122,6 +122,7 @@ public class Hero extends GameObject {
     
     if(collisions.isEmpty()) {
       if(speedY < 0) PhysicsEngine.fall(this);// apply gravity
+      if(speedY == 0 && speedX != 0) PhysicsEngine.fall(this);// apply gravity
     }
     
     if(getSpeedX() != 0 && didLand()) this.setTextureId(DrawLib.TEX_HERO_RUN1);

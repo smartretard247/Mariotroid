@@ -103,8 +103,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void display(GLAutoDrawable drawable) { // called when the panel needs to be drawn
     GL2 gl = drawable.getGL().getGL2();
     gl.glClearColor(0, 0.4f, 0.8f, 0);
-    gl.glClear( GL.GL_COLOR_BUFFER_BIT ); // TODO? Omit depth buffer for 2D.
-    gl.glLoadIdentity();             // Set up modelview transform.
+    gl.glClear( GL.GL_COLOR_BUFFER_BIT );
+    gl.glLoadIdentity();
     draw(gl);
   }
 
@@ -198,8 +198,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glScaled(scene.scaleX, scene.scaleY, 1); // set global scale
     
     //if(hero.getX()/2 < scene.transX+1000) scene.transX++;// apply scroll with hero
-    //else if(hero.getX()/2 > scene.transX-1000) scene.transX--;// apply scroll with hero
-    gl.glTranslated(scene.transX, scene.transY, 0);  //move the world to respond to user input
+    //else if(hero.getX()/2 > scene.transX-1000) scene.transX--;// apply scroll with hero      
+    
+    //gl.glTranslated(scene.transX, scene.transY, 0);  //move the world to respond to user input
+    if(hero.getX() > 600 && hero.getX() < 10500)
+      gl.glTranslated(-hero.getX(), scene.transY, 0);
+    else if(hero.getX() <= 600)
+      gl.glTranslated(scene.transX, scene.transY, 0);
+    else if(hero.getX() >= 10500)
+      gl.glTranslated(-10500, scene.transY, 0);
     
     drawBackground(gl);
     drawHero(gl);
@@ -558,8 +565,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         hero.setSpeedX(0);
         break;
       case KeyEvent.VK_SPACE: // stop jump, start fall
-        ++hero.fallCount;
-        if(!hero.didLand() && hero.fallCount <= 2) hero.setSpeedY(-PhysicsEngine.GRAVITY);
+        //++hero.fallCount;
+        //if(!hero.didLand() && hero.fallCount <= 2) hero.setSpeedY(-PhysicsEngine.GRAVITY);
+        if(!hero.didLand()) hero.setSpeedY(-PhysicsEngine.GRAVITY);
         break;
       default: break;
     }
