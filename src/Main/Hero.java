@@ -74,7 +74,7 @@ public class Hero extends GameObject {
   @Override
   public Map<Integer, Collidable> move(Map<Integer,Collidable> nearObjects)  {
     if(getY() >= getMaxJumpHeight() && !maxJumpExceeded) {
-      setSpeedY(0);
+      setSpeedY(-PhysicsEngine.GRAVITY);
       maxJumpExceeded = true;
     }
     
@@ -103,7 +103,7 @@ public class Hero extends GameObject {
           speedX = 0;
         } else if (speedY > 0) {
           Y = collisions.get(id).getBottom() - height/2 - 1;
-          speedY = 0;
+          speedY = -10;
         } else if (speedY < 0) {
           Y = collisions.get(id).getTop() + height/2 + 1;
           speedY = 0;
@@ -120,7 +120,10 @@ public class Hero extends GameObject {
       }
     }
     
-    if(speedY < 0 && collisions.isEmpty()) PhysicsEngine.fall(this);// apply gravity
+    if(collisions.isEmpty()) {
+      if(speedY < 0) PhysicsEngine.fall(this);// apply gravity
+    }
+    
     if(getSpeedX() != 0 && didLand()) this.setTextureId(DrawLib.TEX_HERO_RUN1);
     return collisions;
   }

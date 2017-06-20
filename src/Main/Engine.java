@@ -559,7 +559,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         break;
       case KeyEvent.VK_SPACE: // stop jump, start fall
         ++hero.fallCount;
-        if(!hero.didLand() && hero.fallCount <= 2) hero.setSpeedY(0);
+        if(!hero.didLand() && hero.fallCount <= 2) hero.setSpeedY(-PhysicsEngine.GRAVITY);
         break;
       default: break;
     }
