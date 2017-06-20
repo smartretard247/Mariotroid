@@ -122,7 +122,7 @@ public class Hero extends GameObject {
     
     if(collisions.isEmpty()) {
       if(speedY < 0) PhysicsEngine.fall(this);// apply gravity
-      if(speedY == 0 && speedX != 0) PhysicsEngine.fall(this);// apply gravity
+      if(speedY == 0 && speedX == 0) PhysicsEngine.fall(this);// apply gravity
     }
     
     if(getSpeedX() != 0 && didLand()) this.setTextureId(DrawLib.TEX_HERO_RUN1);
