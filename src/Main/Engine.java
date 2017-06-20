@@ -319,6 +319,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(this.startMenuSelection) {
       case START_GAME: gameMode = GAME_MODE.RUNNING;
         hero.resetAll();
+        hero.setSpeedY(-PhysicsEngine.GRAVITY);
         break;
       case EXIT: System.exit(0);
         break;

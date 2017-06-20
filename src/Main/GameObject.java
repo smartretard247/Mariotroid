@@ -47,8 +47,7 @@ public class GameObject extends Collidable {
       if(collidesWith(near.getBoundary()))
         collisions.put(near.getTextureId(), near);
     }
-    
-    if(speedY <= 0 && collisions.isEmpty()) PhysicsEngine.fall(this);// apply gravity
+
     return collisions;
   }
   public void increaseSpeed(double deltaX, double deltaY) {

@@ -79,7 +79,7 @@ public class Hero extends GameObject {
     }
     
     Map<Integer, Collidable> collisions = super.move(nearObjects);
-    if(this.getY() < -2000) { //fell off map
+    if(this.getY() < -3000) { //fell off map
       try {
         resetPosition();
         setSpeed(0, 0);
@@ -92,21 +92,22 @@ public class Hero extends GameObject {
     
     // additional things that the hero should do with each of the collided objects
     for(Integer id : collisions.keySet()) {
+      System.out.println("Collision, source object coord/speed: " + X + ", " + Y + " / " + speedX + ", " + speedY);
       switch(id) {
       case DrawLib.TEX_LEVEL:
-        if(speedY < 0) {
+        if (speedX < 0 && speedY == 0) {
+          X = collisions.get(id).getRight() + width/2 + 1;
+          speedX = 0;
+        } else if (speedX > 0 && speedY == 0) {
+          X = collisions.get(id).getLeft() - width/2 - 1;
+          speedX = 0;
+        } else if (speedY > 0) {
+          Y = collisions.get(id).getBottom() - height/2 - 1;
+          speedY = 0;
+        } else if (speedY < 0) {
           Y = collisions.get(id).getTop() + height/2 + 1;
           speedY = 0;
           doLand();
-        } else if (speedY > 1) {
-          Y = collisions.get(id).getBottom() - height/2 - 1;
-          speedY = 0;
-        } else if (speedX < 0) {
-          X = collisions.get(id).getRight() + width/2 + 1;
-          speedX = 0;
-        } else if (speedX > 0) {
-          X = collisions.get(id).getLeft() - width/2 - 1;
-          speedX = 0;
         }
         break;
       case DrawLib.TEX_JETPACK:
@@ -119,6 +120,7 @@ public class Hero extends GameObject {
       }
     }
     
+    if(speedY < 0 && collisions.isEmpty()) PhysicsEngine.fall(this);// apply gravity
     if(getSpeedX() != 0 && didLand()) this.setTextureId(DrawLib.TEX_HERO_RUN1);
     return collisions;
   }
