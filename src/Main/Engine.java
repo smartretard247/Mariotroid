@@ -175,7 +175,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
               r.y(),
               r.w(),
               r.h()));
-      //visibleObjects.get(lastId+1).setColor(Math.random(), Math.random(), Math.random());
     }
   }
   
@@ -352,17 +351,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   private void drawAmmoCount(GL2 gl) {
     if(hero.hasSecondaryWeapon()) {
-      double xDiff = 5;
+      double xDiff = -30;
       double[] textColor = new double[] { 1.0, 1.0, 1.0 };
       gl.glPushMatrix();
-      gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2+DrawLib.getTexture(DrawLib.TEX_SHELL).getWidth()*3/2+xDiff,
+      gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2+DrawLib.getTexture(DrawLib.TEX_ALT_WEAPON).getWidth()/2+xDiff,
               DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2
                       -DrawLib.getTexture(DrawLib.TEX_HEALTH).getHeight()
-                      -DrawLib.getTexture(DrawLib.TEX_SHELL).getHeight()*6, 0);
-      DrawLib.drawTexturedRectangle(DrawLib.TEX_SHELL,
-              DrawLib.getTexture(DrawLib.TEX_SHELL).getWidth()*3,
-              DrawLib.getTexture(DrawLib.TEX_SHELL).getHeight()*3);
-      DrawLib.drawText(Integer.toString(hero.getAmmoCount()), textColor, 17, -4);
+                      -DrawLib.getTexture(DrawLib.TEX_ALT_WEAPON).getHeight(), 0);
+      DrawLib.drawTexturedRectangle(DrawLib.TEX_ALT_WEAPON,
+              DrawLib.getTexture(DrawLib.TEX_ALT_WEAPON).getWidth()/3,
+              DrawLib.getTexture(DrawLib.TEX_ALT_WEAPON).getHeight()/3);
+      DrawLib.drawText(Integer.toString(hero.getAmmoCount()), textColor, 20, -6);
       gl.glPopMatrix();
     }
   }
@@ -384,7 +383,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPushMatrix();
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2,
             DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
-    DrawLib.drawText(Integer.toString(hero.getLives()), textColor, 30, -50);
+    DrawLib.drawText(Integer.toString(hero.getLives()), textColor, 40, -50);
     gl.glPopMatrix();
   }
 
