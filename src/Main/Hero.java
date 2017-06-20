@@ -92,7 +92,7 @@ public class Hero extends GameObject {
     
     // additional things that the hero should do with each of the collided objects
     for(Integer id : collisions.keySet()) {
-      //System.out.println("Collision, source object coord/speed: " + X + ", " + Y + " / " + speedX + ", " + speedY);
+      System.out.println("Collision, source object coord/speed: " + X + ", " + Y + " / " + speedX + ", " + speedY);
       switch(id) {
       case DrawLib.TEX_LEVEL:
         if (speedX < 0 && speedY == 0) {
