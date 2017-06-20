@@ -161,19 +161,18 @@ public class Hero extends GameObject {
   public Projectile firePrimaryWeapon() {
     int zRot = 0;
     double xOffset = 40;
-    double w = 75;
-    double h = 3;
     double speed = 40;
     //(isFlippedOnY()) ? getX()-w-xOffset : getX()+xOffset
-    return new Projectile(DrawLib.TEX_NONE, zRot,
+    return new Projectile(DrawLib.TEX_SHELL, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
-            getY(), w, h, speed, isFlippedOnY()); //fire primary
+            getY(), speed, isFlippedOnY()); //fire primary
   }
   public Projectile fireSecondaryWeapon() {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
-      double speed = 25;
+      int zRot = 90;
+      double speed = 50;
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
-      return new Projectile(DrawLib.TEX_SHELL, 0, getX(), getY(), speed, isFlippedOnY()); //fire
+      return new Projectile(DrawLib.TEX_ALT_WEAPON, zRot, getX(), getY(), speed, isFlippedOnY()); //fire
     }
     return null;
   }

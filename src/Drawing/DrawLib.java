@@ -51,7 +51,7 @@ public class DrawLib {
     textureIdMap.put(TEX_HUD, "art/hud/hud.png");
     textureIdMap.put(TEX_SHELL, "art/hud/shell.png");
     textureIdMap.put(TEX_JETPACK, "art/sprites/items/jetpack.png");
-    textureIdMap.put(TEX_ALT_WEAPON, "art/hud/shell.png");
+    textureIdMap.put(TEX_ALT_WEAPON, "art/sprites/projectiles/blue_r.png");
     
     loadTextures(); // must load after filename 'puts' above
   }

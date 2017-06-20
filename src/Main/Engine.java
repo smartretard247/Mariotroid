@@ -137,13 +137,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // initialize all game objects here
     gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, 1400, 300, 75, 75));
     gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, 300, 1000, 75, 75));
-    gameObjects.put(DrawLib.TEX_SHELL, new Collidable(DrawLib.TEX_SHELL));
+    //gameObjects.put(DrawLib.TEX_SHELL, new Collidable(DrawLib.TEX_SHELL));
     
+    resetVisibles();
+    
+    loadLevel(gl, "design/art/level/level.png");
+  }
+  
+  private void resetVisibles() {
     // only add currently visible objects to this map
     visibleObjects.put(DrawLib.TEX_JETPACK, gameObjects.get(DrawLib.TEX_JETPACK));
     visibleObjects.put(DrawLib.TEX_ALT_WEAPON, gameObjects.get(DrawLib.TEX_ALT_WEAPON));
-    
-    loadLevel(gl, "design/art/level/level.png");
   }
   
   /**
@@ -327,6 +331,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case START_GAME: gameMode = GAME_MODE.RUNNING;
         hero.resetAll();
         hero.setSpeedY(-PhysicsEngine.GRAVITY);
+        resetVisibles();
         break;
       case EXIT: System.exit(0);
         break;
