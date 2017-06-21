@@ -70,7 +70,7 @@ public class Hero extends GameObject {
     dropJetpack();
     doLand(); // reset jump as if on ground
     
-    pickupSecondaryWeapon();
+    //pickupSecondaryWeapon(); // for testing secondary weapon
   }
   
   @Override
