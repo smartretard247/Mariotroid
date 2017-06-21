@@ -10,8 +10,8 @@ import com.jogamp.opengl.GL2;
 public class Drawable {
   public final static GL2 GL = DrawLib.gl;
   private int textureId;
-  protected double X; // for moving x direction
-  protected double Y; // for moving y direction
+  protected double x; // for moving x direction
+  protected double y; // for moving y direction
   protected double width, height; // for building the collision rect
   private double defX;
   private double defY;
@@ -20,8 +20,8 @@ public class Drawable {
   
   public Drawable(int texId, double x, double y, double w, double h) {
     textureId = texId;
-    X = x;
-    Y = y;
+    this.x = x;
+    this.y = y;
     defX = x;
     defY = y;
     width = w;
@@ -31,18 +31,18 @@ public class Drawable {
   }
   
   public int getTextureId() { return textureId; }
-  public double getX() { return X; }
-  public double getY() { return Y; }
+  public double getX() { return x; }
+  public double getY() { return y; }
   public double getW() { return width; }
   public double getH() { return height; }
-  public double getLeft() { return X-width/2; }
-  public double getRight() { return X+width/2; }
-  public double getBottom() { return Y-height/2; }
-  public double getTop() { return Y+height/2; }
+  public double getLeft() { return x-width/2; }
+  public double getRight() { return x+width/2; }
+  public double getBottom() { return y-height/2; }
+  public double getTop() { return y+height/2; }
   public void setTextureId(int id) { textureId = id; }
-  public void setX(double posX) { X = posX; }
-  public void setY(double posY) { Y = posY; }
-  public void setPosition(double posX, double posY) { X = posX; Y = posY; }
+  public void setX(double posX) { x = posX; }
+  public void setY(double posY) { y = posY; }
+  public void setPosition(double posX, double posY) { x = posX; y = posY; }
   public void setW(int w) { width = w; }
   public void setH(int h) { height = h; }
   public void setDimensions(int w, int h) { width = w; height = h; } // only applies to rectangle, NOT image
@@ -66,7 +66,7 @@ public class Drawable {
   }
   
   /**
-   * Call this to make images flip along the Y-axis, making them seem to turn around.
+   * Call this to make images flip along the y-axis, making them seem to turn around.
    * @param to
    */
   public void setFlipY(boolean to) { flipY = to; }

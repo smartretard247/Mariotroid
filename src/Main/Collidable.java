@@ -26,7 +26,7 @@ public class Collidable extends Drawable {
    * @return 
    */
   public Rectangle getBoundary() {
-    return new Rectangle(X-width/2, Y+height/2, width, height);
+    return new Rectangle(x-width/2, y+height/2, width, height);
   }
   
   /**

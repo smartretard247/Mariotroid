@@ -56,7 +56,7 @@ public class DrawLib {
     loadTextures(); // must load after filename 'puts' above
   }
 
-  private static Map<Integer, Texture> textures = new HashMap<>();
+  private static final Map<Integer, Texture> textures = new HashMap<>();
   
   public static Texture getTexture(int id) { return textures.get(id); }
   

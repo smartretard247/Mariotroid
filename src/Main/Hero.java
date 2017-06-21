@@ -36,7 +36,7 @@ public class Hero extends GameObject {
     hasDoubleJump = false;
     doubleJumped = false;
     maxJumpExceeded = false;
-    landHeight = Y;
+    landHeight = y;
   }
   
   public long getScore() { return score; }
@@ -93,21 +93,23 @@ public class Hero extends GameObject {
     }
     
     // additional things that the hero should do with each of the collided objects
-    for(Integer id : collisions.keySet()) {
-      System.out.println("Collision, source object coord/speed: " + X + ", " + Y + " / " + speedX + ", " + speedY);
+    for(Map.Entry<Integer, Collidable> e : collisions.entrySet()) {
+      System.out.println("Collision, source object coord/speed: " + x + ", " + y + " / " + speedX + ", " + speedY);
+      int id = e.getKey();
+      Collidable c = e.getValue();
       switch(id) {
       case DrawLib.TEX_LEVEL:
         if (speedX < 0 && speedY == 0) {
-          X = collisions.get(id).getRight() + width/2 + 1;
+          x = collisions.get(id).getRight() + width/2 + 1;
           speedX = 0;
         } else if (speedX > 0 && speedY == 0) {
-          X = collisions.get(id).getLeft() - width/2 - 1;
+          x = collisions.get(id).getLeft() - width/2 - 1;
           speedX = 0;
         } else if (speedY > 0) {
-          Y = collisions.get(id).getBottom() - height/2 - 1;
+          y = collisions.get(id).getBottom() - height/2 - 1;
           speedY = -10;
         } else if (speedY < 0) {
-          Y = collisions.get(id).getTop() + height/2 + 1;
+          y = collisions.get(id).getTop() + height/2 + 1;
           speedY = 0;
           doLand();
         }

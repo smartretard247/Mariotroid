@@ -38,8 +38,8 @@ public class GameObject extends Collidable {
    */
   public Map<Integer, Collidable> move(Map<Integer, Collidable> nearObjects) {
     Map<Integer, Collidable> collisions = new HashMap<>();
-    X += speedX;
-    Y += speedY;
+    x += speedX;
+    y += speedY;
     
     if(speedX != 0) setFlipY(speedX < 0); // this reverses the sprite with direction changes
     

@@ -46,7 +46,7 @@ public class Projectile extends Collidable {
         DrawLib.drawLine(0, 0, width, 0);
     }
     GL.glPopMatrix();
-    if(flipY) X -= speed; //update location based on speed
-    else X += speed;
+    if(flipY) x -= speed; //update location based on speed
+    else x += speed;
   }
 }
