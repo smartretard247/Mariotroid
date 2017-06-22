@@ -18,18 +18,42 @@ public class Help {
   
   
   public static void fallingRightAndDown(Hero h, Collidable c) {
-    
+    if(Math.abs(c.getRight() - h.getLeft()) <= Math.abs(c.getTop() - h.getBottom())) {
+      h.x = c.getLeft() - h.width/2 - 1;
+      h.speedX = 0;
+    } else {
+      h.y = c.getTop() + h.height/2 + 1;
+      h.speedY = 0;
+    }
   }
   
   public static void fallingLeftAndDown(Hero h, Collidable c) {
-    
+    if(Math.abs(c.getRight() - h.getLeft()) <= Math.abs(c.getTop() - h.getBottom())) {
+      h.x = c.getRight() + h.width/2 + 1;
+      h.speedX = 0;
+    } else {
+      h.y = c.getTop() + h.height/2 + 1;
+      h.speedY = 0;
+    }
   }
   
   public static void flyingUpAndToTheLeft(Hero h, Collidable c) {
-    
+    if(Math.abs(c.getRight() - h.getLeft()) <= Math.abs(c.getBottom() - h.getTop())) {
+      h.x = c.getRight() + h.width/2 + 1;
+      h.speedX = 0;
+    } else {
+      h.y = c.getBottom() - h.height/2 - 1;
+      h.speedY = 0;
+    }
   }
   
   public static void flyingUpAndToTheRight(Hero h, Collidable c) {
-    
+    if(Math.abs(c.getRight() - h.getLeft()) <= Math.abs(c.getBottom() - h.getTop())) {
+      h.x = c.getLeft() - h.width/2 - 1;
+      h.speedX = 0;
+    } else {
+      h.y = c.getBottom() - h.height/2 - 1;
+      h.speedY = 0;
+    }
   }
 }

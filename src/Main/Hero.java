@@ -104,11 +104,21 @@ public class Hero extends GameObject {
           speedY = 0;
           doLand();
         } else if(speedY < 0 && speedX > 0) { // falling right and down
-          System.out.println("falling right and down");
-          Help.fallingRightAndDown(this, c);
+          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
+            x = c.getLeft() - width/2 - 1;
+            speedX = 0;
+          } else {
+            y = c.getTop() + height/2 + 1;
+            speedY = 0;
+          }
         } else if(speedY < 0 && speedX < 0) { // falling left and down
-          System.out.println("falling left and down");
-          Help.fallingLeftAndDown(this, c);
+          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
+            x = c.getRight() + width/2 + 1;
+            speedX = 0;
+          } else {
+            y = c.getTop() + height/2 + 1;
+            speedY = 0;
+          }
         } else if(speedY == 0 && speedX < 0) { // moving left
           x = c.getRight() + width/2 + 1;
           speedX = 0;
@@ -116,16 +126,26 @@ public class Hero extends GameObject {
           x = c.getLeft() - width/2 - 1;
           speedX = 0;
         } else if(speedY > 0 && speedX < 0) { // flying upward and to the left
-          System.out.println("flying upward and to the left");
-          Help.flyingUpAndToTheLeft(this, c);
+          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
+            x = c.getRight() + width/2 + 1;
+            speedX = 0;
+          } else {
+            y = c.getBottom() - height/2 - 1;
+            speedY = 0;
+          }
         } else if(speedY > 0 && speedX > 0) { // flying upward and to the right
-          System.out.println("flying upward and to the right");
-          Help.flyingUpAndToTheRight(this, c);
+          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
+            x = c.getLeft() - width/2 - 1;
+            speedX = 0;
+          } else {
+            y = c.getBottom() - height/2 - 1;
+            speedY = 0;
+          }
         } else if(speedY > 0 && speedX == 0) { // flying straight upward
           y = c.getBottom() - height/2 - 1;
           speedY = 0;
         } else if(speedY == 0 && speedX == 0) { // not moving, must be a different object
-          System.out.println("not moving, must be a different object");
+          System.out.println("Hero not moving, source must be a different object");
         }
         break;
       case DrawLib.TEX_JETPACK:
@@ -144,6 +164,7 @@ public class Hero extends GameObject {
     }
     
     if(getSpeedX() != 0 && didLand()) this.setTextureId(DrawLib.TEX_HERO_RUN1);
+    if(getSpeedX() == 0 && didLand()) this.setTextureId(DrawLib.TEX_HERO);
     return collisions;
   }
   
