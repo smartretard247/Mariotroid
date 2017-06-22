@@ -104,7 +104,7 @@ public class Hero extends GameObject {
           speedY = 0;
           doLand();
         } else if(speedY < 0 && speedX > 0) { // falling right and down
-          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
+          if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
             x = c.getLeft() - width/2 - 1;
             speedX = 0;
           } else {
@@ -134,7 +134,7 @@ public class Hero extends GameObject {
             speedY = 0;
           }
         } else if(speedY > 0 && speedX > 0) { // flying upward and to the right
-          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
+          if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
             x = c.getLeft() - width/2 - 1;
             speedX = 0;
           } else {
