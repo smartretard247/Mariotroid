@@ -99,19 +99,33 @@ public class Hero extends GameObject {
       Collidable c = e.getValue();
       switch(id) {
       case DrawLib.TEX_LEVEL:
-        if (speedX < 0 && speedY == 0) {
-          x = collisions.get(id).getRight() + width/2 + 1;
-          speedX = 0;
-        } else if (speedX > 0 && speedY == 0) {
-          x = collisions.get(id).getLeft() - width/2 - 1;
-          speedX = 0;
-        } else if (speedY > 0) {
-          y = collisions.get(id).getBottom() - height/2 - 1;
-          speedY = -10;
-        } else if (speedY < 0) {
-          y = collisions.get(id).getTop() + height/2 + 1;
+        if(speedY < 0 && speedX == 0) { // falling straight down
+          y = c.getTop() + height/2 + 1;
           speedY = 0;
           doLand();
+        } else if(speedY < 0 && speedX > 0) { // falling right and down
+          System.out.println("falling right and down");
+          Help.fallingRightAndDown(this, c);
+        } else if(speedY < 0 && speedX < 0) { // falling left and down
+          System.out.println("falling left and down");
+          Help.fallingLeftAndDown(this, c);
+        } else if(speedY == 0 && speedX < 0) { // moving left
+          x = c.getRight() + width/2 + 1;
+          speedX = 0;
+        } else if(speedY == 0 && speedX > 0) { // moving right
+          x = c.getLeft() - width/2 - 1;
+          speedX = 0;
+        } else if(speedY > 0 && speedX < 0) { // flying upward and to the left
+          System.out.println("flying upward and to the left");
+          Help.flyingUpAndToTheLeft(this, c);
+        } else if(speedY > 0 && speedX > 0) { // flying upward and to the right
+          System.out.println("flying upward and to the right");
+          Help.flyingUpAndToTheRight(this, c);
+        } else if(speedY > 0 && speedX == 0) { // flying straight upward
+          y = c.getBottom() - height/2 - 1;
+          speedY = 0;
+        } else if(speedY == 0 && speedX == 0) { // not moving, must be a different object
+          System.out.println("not moving, must be a different object");
         }
         break;
       case DrawLib.TEX_JETPACK:
@@ -126,7 +140,7 @@ public class Hero extends GameObject {
     
     if(collisions.isEmpty()) {
       if(speedY < 0) PhysicsEngine.fall(this);// apply gravity
-      if(speedY == 0 && speedX == 0) PhysicsEngine.fall(this);// apply gravity
+      //if(speedY == 0 && speedX == 0) PhysicsEngine.fall(this);// apply gravity
     }
     
     if(getSpeedX() != 0 && didLand()) this.setTextureId(DrawLib.TEX_HERO_RUN1);
