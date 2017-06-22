@@ -464,18 +464,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(gameMode) { // controls are based on the game mode
     case RUNNING:
       switch (key) {
-      case KeyEvent.VK_UP:
-        scene.transY -= 20;
-        break;
-      case KeyEvent.VK_DOWN:
-        scene.transY += 20;
-        break;
-      case KeyEvent.VK_LEFT:
-        scene.transX += 20;
-        break;
-      case KeyEvent.VK_RIGHT:
-        scene.transX -= 20;
-        break;
       case KeyEvent.VK_SHIFT:
         if(!hero.isSprinting()) {
           hero.toggleSprint();
@@ -486,9 +474,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         gameMode = GAME_MODE.PAUSED;
         break;
       case KeyEvent.VK_A: // move left
+        hero.setTextureId(DrawLib.TEX_HERO_RUN1);
         hero.increaseSpeed(-10, 0);
         break;
       case KeyEvent.VK_D: // move right
+        hero.setTextureId(DrawLib.TEX_HERO_RUN1);
         hero.increaseSpeed(10, 0);
         break;
       case KeyEvent.VK_SPACE: // jump

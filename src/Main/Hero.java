@@ -106,17 +106,21 @@ public class Hero extends GameObject {
         } else if(speedY < 0 && speedX > 0) { // falling right and down
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
             x = c.getLeft() - width/2 - 1;
-            speedX = 0;
+            if(speedY != -10) speedX = 0;
+            speedY = 0;
           } else {
             y = c.getTop() + height/2 + 1;
+            if(speedY != -10) speedX = 0;
             speedY = 0;
           }
         } else if(speedY < 0 && speedX < 0) { // falling left and down
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
             x = c.getRight() + width/2 + 1;
-            speedX = 0;
+            if(speedY != -10) speedX = 0;
+            speedY = 0;
           } else {
             y = c.getTop() + height/2 + 1;
+            if(speedY != -10) speedX = 0;
             speedY = 0;
           }
         } else if(speedY == 0 && speedX < 0) { // moving left
@@ -129,16 +133,20 @@ public class Hero extends GameObject {
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
             x = c.getRight() + width/2 + 1;
             speedX = 0;
+            speedY = 0;
           } else {
             y = c.getBottom() - height/2 - 1;
+            speedX = 0;
             speedY = 0;
           }
         } else if(speedY > 0 && speedX > 0) { // flying upward and to the right
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
             x = c.getLeft() - width/2 - 1;
             speedX = 0;
+            speedY = 0;
           } else {
             y = c.getBottom() - height/2 - 1;
+            speedX = 0;
             speedY = 0;
           }
         } else if(speedY > 0 && speedX == 0) { // flying straight upward
@@ -146,6 +154,7 @@ public class Hero extends GameObject {
           speedY = 0;
         } else if(speedY == 0 && speedX == 0) { // not moving, must be a different object
           System.out.println("Hero not moving, source must be a different object");
+          y += 1; //try to offset falling through the ground...
         }
         break;
       case DrawLib.TEX_JETPACK:
@@ -162,8 +171,6 @@ public class Hero extends GameObject {
       if(speedY <= 0) PhysicsEngine.fall(this);// apply gravity
     }
     
-    if(getSpeedX() != 0 && didLand()) this.setTextureId(DrawLib.TEX_HERO_RUN1);
-    if(getSpeedX() == 0 && didLand()) this.setTextureId(DrawLib.TEX_HERO);
     return collisions;
   }
   
@@ -191,6 +198,8 @@ public class Hero extends GameObject {
     this.setTextureId(DrawLib.TEX_HERO);
     maxJumpExceeded = false;
     landHeight = getY();
+    
+    this.setTextureId(DrawLib.TEX_HERO);
   }
   
   public boolean hasSecondaryWeapon() { return hasSecondaryWeapon; }
