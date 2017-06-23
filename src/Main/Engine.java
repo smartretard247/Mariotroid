@@ -473,11 +473,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case KeyEvent.VK_P: // pause/unpause
         gameMode = GAME_MODE.PAUSED;
         break;
-      case KeyEvent.VK_W: // climb
+      case KeyEvent.VK_W: // climb up
         //hero.setTextureId(DrawLib.TEX_HERO_CLIMB);
         if(hero.canClimb()) {
           hero.setClimbing(true);
           hero.setSpeedY(5);
+        }
+        break;
+      case KeyEvent.VK_S: // climb down
+        //hero.setTextureId(DrawLib.TEX_HERO_CLIMB);
+        if(hero.canClimb()) {
+          hero.setClimbing(true);
+          hero.setY(hero.getY()-5);
         }
         break;
       case KeyEvent.VK_A: // move left
@@ -504,9 +511,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             hero.doDoubleJump();
           }
         }
-        break;
-      case KeyEvent.VK_S: // crouch
-        // TODO: change to crouch (image and collision rect will shrink)
         break;
       default: break;
       }
@@ -568,6 +572,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         }
         break;
       case KeyEvent.VK_W: // stop climbimg
+        hero.setSpeedY(0);
+        break;
+      case KeyEvent.VK_S: // stop climbimg
         hero.setSpeedY(0);
         break;
       case KeyEvent.VK_A: // stop moving left
