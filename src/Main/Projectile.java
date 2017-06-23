@@ -8,19 +8,21 @@ import Drawing.DrawLib;
  */
 public class Projectile extends Collidable {
   private int zRot;
-  private double speed; // speed will be calculated by rise/run
+  private double speedX, speedY; // speed will be calculated by rise/run
   
-  public Projectile(int texId, int zrot, double x, double y, double w, double h, double s, boolean flipY) {
+  public Projectile(int texId, int zrot, double x, double y, double w, double h, double sX, double sY, boolean flipY) {
     super(texId, x, y, w, h);
-    speed = s;
+    speedX = sX;
+    speedY = sY;
     this.flipY = flipY;
     setColor(1.0, 0.0, 0.0);
     zRot = zrot;
   }
   
-  public Projectile(int texId, int zrot, double x, double y, double s, boolean flipY) {
+  public Projectile(int texId, int zrot, double x, double y, double sX, double sY, boolean flipY) {
     super(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getWidth());
-    speed = s;
+    speedX = sX;
+    speedY = sY;
     this.flipY = flipY;
     zRot = zrot;
   }
@@ -46,7 +48,13 @@ public class Projectile extends Collidable {
         DrawLib.drawLine(0, 0, width, 0);
     }
     GL.glPopMatrix();
-    if(flipY) x -= speed; //update location based on speed
-    else x += speed;
+    if(flipY) { //update location based on speed
+      x -= speedX;
+      y -= speedY;
+    } 
+    else {
+      x += speedX;
+      y += speedY;
+    }
   }
 }

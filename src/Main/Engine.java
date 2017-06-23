@@ -14,10 +14,15 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
+import com.jogamp.opengl.glu.GLU;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,7 +91,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     display.addMouseMotionListener(this);
 
     // start the animation
-    this.startAnimation(); // also control pause function (and remove keyboard response)
+    startAnimation(); // also control pause function (and remove keyboard response)
     
     Timer introTimer = new Timer(INTROLENGTHMS, (evt)-> {
       this.gameMode = GAME_MODE.START_MENU;
@@ -246,7 +251,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawBackground(GL2 gl) {
     // back ground objects
-    //drawCollisions(gl); // USE THIS LINE ONLY WHEN TESTING COLLISIONS!!
     
     // draw game objects
     visibleObjects.values().forEach((c) -> {
@@ -285,16 +289,28 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   /**
-   * This is only temporary to display the collision PNG.
-   * @param gl 
+   * Given a screen coordinate p, will return a point corresponding to the world position.
+   * @param p
+   * @return 
    */
-  private void drawCollisions(GL2 gl) { // TODO: only draw collisions 'close' to character
-    gl.glPushMatrix();
-    /*for(int i = DrawLib.TEX_COLLISIONS_START; i <= DrawLib.TEX_COLLISIONS_END; i++) {
-      DrawLib.drawTexturedRectangle(i);
-      gl.glTranslated(DrawLib.getTexture(i).getWidth(), 0, 0);
-    }*/
-    gl.glPopMatrix();
+  private Point screenToWorld(Point p) {
+    int[] viewport = new int[4]; //var to hold the viewport info
+    double[] modelview = new double[16]; //var to hold the modelview info
+    double[] projection = new double[16]; //var to hold the projection matrix info
+    double wcoord[] = new double[4]; //variables to hold world x,y,z coordinates
+    
+    DrawLib.gl.glGetDoublev( GL2.GL_MODELVIEW_MATRIX, modelview, 0 ); //get the modelview info
+    DrawLib.gl.glGetDoublev( GL2.GL_PROJECTION_MATRIX, projection, 0 ); //get the projection matrix info
+    DrawLib.gl.glGetIntegerv( GL2.GL_VIEWPORT, viewport, 0 ); //get the viewport info
+ 
+    //get the world coordinates from the screen coordinates
+    int realy = viewport[3] - (int) p.y - 1;
+    DrawLib.glu.gluUnProject((double) p.x, (double) realy, 0.0,
+              modelview, 0,
+              projection, 0, 
+              viewport, 0, 
+              wcoord, 0);
+    return new Point((int)wcoord[0], (int)wcoord[1]);
   }
 
   private void drawStartMenu(GL2 gl) {
@@ -720,6 +736,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   @Override
   public void mouseClicked(MouseEvent evt) {
     int key = evt.getButton();
+    Point sc = evt.getPoint(); // clicked location, to convert to world coords
+    Point wc = screenToWorld(sc); // world coords of clicked location
     
     switch(gameMode) { // controls are based on the game mode
     case START_MENU:
@@ -748,14 +766,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         } catch (GameOverException ex) {
           this.gameMode = GAME_MODE.GAME_OVER;
         }*/
-        fired = hero.firePrimaryWeapon();
+        setStatusMessage("Clicked point: ( " + sc.x + ", " + sc.y + " ), world coords: (" + wc.x + ", " + wc.y + ")");
+        fired = hero.firePrimaryWeapon(wc);
         projectiles.put(frameNumber, fired);
         break;
       case MouseEvent.BUTTON2: // middle click
         break;
       case MouseEvent.BUTTON3: // right click
         //hero.addScore(100);
-        fired = hero.fireSecondaryWeapon();
+        fired = hero.fireSecondaryWeapon(wc);
         if(fired != null) projectiles.put(frameNumber, fired);
         break;
       default: break;

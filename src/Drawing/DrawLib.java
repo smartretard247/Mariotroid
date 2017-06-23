@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
@@ -22,6 +23,7 @@ import javax.imageio.ImageIO;
 public class DrawLib {
   public static GL2 gl;
   public static final GLUT glut = new GLUT();
+  public static final GLU glu = new GLU();
   
   private static final Map<Integer, String> textureIdMap = new HashMap<>();
   public static final int TEX_TEST = -3;
