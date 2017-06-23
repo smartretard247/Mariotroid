@@ -44,7 +44,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private DrawLib drawLib;
   public static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
-  private final int INTROLENGTHMS = 4000;
+  private final int INTROLENGTHMS = 400;
   private final int MAX_GAME_OBJECTS = 2;
   
   public Scene scene; // trans x & y, scale x & y
@@ -473,13 +473,28 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case KeyEvent.VK_P: // pause/unpause
         gameMode = GAME_MODE.PAUSED;
         break;
+      case KeyEvent.VK_W: // climb
+        //hero.setTextureId(DrawLib.TEX_HERO_CLIMB);
+        if(hero.canClimb()) {
+          hero.setClimbing(true);
+          hero.setSpeedY(5);
+        }
+        break;
       case KeyEvent.VK_A: // move left
         hero.setTextureId(DrawLib.TEX_HERO_RUN1);
         hero.increaseSpeed(-10, 0);
+        if(hero.isClimbing()) {
+          hero.setClimbing(false);
+          hero.setSpeedY(-1);
+        }
         break;
       case KeyEvent.VK_D: // move right
         hero.setTextureId(DrawLib.TEX_HERO_RUN1);
         hero.increaseSpeed(10, 0);
+        if(hero.isClimbing()) {
+          hero.setClimbing(false);
+          hero.setSpeedY(-1);
+        }
         break;
       case KeyEvent.VK_SPACE: // jump
         if(hero.canJump()) {
@@ -552,6 +567,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           hero.setSpeedX(hero.getSpeedX()/2); // halve current speed
         }
         break;
+      case KeyEvent.VK_W: // stop climbimg
+        hero.setSpeedY(0);
+        break;
       case KeyEvent.VK_A: // stop moving left
         hero.setSpeedX(0);
         break;
@@ -598,6 +616,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         default: break;
         }
       }
+      if((hero.getSpeedY() < 0) || // if hero is already falling
+              (hero.getRight() < hero.getLastCollision().getLeft() && !hero.canClimb()) || // or hero is past left edge of floor
+              (hero.getLeft() > hero.getLastCollision().getRight() && !hero.canClimb()) || // or hero is past right edge of floor
+              (hero.getTop() <= hero.getLastCollision().getBottom())) // or hero bumped head on ceiling
+        PhysicsEngine.fall(hero);// apply gravity
+      
+      // set textures based on speed here
+      if(hero.getSpeedX() == 0 && hero.getSpeedY() == 0) hero.setTextureId(DrawLib.TEX_HERO);
+      
       break;
     default: break;
     }

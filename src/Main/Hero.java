@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class Hero extends GameObject {
   private static final int MAX_SECONDARY_AMMO = 5;
-  private static final int JUMP_SPEED = 60;
+  private static final int JUMP_SPEED = 70;
   private static final int MAX_JUMP_HEIGHT = 300;
   public int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
   private long score;
@@ -23,6 +23,8 @@ public class Hero extends GameObject {
   private boolean hasSecondaryWeapon;
   private int secondaryAmmoCount;
   private double landHeight; // for calculating jump and double jump heights
+  private boolean isClimbing;
+  private Collidable lastCollidedObject;
   
   public Hero(int startLives, long startScore, int startHealth, int texId, double x, double y, double w, double h) {
     super(texId, x, y, w, h);
@@ -37,6 +39,7 @@ public class Hero extends GameObject {
     doubleJumped = false;
     maxJumpExceeded = false;
     landHeight = y;
+    isClimbing = false;
   }
   
   public long getScore() { return score; }
@@ -156,6 +159,7 @@ public class Hero extends GameObject {
           System.out.println("Hero not moving, source must be a different object");
           y += 1; //try to offset falling through the ground...
         }
+        lastCollidedObject = c;
         break;
       case DrawLib.TEX_JETPACK:
         pickupJetpack();
@@ -167,10 +171,6 @@ public class Hero extends GameObject {
       }
     }
     
-    if(collisions.isEmpty()) {
-      if(speedY <= 0) PhysicsEngine.fall(this);// apply gravity
-    }
-    
     return collisions;
   }
   
@@ -178,7 +178,6 @@ public class Hero extends GameObject {
   public void doJump() {
     jumped = true;
     setSpeedY(JUMP_SPEED);
-    //this.setTextureId(DrawLib.TEX_HERO_JUMP);
   }
   public boolean canDoubleJump() { return !doubleJumped && jumped && hasDoubleJump; }
   public void doDoubleJump() {
@@ -239,4 +238,18 @@ public class Hero extends GameObject {
   public double getMaxJumpHeight() {
     return landHeight + MAX_JUMP_HEIGHT;
   }
+  
+  public boolean canClimb() {
+    return ((getRight() + 1) == lastCollidedObject.getLeft() || (getLeft() - 1) == lastCollidedObject.getRight()) &&
+            !reachedTop();
+  }
+  
+  private boolean reachedTop() {
+    return !(getBottom() <= (lastCollidedObject.getTop() + 3));
+  }
+  
+  public boolean isClimbing() { return isClimbing; }
+  public void setClimbing(boolean to) { isClimbing = to; }
+  
+  public Collidable getLastCollision() { return this.lastCollidedObject; }
 }
