@@ -3,6 +3,7 @@ package Main;
 import Drawing.DrawLib;
 import Enumerations.START_MENU_OPTION;
 import Enumerations.GAME_MODE;
+//import Test.Test;
 import java.awt.event.*;
 import javax.swing.*;
 import com.jogamp.opengl.GL;
@@ -142,6 +143,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     resetVisibles();
     
     loadLevel(gl, "design/art/level/level.png");
+          
+//    Test test = new Test();
+//    test.runTest();
   }
   
   private void resetVisibles() {
