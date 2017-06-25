@@ -8,21 +8,21 @@ Rectangle@( 300.5 , 720.0 ), width: 383.0 , height: 98.0
 
 Rectangle@( 5952.0 , 337.0 ), width: 768.0 , height: 672.0
 
-Rectangle@( 7485.5 , 337.0 ), width: 385.0 , height: 672.0
+Rectangle@( 7485.5 , 624.5 ), width: 385.0 , height: 97.0
 
-Rectangle@( 8059.5 , 337.0 ), width: 385.0 , height: 672.0
+Rectangle@( 8059.5 , 624.5 ), width: 385.0 , height: 97.0
 
 Rectangle@( 1066.0 , 241.0 ), width: 194.0 , height: 480.0
 
-Rectangle@( 3461.5 , 241.0 ), width: 385.0 , height: 480.0
+Rectangle@( 3461.5 , 432.5 ), width: 385.0 , height: 97.0
 
-Rectangle@( 4131.5 , 241.0 ), width: 385.0 , height: 480.0
+Rectangle@( 4131.5 , 432.5 ), width: 385.0 , height: 97.0
 
-Rectangle@( 4802.5 , 241.0 ), width: 385.0 , height: 480.0
+Rectangle@( 4802.5 , 432.5 ), width: 385.0 , height: 97.0
 
 Rectangle@( 5952.0 , 241.0 ), width: 1152.0 , height: 480.0
 
-Rectangle@( 6910.5 , 241.0 ), width: 385.0 , height: 480.0
+Rectangle@( 6910.5 , 432.5 ), width: 385.0 , height: 97.0
 
 Rectangle@( 8826.5 , 241.0 ), width: 193.0 , height: 480.0
 

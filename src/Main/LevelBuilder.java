@@ -67,7 +67,7 @@ public class LevelBuilder {
               r.setX(x);
               r.setY(y);
               r.setW(findWidth(x, y, bounds.width)); // find width
-              r.setH(findHeight(r, bounds.height)); //height
+              r.setH(findHeight(x, y, (int)r.w(), bounds.height)); //height
               System.out.println(r); // found rectangle
               markPixels(marked, r); // mark dead pixels
               // adjust to center before adding to found
@@ -111,12 +111,19 @@ public class LevelBuilder {
   }
   
   // 1535x97, 193x289
-  private int findHeight(Rectangle r, int maxY) {
-    for(int height = maxY-1; height >= r.y(); height--) {
-      if(verifyHeight((int)r.x(), (int)r.y(), (int)r.w(), height))
-        return (int) (height - r.y());
+  private int findHeight(int xPos, int yPos, int width, int maxY) {
+    int x = xPos;
+    for(int i = yPos+1; i < maxY; i++) {
+      if(isTransparentAt(x, i)) {
+        if(verifyHeight(xPos, yPos, width, i))
+          return i - yPos; // return height of rectangle
+        else {
+          x++;
+          i = yPos+1;
+        }
+      }
     }
-    return (int) (maxY - r.y());
+    return maxY - yPos;
   }
   
   /**
