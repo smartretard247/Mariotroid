@@ -116,6 +116,7 @@ public class Hero extends GameObject {
             y = c.getTop() + height/2 + 1;
             if(speedY != -10) speedX = 0;
             speedY = 0;
+            doLand();
           }
         } else if(speedY < 0 && speedX < 0) { // falling left and down
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
@@ -126,6 +127,7 @@ public class Hero extends GameObject {
             y = c.getTop() + height/2 + 1;
             if(speedY != -10) speedX = 0;
             speedY = 0;
+            doLand();
           }
         } else if(speedY == 0 && speedX < 0) { // moving left
           x = c.getRight() + width/2 + 1;
