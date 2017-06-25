@@ -3,10 +3,9 @@ package Main;
 import java.awt.image.BufferedImage;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import java.awt.image.Raster;
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,10 +22,14 @@ public class LevelBuilder {
   private final String dataFileName;
   private boolean firstLoad = true;
   
-  public LevelBuilder(String fileName) {
+  public LevelBuilder(String fileName, int num) {
     imageFileName = fileName;
-    dataFileName = imageFileName.substring(0, imageFileName.length()-3) + "txt";
-    dl = new DataLoader(dataFileName);
+    dataFileName = imageFileName.substring(imageFileName.lastIndexOf("/")+1, imageFileName.length()-4) + Integer.toString(num) + ".txt";
+    URL level = getClass().getClassLoader().getResource(dataFileName);
+    if(level != null)
+      dl = new DataLoader(level);
+    else
+      dl = new DataLoader(dataFileName);
     if(dl.getData().isEmpty())
       loadImage(imageFileName);
     else
@@ -157,7 +160,9 @@ public class LevelBuilder {
    */
   private void loadImage(String fileName) {
     try {
-      BufferedImage image = ImageIO.read(new File(fileName));
+      URL url = getClass().getClassLoader().getResource(fileName);
+      //BufferedImage image = ImageIO.read(new File(fileName));
+      BufferedImage image = ImageIO.read(url);
       if(image.getType() != TYPE_INT_RGB) {
         System.out.println("Incorrect image type \"" + ((image.getType() == 13) ? "TYPE_BYTE_INDEXED" : image.getType()) + "\", converting...");
         image = filter(image);

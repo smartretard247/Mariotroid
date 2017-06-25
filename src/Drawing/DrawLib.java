@@ -52,8 +52,8 @@ public class DrawLib {
     textureIdMap.put(TEX_HEALTH, "art/hud/health.png");
     textureIdMap.put(TEX_HUD, "art/hud/hud.png");
     textureIdMap.put(TEX_SHELL, "art/hud/shell.png");
-    textureIdMap.put(TEX_JETPACK, "art/sprites/items/jetpack.png");
-    textureIdMap.put(TEX_ALT_WEAPON, "art/sprites/projectiles/blue_r.png");
+    textureIdMap.put(TEX_JETPACK, "art/sprites/items/Jetpack.png");
+    textureIdMap.put(TEX_ALT_WEAPON, "art/sprites/projectiles/Blue_R.png");
     
     loadTextures(); // must load after filename 'puts' above
   }
@@ -69,23 +69,23 @@ public class DrawLib {
    */
   private void loadTextures() {
     textureIdMap.keySet().forEach((i) -> {
-    //for (int i = 0; i < textureFileNames.length; i++) {
       try {
-          URL textureURL;
-          textureURL = getClass().getClassLoader().getResource(textureIdMap.get(i));
-          if (textureURL != null) {
-            BufferedImage img = ImageIO.read(textureURL);
-            ImageUtil.flipImageVertically(img);
-            Texture temp = AWTTextureIO.newTexture(GLProfile.getDefault(), img, true);
-            temp.setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
-            temp.setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
-            textures.put(i, temp);
-          }
+        URL textureURL = getClass().getClassLoader().getResource(textureIdMap.get(i));
+        if (textureURL != null) {
+          BufferedImage img = ImageIO.read(textureURL);
+          ImageUtil.flipImageVertically(img);
+          Texture temp = AWTTextureIO.newTexture(GLProfile.getDefault(), img, true);
+          temp.setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
+          temp.setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
+          textures.put(i, temp);
+        } else {
+          System.out.println("Invalid textureURL in DrawLib.loadTextures: " + textureIdMap.get(i));
+        }
       } catch (IOException | GLException e) {
         e.printStackTrace();
       }
     });
-    textures.get(0).enable(gl);
+    //textures.get(0).enable(gl);
   }
   
   public static void drawLine(double fromX, double fromY, double toX, double toY) {

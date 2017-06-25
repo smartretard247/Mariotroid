@@ -14,15 +14,11 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
-import com.jogamp.opengl.glu.GLU;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -146,7 +142,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     resetVisibles();
     
-    loadLevel(gl, "design/art/level/level.png");
+    loadLevel(gl, "art/level/level.png");
   }
   
   private void resetVisibles() {
@@ -171,7 +167,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     lastId = 99999; // start at last id
     
-    LevelBuilder levelBuilder = new LevelBuilder(fileName);
+    LevelBuilder levelBuilder = new LevelBuilder(fileName, 1);
     ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
     for(Rectangle r : level) {
       // need to scale the rectangle before adding it to the visible objects.....

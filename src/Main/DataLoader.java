@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -23,6 +24,10 @@ public class DataLoader {
     
     public DataLoader() {
         data = new ArrayList<>();
+    }
+    public DataLoader(URL fileName) {
+        data = new ArrayList<>();
+        loadFromFile(fileName);
     }
     public DataLoader(String fileName) {
         data = new ArrayList<>();
@@ -101,6 +106,11 @@ public class DataLoader {
         }
     }
     
+    public final boolean loadFromFile(URL fileName) {
+      File file = new File(fileName.getFile());
+      return loadFromFile(file);
+    }
+    
     public final boolean saveToFile(String fileName) {
         PrintWriter thePrintWriter;
         
@@ -118,4 +128,6 @@ public class DataLoader {
         
         return true;
     }
+
+  
 }
