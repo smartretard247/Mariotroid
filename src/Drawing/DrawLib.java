@@ -9,6 +9,7 @@ import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -152,5 +153,30 @@ public class DrawLib {
     double width = textures.get(textureId).getWidth();
     double height = textures.get(textureId).getHeight();
     drawTexturedRectangle(textureId, width, height);
+  }
+  
+  /**
+   * Given a screen coordinate p, will return a point corresponding to the world position.
+   * @param p
+   * @return 
+   */
+  public static Point screenToWorld(Point p) {
+    int[] viewport = new int[4]; //var to hold the viewport info
+    double[] modelview = new double[16]; //var to hold the modelview info
+    double[] projection = new double[16]; //var to hold the projection matrix info
+    double wcoord[] = new double[4]; //variables to hold world x,y,z coordinates
+    
+    gl.glGetDoublev( GL2.GL_MODELVIEW_MATRIX, modelview, 0 ); //get the modelview info
+    gl.glGetDoublev( GL2.GL_PROJECTION_MATRIX, projection, 0 ); //get the projection matrix info
+    gl.glGetIntegerv( GL2.GL_VIEWPORT, viewport, 0 ); //get the viewport info
+ 
+    //get the world coordinates from the screen coordinates
+    int realy = viewport[3] - (int) p.y - 1;
+    DrawLib.glu.gluUnProject((double) p.x, (double) realy, 0.0,
+              modelview, 0,
+              projection, 0, 
+              viewport, 0, 
+              wcoord, 0);
+    return new Point((int)wcoord[0], (int)wcoord[1]);
   }
 }

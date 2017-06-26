@@ -1,12 +1,16 @@
 package Main;
 
 import Drawing.DrawLib;
+import java.awt.Point;
 
 /**
  *
  * @author Jeezy
  */
 public class Projectile extends Collidable {
+  private static final int MAX_SPEED_X = 50;
+  private static final int MAX_SPEED_Y = 50;
+  
   private int zRot;
   private double speedX, speedY; // speed will be calculated by rise/run
   
@@ -23,6 +27,15 @@ public class Projectile extends Collidable {
     super(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getWidth());
     speedX = sX;
     speedY = sY;
+    this.flipY = flipY;
+    zRot = zrot;
+  }
+  
+  public Projectile(int texId, int zrot, double x, double y, boolean flipY) {
+    super(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getWidth());
+    Point speed = calcSpeed(zrot);
+    speedX = speed.x;
+    speedY = speed.y;
     this.flipY = flipY;
     zRot = zrot;
   }
@@ -55,6 +68,36 @@ public class Projectile extends Collidable {
     else {
       x += speedX;
       y += speedY;
+    }
+  }
+  
+  public static int calcRotation(Point center, Point direction) {
+    if(direction.x - center.x == 0) {
+      return center.y < 0 ? -90 : 90; // shoot up or down when div by 0
+    }
+    float slope = (float) ((direction.y - center.y) / (direction.x - center.x)); // rise/run
+    if(slope >= -2.0 && slope < -0.5) { return -45; // shoot down and right
+    } else if(slope >= -0.5 && slope < 0.5) { return 0; // shoot straight ahead
+    } else if(slope >= 0.5 && slope < 2.0) { return 45;// shoot diagonal up and right
+    } else if(slope >= 2.0 || slope < -2.0) { return 90;// shoot up
+    } else { return -90; // shoot down
+    }
+  }
+  
+  /**
+   * Given a rotation in degrees, calculates horizontal and vertical speeds, and returns as a Point.
+   * @param rotation
+   * @return 
+   */
+  private static Point calcSpeed(int rotation) {
+    int maxX = MAX_SPEED_X, maxY = MAX_SPEED_Y;
+    switch(rotation) {
+      case -90: return new Point(0, -maxY);
+      case -45: return new Point((int) Math.sqrt(maxX*maxX/2), (int) -Math.sqrt(maxY*maxY/2));
+      case 0: return new Point(maxX, 0);
+      case 45: return new Point((int) Math.sqrt(maxX*maxX/2), (int) Math.sqrt(maxY*maxY/2));
+      case 90: return new Point(0, maxY);
+      default: return null;
     }
   }
 }

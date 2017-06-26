@@ -207,44 +207,20 @@ public class Hero extends GameObject {
   public boolean hasSecondaryWeapon() { return hasSecondaryWeapon; }
   public void pickupSecondaryWeapon() { hasSecondaryWeapon = true; }
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
-  private int calcProjectileRotation(Point direction) {
-    if(direction.x - x == 0) {
-      return y < 0 ? -90 : 90; // shoot up or down when div by 0
-    }
-    float slope = (float) ((direction.y - y) / (direction.x - x)); // rise/run
-    if(slope >= -2.0 && slope < -0.5) { return -45; // shoot down and right
-    } else if(slope >= -0.5 && slope < 0.5) { return 0; // shoot straight ahead
-    } else if(slope >= 0.5 && slope < 2.0) { return 45;// shoot diagonal up and right
-    } else if(slope >= 2.0 || slope < -2.0) { return 90;// shoot up
-    } else { return -90; // shoot down
-    }
-  }
-  public Point calcProjectileSpeed(int rotation) {
-    int maxX = 50, maxY = 50;
-    switch(rotation) {
-      case -90: return new Point(0, -maxY);
-      case -45: return new Point((int) Math.sqrt(maxX*maxX/2), (int) -Math.sqrt(maxY*maxY/2));
-      case 0: return new Point(maxX, 0);
-      case 45: return new Point((int) Math.sqrt(maxX*maxX/2), (int) Math.sqrt(maxY*maxY/2));
-      case 90: return new Point(0, maxY);
-      default: return null;
-    }
-  }
+  
   public Projectile firePrimaryWeapon(Point direction) {
-    int zRot = calcProjectileRotation(direction);
-    Point speed = calcProjectileSpeed(zRot);
-    double xOffset = 40;
+    int zRot = Projectile.calcRotation(new Point((int)x, (int)y), direction);
+    double xOffset = 40; // so projectile doesn't come from the hero's chest
     return new Projectile(DrawLib.TEX_SHELL, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
-            getY(), speed.x, speed.y, isFlippedOnY()); //fire primary
+            getY(), isFlippedOnY()); //fire primary
   }
   public Projectile fireSecondaryWeapon(Point direction) {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
-      int zRot = calcProjectileRotation(direction);
-      Point speed = calcProjectileSpeed(zRot);
+      int zRot = Projectile.calcRotation(new Point((int)x, (int)y), direction);
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
       return new Projectile(DrawLib.TEX_ALT_WEAPON, zRot + 90,
-              getX(), getY(), speed.x, speed.y, isFlippedOnY()); //fire
+              getX(), getY(), isFlippedOnY()); //fire
     }
     return null;
   }

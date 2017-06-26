@@ -22,6 +22,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import javax.swing.JFrame;
 
@@ -56,6 +57,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public Map<Integer, Collidable> visibleObjects = new HashMap<>();
   public Map<Integer, Collidable> projectiles = new HashMap<>();
   private static String statusMessage = "";
+  private LinkedList<NextProjectile> qProjectiles = new LinkedList<>();
   
   ///// START METHODS
 
@@ -263,9 +265,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     hero.draw();
     ArrayList<Integer> toRemove = new ArrayList<>();
     
+    fireProjectiles(); // fire projectile from the queue
+    
     projectiles.entrySet().forEach((p) -> {
       p.getValue().draw();
-      if(Math.abs(p.getValue().getX()) > Math.abs(hero.getX()) + 1500) toRemove.add(p.getKey());
+      if(Math.abs(p.getValue().getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(p.getKey());
     });
     
     // remove all projectiles that were flagged in previous step
@@ -283,31 +287,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   private void drawIntro(GL2 gl) {
     DrawLib.drawTexturedRectangle(DrawLib.TEX_LOGO);
-  }
-  
-  /**
-   * Given a screen coordinate p, will return a point corresponding to the world position.
-   * @param p
-   * @return 
-   */
-  private Point screenToWorld(Point p) {
-    int[] viewport = new int[4]; //var to hold the viewport info
-    double[] modelview = new double[16]; //var to hold the modelview info
-    double[] projection = new double[16]; //var to hold the projection matrix info
-    double wcoord[] = new double[4]; //variables to hold world x,y,z coordinates
-    
-    DrawLib.gl.glGetDoublev( GL2.GL_MODELVIEW_MATRIX, modelview, 0 ); //get the modelview info
-    DrawLib.gl.glGetDoublev( GL2.GL_PROJECTION_MATRIX, projection, 0 ); //get the projection matrix info
-    DrawLib.gl.glGetIntegerv( GL2.GL_VIEWPORT, viewport, 0 ); //get the viewport info
- 
-    //get the world coordinates from the screen coordinates
-    int realy = viewport[3] - (int) p.y - 1;
-    DrawLib.glu.gluUnProject((double) p.x, (double) realy, 0.0,
-              modelview, 0,
-              projection, 0, 
-              viewport, 0, 
-              wcoord, 0);
-    return new Point((int)wcoord[0], (int)wcoord[1]);
   }
 
   private void drawStartMenu(GL2 gl) {
@@ -734,7 +713,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void mouseClicked(MouseEvent evt) {
     int key = evt.getButton();
     Point sc = evt.getPoint(); // clicked location, to convert to world coords
-    Point wc = screenToWorld(sc); // world coords of clicked location
     
     switch(gameMode) { // controls are based on the game mode
     case START_MENU:
@@ -755,24 +733,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       default: break;
       }
       break; // END PAUSED
-    case RUNNING: Projectile fired;
+    case RUNNING:
       switch(key) {
       case MouseEvent.BUTTON1: // left click
-        /*try {
-          hero.loseHealth(1); // lose 1 health, TEST
-        } catch (GameOverException ex) {
-          this.gameMode = GAME_MODE.GAME_OVER;
-        }*/
-        setStatusMessage("Clicked point: ( " + sc.x + ", " + sc.y + " ), world coords: (" + wc.x + ", " + wc.y + ")");
-        fired = hero.firePrimaryWeapon(wc);
-        projectiles.put(frameNumber, fired);
+        qProjectiles.add(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
         break;
       case MouseEvent.BUTTON2: // middle click
         break;
       case MouseEvent.BUTTON3: // right click
-        //hero.addScore(100);
-        fired = hero.fireSecondaryWeapon(wc);
-        if(fired != null) projectiles.put(frameNumber, fired);
+        qProjectiles.add(new NextProjectile(sc, false)); // add the projectile to the queue, to be fired during next update
         break;
       default: break;
       }
@@ -795,5 +764,24 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public static void setStatusMessage(String message) {
     statusMessage = message;
     messageTimer.start();
+  }
+  
+  public void fireProjectiles() {
+    if(!qProjectiles.isEmpty()) {
+      NextProjectile np = qProjectiles.pop();
+      Point sc = np.screenCoord;
+      Point wc = DrawLib.screenToWorld(sc);
+      setStatusMessage("Clicked point: ( " + sc.x + ", " + sc.y + " ), world coords: (" + wc.x + ", " + wc.y + ")");
+      
+      // can only shoot in front of direction the hero is facing
+      if(wc.x >= hero.getX() - hero.getW()/2 || (hero.isFlippedOnY() && (wc.x <= hero.getX() + hero.getW()/2))) {
+        Projectile fired;
+        if(np.isFromPrimaryWeapon)
+          fired = hero.firePrimaryWeapon(wc);
+        else
+          fired = hero.fireSecondaryWeapon(wc);
+        projectiles.put(frameNumber, fired);
+      }
+    }
   }
 }
