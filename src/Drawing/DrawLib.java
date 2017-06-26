@@ -44,16 +44,16 @@ public class DrawLib {
     gl = context;
     
   // all images should be listed here, and stored in the textures directory
-    textureIdMap.put(TEX_HERO, "art/sprites/hero/hero.png");
-    textureIdMap.put(TEX_HERO_RUN1, "art/sprites/hero/hero_run_step_1.png");
-    textureIdMap.put(TEX_HERO_RUN2, "art/sprites/hero/hero_run_step_2.png");
-    textureIdMap.put(TEX_HERO_BACKPACK1, "art/sprites/hero/hero_backpack_run_step_1.png");
-    textureIdMap.put(TEX_LOGO, "art/logo.png");
-    textureIdMap.put(TEX_HEALTH, "art/hud/health.png");
-    textureIdMap.put(TEX_HUD, "art/hud/hud.png");
-    textureIdMap.put(TEX_SHELL, "art/hud/shell.png");
-    textureIdMap.put(TEX_JETPACK, "art/sprites/items/Jetpack.png");
-    textureIdMap.put(TEX_ALT_WEAPON, "art/sprites/projectiles/Blue_R.png");
+    textureIdMap.put(TEX_HERO, "/res/hero.png");
+    textureIdMap.put(TEX_HERO_RUN1, "/res/hero_run_step_1.png");
+    textureIdMap.put(TEX_HERO_RUN2, "/res/hero_run_step_2.png");
+    textureIdMap.put(TEX_HERO_BACKPACK1, "/res/hero_backpack_run_step_1.png");
+    textureIdMap.put(TEX_LOGO, "/res/logo.png");
+    textureIdMap.put(TEX_HEALTH, "/res/hud_health.png");
+    textureIdMap.put(TEX_HUD, "/res/layer_hud.png");
+    textureIdMap.put(TEX_SHELL, "/res/hud_shell.png");
+    textureIdMap.put(TEX_JETPACK, "/res/jetpack.png");
+    textureIdMap.put(TEX_ALT_WEAPON, "/res/projectile_blue.png");
     
     loadTextures(); // must load after filename 'puts' above
   }
@@ -70,7 +70,7 @@ public class DrawLib {
   private void loadTextures() {
     textureIdMap.keySet().forEach((i) -> {
       try {
-        URL textureURL = getClass().getClassLoader().getResource(textureIdMap.get(i));
+        URL textureURL = getClass().getResource(textureIdMap.get(i));
         if (textureURL != null) {
           BufferedImage img = ImageIO.read(textureURL);
           ImageUtil.flipImageVertically(img);
