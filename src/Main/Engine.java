@@ -168,7 +168,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     lastId = 99999; // start at last id
     
-    LevelBuilder levelBuilder = new LevelBuilder(fileName, 1);
+    LevelBuilder levelBuilder = new LevelBuilder(fileName);
     ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
     for(Rectangle r : level) {
       // need to scale the rectangle before adding it to the visible objects.....

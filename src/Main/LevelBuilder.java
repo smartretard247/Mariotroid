@@ -22,9 +22,9 @@ public class LevelBuilder {
   private final String dataFileName;
   private boolean firstLoad = true;
   
-  public LevelBuilder(String fileName, int num) {
+  public LevelBuilder(String fileName) {
     imageFileName = fileName;
-    dataFileName = imageFileName.substring(imageFileName.lastIndexOf("/")+1, imageFileName.length()-4) + Integer.toString(num) + ".txt";
+    dataFileName = imageFileName.substring(imageFileName.lastIndexOf("/")+1, imageFileName.length()-4) + ".txt";
     URL level = getClass().getClassLoader().getResource(dataFileName);
     if(level != null)
       dl = new DataLoader(level);
