@@ -167,7 +167,7 @@ public class LevelBuilder {
    */
   private void loadImage(String fileName) {
     try {
-      URL url = getClass().getClassLoader().getResource(fileName);
+      URL url = getClass().getResource(fileName);
       //BufferedImage image = ImageIO.read(new File(fileName));
       BufferedImage image = ImageIO.read(url);
       if(image.getType() != TYPE_INT_RGB) {
