@@ -145,7 +145,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     resetVisibles();
     
-    loadLevel(gl, "/res/layer_collision_1.png");
+    loadLevel(gl, "res/layer_collision_1.png");
   }
   
   private void resetVisibles() {

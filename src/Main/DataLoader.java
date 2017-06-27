@@ -112,21 +112,21 @@ public class DataLoader {
     }
     
     public final boolean saveToFile(String fileName) {
-        PrintWriter thePrintWriter;
-        
-        try {
-            thePrintWriter = new PrintWriter(fileName);
-            
-            getData().stream().forEach((st) -> {
-                thePrintWriter.println(st + "\n");
-            });
-            
-            thePrintWriter.close();
-        } catch (IOException ex) {
-            return false;
-        }
-        
-        return true;
+      PrintWriter thePrintWriter;
+
+      try {
+        thePrintWriter = new PrintWriter(fileName);
+
+        getData().stream().forEach((st) -> {
+            thePrintWriter.println(st + "\n");
+        });
+
+        thePrintWriter.close();
+      } catch (IOException ex) {
+        return false;
+      }
+
+      return true;
     }
 
   

@@ -3,8 +3,12 @@ package Main;
 import java.awt.image.BufferedImage;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import java.awt.image.Raster;
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -21,19 +25,34 @@ public class LevelBuilder {
   private final String imageFileName;
   private final String dataFileName;
   private boolean firstLoad = true;
+  private String pngChecksum = "123456789";
   
   public LevelBuilder(String fileName) {
     imageFileName = fileName;
     dataFileName = imageFileName.substring(imageFileName.lastIndexOf("/")+1, imageFileName.length()-4) + ".txt";
-    URL level = getClass().getClassLoader().getResource(dataFileName);
-    if(level != null)
+    
+    // compute the checksum from the level image
+    try {
+      pngChecksum = getFileChecksum(MessageDigest.getInstance("MD5"), imageFileName);
+    } catch (NoSuchAlgorithmException ex) {
+      System.out.println("System does not support MD5");
+    } catch (IOException ex) {
+      System.out.println("Level image not found.");
+    }
+    
+    File level = new File(dataFileName);
+    //URL level = getClass().getClassLoader().getResource(dataFileName);
+    if(level.exists()) { // if txt version exists
       dl = new DataLoader(level);
-    else
-      dl = new DataLoader(dataFileName);
-    if(dl.getData().isEmpty())
+      if(!dl.getLine(0).equals(pngChecksum))
+        loadImage(imageFileName);
+      else
+        firstLoad = false;
+    } else {
+      dl = new DataLoader(dataFileName); // create a new file
+      dl.addLine(pngChecksum); // add the hash as the first entry
       loadImage(imageFileName);
-    else
-      firstLoad = false;
+    }
   }
   
   /**
@@ -80,22 +99,25 @@ public class LevelBuilder {
         }
       }
       //save the rectangles to a file for future use
-      if(!dl.getData().isEmpty())
+      if(!dl.getData().isEmpty()) {
         dl.saveToFile(dataFileName);
+      }
     } else { // otherwise load the rectangles already in the file
       dl.getData().forEach((st) -> {
-        // st == Rectangle@( 773.0, 1103.5 ), width: 1524.0, height: 97.0
-        Scanner sc = new Scanner(st);
-        ArrayList<Double> var = new ArrayList<>();
-        while (var.size() < 4) { // untill we have all four variables for the rectangle
-          if(sc.hasNextDouble())
-            var.add(var.size(), sc.nextDouble()); // use the double
-          else
-            sc.next(); // else no double found so skip ahead
+        if(st.contains("Rectangle")) {
+          // st == Rectangle@( 773.0, 1103.5 ), width: 1524.0, height: 97.0
+          Scanner sc = new Scanner(st);
+          ArrayList<Double> var = new ArrayList<>();
+          while (var.size() < 4) { // untill we have all four variables for the rectangle
+            if(sc.hasNextDouble())
+              var.add(var.size(), sc.nextDouble()); // use the double
+            else
+              sc.next(); // else no double found so skip ahead
+          }
+          Rectangle r = new Rectangle(var.get(0), var.get(1), var.get(2), var.get(3));
+          found.add(r); // add to found rectangles
+          System.out.println(r); // log rectangle
         }
-        Rectangle r = new Rectangle(var.get(0), var.get(1), var.get(2), var.get(3));
-        found.add(r); // add to found rectangles
-        System.out.println(r); // log rectangle
       });
     }
     
@@ -167,8 +189,7 @@ public class LevelBuilder {
    */
   private void loadImage(String fileName) {
     try {
-      URL url = getClass().getResource(fileName);
-      //BufferedImage image = ImageIO.read(new File(fileName));
+      URL url = getClass().getClassLoader().getResource(fileName);
       BufferedImage image = ImageIO.read(url);
       if(image.getType() != TYPE_INT_RGB) {
         System.out.println("Incorrect image type \"" + ((image.getType() == 13) ? "TYPE_BYTE_INDEXED" : image.getType()) + "\", converting...");
@@ -186,9 +207,29 @@ public class LevelBuilder {
     BufferedImage convertedImage = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
     for (int x = 0; x < src.getWidth(); x++) {
       for (int y = 0; y < src.getHeight(); y++) {
-          convertedImage.setRGB(x, y, src.getRGB(x, y));
+        convertedImage.setRGB(x, y, src.getRGB(x, y));
       }
     }
     return convertedImage;
+  }
+  
+  private  String getFileChecksum(MessageDigest digest, String fileName) throws IOException {
+    try (BufferedInputStream fis = (BufferedInputStream)getClass().getClassLoader().getResourceAsStream(fileName)) { // get file input stream for reading the file content
+      byte[] byteArray = new byte[1024];
+      int bytesCount = 0;
+      
+      // read file data and update in message digest
+      while ((bytesCount = fis.read(byteArray)) != -1) {
+        digest.update(byteArray, 0, bytesCount);
+      }
+    }
+    
+    byte[] bytes = digest.digest(); // get the hash's bytes
+    StringBuilder sb = new StringBuilder();
+    for(int i=0; i< bytes.length ;i++) { // convert it to hexadecimal format
+      sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+    }
+    
+    return sb.toString(); // return complete hash
   }
 }
