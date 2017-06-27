@@ -123,6 +123,7 @@ public class DataLoader {
 
         thePrintWriter.close();
       } catch (IOException ex) {
+        System.out.println("DataLoader could not save to file: " + fileName);
         return false;
       }
 

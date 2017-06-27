@@ -5,7 +5,9 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import java.awt.image.Raster;
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -41,12 +43,22 @@ public class LevelBuilder {
     }
     
     File level = new File(dataFileName);
-    //URL level = getClass().getClassLoader().getResource(dataFileName);
     if(level.exists()) { // if txt version exists
       dl = new DataLoader(level);
-      if(!dl.getLine(0).equals(pngChecksum))
+      if(!dl.getLine(0).equals(pngChecksum)) {
+        System.out.println("Incorrect MD5, recreating level.");
+        PrintWriter writer;
+        try {
+          writer = new PrintWriter(level);
+          writer.print("");
+          writer.close();
+        } catch (FileNotFoundException ex) {
+          Logger.getLogger(LevelBuilder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        dl.clearData();
+        dl.addLine(pngChecksum); // add the hash as the first entry
         loadImage(imageFileName);
-      else
+      } else
         firstLoad = false;
     } else {
       dl = new DataLoader(dataFileName); // create a new file
