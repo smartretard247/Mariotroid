@@ -12,7 +12,6 @@ import java.util.Map;
 public class Hero extends GameObject {
   private static final int MAX_SECONDARY_AMMO = 5;
   private static final int JUMP_SPEED = 70;
-  private static final int MAX_JUMP_HEIGHT = 300;
   public int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
   private long score;
   private int lives;
@@ -20,10 +19,8 @@ public class Hero extends GameObject {
   private boolean jumped;
   private boolean hasDoubleJump;
   private boolean doubleJumped;
-  private boolean maxJumpExceeded;
   private boolean hasSecondaryWeapon;
   private int secondaryAmmoCount;
-  private double landHeight; // for calculating jump and double jump heights
   private boolean isClimbing;
   private Collidable lastCollidedObject;
   
@@ -38,8 +35,6 @@ public class Hero extends GameObject {
     jumped = false;
     hasDoubleJump = false;
     doubleJumped = false;
-    maxJumpExceeded = false;
-    landHeight = y;
     isClimbing = false;
   }
   
@@ -78,13 +73,10 @@ public class Hero extends GameObject {
   }
   
   @Override
-  public Map<Integer, Collidable> move(Map<Integer,Collidable> nearObjects)  {
-    if(getY() >= getMaxJumpHeight() && !maxJumpExceeded) {
-      setSpeedY(-PhysicsEngine.GRAVITY);
-      maxJumpExceeded = true;
-    }
+  public List<Collidable> move(Map<Integer,Collidable> nearObjects)  {
+    setSpeedY(-PhysicsEngine.GRAVITY);
     
-    Map<Integer, Collidable> collisions = super.move(nearObjects);
+    List<Collidable> collisions = super.move(nearObjects);
     if(this.getY() < -3000) { //fell off map
       try {
         resetPosition();
@@ -97,10 +89,9 @@ public class Hero extends GameObject {
     }
     
     // additional things that the hero should do with each of the collided objects
-    for(Map.Entry<Integer, Collidable> e : collisions.entrySet()) {
+    for(Collidable c : collisions) {
       System.out.println("Collision, source object coord/speed: " + x + ", " + y + " / " + speedX + ", " + speedY);
-      int id = e.getKey();
-      Collidable c = e.getValue();
+      int id = c.getTextureId();
       switch(id) {
       case DrawLib.TEX_LEVEL:
         if(speedY < 0 && speedX == 0) { // falling straight down
@@ -110,49 +101,35 @@ public class Hero extends GameObject {
         } else if(speedY < 0 && speedX > 0) { // falling right and down
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
             x = c.getLeft() - width/2 - 1;
-            if(speedY != -10) speedX = 0;
-            speedY = 0;
           } else {
             y = c.getTop() + height/2 + 1;
-            if(speedY != -10) speedX = 0;
             speedY = 0;
             doLand();
           }
         } else if(speedY < 0 && speedX < 0) { // falling left and down
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
             x = c.getRight() + width/2 + 1;
-            if(speedY != -10) speedX = 0;
-            speedY = 0;
           } else {
             y = c.getTop() + height/2 + 1;
-            if(speedY != -10) speedX = 0;
             speedY = 0;
             doLand();
           }
         } else if(speedY == 0 && speedX < 0) { // moving left
           x = c.getRight() + width/2 + 1;
-          speedX = 0;
         } else if(speedY == 0 && speedX > 0) { // moving right
           x = c.getLeft() - width/2 - 1;
-          speedX = 0;
         } else if(speedY > 0 && speedX < 0) { // flying upward and to the left
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
             x = c.getRight() + width/2 + 1;
-            speedX = 0;
-            speedY = 0;
           } else {
             y = c.getBottom() - height/2 - 1;
-            speedX = 0;
             speedY = 0;
           }
         } else if(speedY > 0 && speedX > 0) { // flying upward and to the right
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
             x = c.getLeft() - width/2 - 1;
-            speedX = 0;
-            speedY = 0;
           } else {
             y = c.getBottom() - height/2 - 1;
-            speedX = 0;
             speedY = 0;
           }
         } else if(speedY > 0 && speedX == 0) { // flying straight upward
@@ -160,7 +137,6 @@ public class Hero extends GameObject {
           speedY = 0;
         } else if(speedY == 0 && speedX == 0) { // not moving, must be a different object
           System.out.println("Hero not moving, source must be a different object");
-          y += 1; //try to offset falling through the ground...
         }
         lastCollidedObject = c;
         break;
@@ -187,8 +163,6 @@ public class Hero extends GameObject {
     doubleJumped = true;
     setSpeedY(JUMP_SPEED);
     this.setTextureId(DrawLib.TEX_HERO_BACKPACK1);
-    maxJumpExceeded = false;
-    landHeight = getY();
   }
   public boolean didLand() {
     return !jumped && !doubleJumped;
@@ -198,8 +172,6 @@ public class Hero extends GameObject {
     doubleJumped = false;
     fallCount = 0; // reset fall count, see fallCount in Engine for definition
     this.setTextureId(DrawLib.TEX_HERO);
-    maxJumpExceeded = false;
-    landHeight = getY();
     
     this.setTextureId(DrawLib.TEX_HERO);
   }
@@ -232,14 +204,6 @@ public class Hero extends GameObject {
   
   public void pickupJetpack() { hasDoubleJump = true; };
   public void dropJetpack() { hasDoubleJump = false; };
-  
-  /**
-   * Returns the maximum height the current jump (single or double) can go.
-   * @return 
-   */
-  public double getMaxJumpHeight() {
-    return landHeight + MAX_JUMP_HEIGHT;
-  }
   
   public boolean canClimb() {
     return ((getRight() + 1) == lastCollidedObject.getLeft() || (getLeft() - 1) == lastCollidedObject.getRight()) &&
