@@ -23,6 +23,7 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import javax.swing.JFrame;
 
@@ -600,9 +601,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     frameNumber++;
     
     switch(gameMode) {
-    case RUNNING: Map<Integer, Collidable> collidedObjects = hero.move(visibleObjects);
+    case RUNNING: List<Collidable> collidedObjects = hero.move(visibleObjects);
       // additional things that the hero should do with each of the collided objects
-      for(Integer id : collidedObjects.keySet()) {
+      for(Collidable c : collidedObjects){
+        int id = c.getTextureId();
         switch(id) {
         case DrawLib.TEX_JETPACK:
           Engine.setStatusMessage("Got double jump!");
