@@ -183,7 +183,7 @@ public class Hero extends GameObject {
   
   public Projectile firePrimaryWeapon(Point direction) {
     int zRot = Projectile.calcRotation(new Point((int)x, (int)y), direction);
-    double xOffset = 40; // so projectile doesn't come from the hero's chest
+    double xOffset = 80; // so projectile doesn't come from the hero's chest
     return new Projectile(DrawLib.TEX_SHELL, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
             getY(), isFlippedOnY()); //fire primary
@@ -191,9 +191,11 @@ public class Hero extends GameObject {
   public Projectile fireSecondaryWeapon(Point direction) {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
       int zRot = Projectile.calcRotation(new Point((int)x, (int)y), direction);
+      double xOffset = 120; // so projectile doesn't come from the hero's chest
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
       return new Projectile(DrawLib.TEX_ALT_WEAPON, zRot,
-              getX(), getY(), isFlippedOnY()); //fire
+            (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
+            getY(), isFlippedOnY()); //fire
     }
     return null;
   }

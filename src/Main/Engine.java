@@ -782,7 +782,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           fired = hero.firePrimaryWeapon(wc);
         else
           fired = hero.fireSecondaryWeapon(wc);
-        projectiles.put(frameNumber, fired);
+        if(fired != null) projectiles.put(frameNumber, fired);
       }
     }
   }

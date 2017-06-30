@@ -51,7 +51,7 @@ public class Projectile extends Collidable {
     GL.glRotated(zRot, 0, 0, 1); // will rotate based on clicked position
     if(this.getTextureId() >= 0) {
       //GL.glRotated(flipY ? 90 : -90, 0, 0, 1); // rotate it 90 degress onto its side
-      DrawLib.drawTexturedRectangle(this.getTextureId(), width*3, height*3);
+      DrawLib.drawTexturedRectangle(this.getTextureId(), width, height);
     } else {
       GL.glColor3d(color[0], color[1], color[2]);
       GL.glLineWidth((float) height);
