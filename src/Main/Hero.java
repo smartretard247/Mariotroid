@@ -23,7 +23,7 @@ public class Hero extends GameObject {
   private boolean hasSecondaryWeapon;
   private int secondaryAmmoCount;
   private boolean isClimbing;
-  private Collidable lastWall Collision;
+  private Collidable lastWallCollision;
   
   public Hero(int startLives, long startScore, int startHealth, int texId, double x, double y, double w, double h) {
     super(texId, x, y, w, h);
@@ -145,7 +145,7 @@ public class Hero extends GameObject {
         } else if(speedY == 0 && speedX == 0) { // not moving, must be a different object
           System.out.println("Hero not moving, source must be a different object");
         }
-        lastCollidedObject = c;
+        //lastCollidedObject = c;
         break;
       case DrawLib.TEX_JETPACK:
         pickupJetpack();

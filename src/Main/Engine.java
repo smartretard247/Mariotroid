@@ -140,9 +140,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           DrawLib.getTexture(DrawLib.TEX_HERO).getHeight()); // height
     
     // initialize all game objects here
-    gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, 1400, 300, 75, 75));
-    gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, 300, 1000, 75, 75));
-    //gameObjects.put(DrawLib.TEX_SHELL, new Collidable(DrawLib.TEX_SHELL));
+    gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, 1400, 300, 
+            DrawLib.getTexture(DrawLib.TEX_JETPACK).getWidth(), DrawLib.getTexture(DrawLib.TEX_JETPACK).getHeight()));
+    gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, 300, 1000, 
+            DrawLib.getTexture(DrawLib.TEX_ALT_WEAPON).getWidth(), DrawLib.getTexture(DrawLib.TEX_ALT_WEAPON).getHeight()));
+    gameObjects.put(DrawLib.TEX_TEST, new Enemy(DrawLib.TEX_TEST, 2000, 800));
     
     resetVisibles();
     
@@ -778,6 +780,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         else
           fired = hero.fireSecondaryWeapon(wc);
         if(fired != null) projectiles.put(frameNumber, fired);
+        else System.out.println("Attempted to fire null projectile.");
       }
     }
   }
