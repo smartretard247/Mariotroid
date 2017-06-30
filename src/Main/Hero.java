@@ -192,7 +192,7 @@ public class Hero extends GameObject {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
       int zRot = Projectile.calcRotation(new Point((int)x, (int)y), direction);
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
-      return new Projectile(DrawLib.TEX_ALT_WEAPON, zRot + 90,
+      return new Projectile(DrawLib.TEX_ALT_WEAPON, zRot,
               getX(), getY(), isFlippedOnY()); //fire
     }
     return null;
