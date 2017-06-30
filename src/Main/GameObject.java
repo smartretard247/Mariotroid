@@ -1,7 +1,5 @@
 package Main;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +37,7 @@ public class GameObject extends Collidable {
    * @return 
    */
   public Map<Integer, Collidable> move(Map<Integer, Collidable> nearObjects) {
-    List<Collidable> collisions = new LinkedList<>();
+    Map<Integer, Collidable> collisions = new HashMap<>();
     x += speedX;
     y += speedY;
     
@@ -47,7 +45,7 @@ public class GameObject extends Collidable {
     
     for(Collidable near : nearObjects.values()) {
       if(collidesWith(near.getBoundary()))
-        collisions.add(near);
+        collisions.put(near.getTextureId(), near);
     }
 
     return collisions;
