@@ -2,7 +2,6 @@ package Main;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -38,7 +37,7 @@ public class GameObject extends Collidable {
    * @param nearObjects
    * @return 
    */
-  public Map<Integer, Collidable> move(Map<Integer, Collidable> nearObjects) {
+  public List<Collidable> move(Map<Integer, Collidable> nearObjects) {
     List<Collidable> collisions = new LinkedList<>();
     x += speedX;
     y += speedY;

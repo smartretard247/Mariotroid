@@ -3,6 +3,7 @@ package Main;
 import Drawing.DrawLib;
 import Enumerations.GAME_MODE;
 import java.awt.Point;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -74,7 +75,7 @@ public class Hero extends GameObject {
   
   @Override
   public List<Collidable> move(Map<Integer,Collidable> nearObjects)  {
-    setSpeedY(-PhysicsEngine.GRAVITY);
+    setSpeedY(speedY - PhysicsEngine.GRAVITY);
     
     List<Collidable> collisions = super.move(nearObjects);
     if(this.getY() < -3000) { //fell off map
