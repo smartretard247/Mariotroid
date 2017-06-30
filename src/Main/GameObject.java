@@ -25,6 +25,13 @@ public class GameObject extends Collidable {
     isSprinting = false;
   }
   
+  public GameObject(int texId, double x, double y) {
+    super(texId, x, y, 1, 1);
+    speedX = 0.0;
+    speedY = 0.0;
+    isSprinting = false;
+  }
+  
   public double getSpeedX() { return speedX; }
   public double getSpeedY() { return speedY; }
   public void setSpeedX(double spdX) { speedX = spdX; }

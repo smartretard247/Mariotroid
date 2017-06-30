@@ -24,7 +24,7 @@ public class Projectile extends Collidable {
   }
   
   public Projectile(int texId, int zrot, double x, double y, double sX, double sY, boolean flipY) {
-    super(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getWidth());
+    super(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
     speedX = sX;
     speedY = sY;
     this.flipY = flipY;
@@ -32,7 +32,7 @@ public class Projectile extends Collidable {
   }
   
   public Projectile(int texId, int zrot, double x, double y, boolean flipY) {
-    super(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getWidth());
+    super(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
     Point speed = calcSpeed(zrot);
     speedX = speed.x;
     speedY = speed.y;
