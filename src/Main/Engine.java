@@ -477,7 +477,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         //hero.setTextureId(DrawLib.TEX_HERO_CLIMB);
         if(hero.canClimb()) {
           hero.setClimbing(true);
-          hero.setY(hero.getY()-5);
+          hero.setSpeedY(-5);
         }
         break;
       case KeyEvent.VK_A: // move left
@@ -617,11 +617,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         default: break;
         }
       }
-      if((hero.getSpeedY() < 0) || // if hero is already falling
-              (hero.getRight() < hero.getLastCollision().getLeft() && !hero.canClimb()) || // or hero is past left edge of floor
-              (hero.getLeft() > hero.getLastCollision().getRight() && !hero.canClimb()) || // or hero is past right edge of floor
-              (hero.getTop() <= hero.getLastCollision().getBottom())) // or hero bumped head on ceiling
-        PhysicsEngine.fall(hero);// apply gravity
       
       // set textures based on speed here
       if(hero.getSpeedX() == 0 && hero.getSpeedY() == 0) hero.setTextureId(DrawLib.TEX_HERO);
