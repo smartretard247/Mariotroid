@@ -23,7 +23,7 @@ public class Hero extends GameObject {
   private boolean hasSecondaryWeapon;
   private int secondaryAmmoCount;
   private boolean isClimbing;
-  private Collidable lastCollidedObject;
+  private Collidable lastWall Collision;
   
   public Hero(int startLives, long startScore, int startHealth, int texId, double x, double y, double w, double h) {
     super(texId, x, y, w, h);
@@ -75,7 +75,7 @@ public class Hero extends GameObject {
   
   @Override
   public List<Collidable> move(Map<Integer,Collidable> nearObjects)  {
-    setSpeedY(speedY - PhysicsEngine.GRAVITY);
+    if(!isClimbing) setSpeedY(speedY - PhysicsEngine.GRAVITY);
     
     List<Collidable> collisions = super.move(nearObjects);
     if(this.getY() < -3000) { //fell off map
@@ -102,6 +102,7 @@ public class Hero extends GameObject {
         } else if(speedY < 0 && speedX > 0) { // falling right and down
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
             x = c.getLeft() - width/2 - 1;
+            lastWallCollision = c;
           } else {
             y = c.getTop() + height/2 + 1;
             speedY = 0;
@@ -110,6 +111,7 @@ public class Hero extends GameObject {
         } else if(speedY < 0 && speedX < 0) { // falling left and down
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
             x = c.getRight() + width/2 + 1;
+            lastWallCollision = c;
           } else {
             y = c.getTop() + height/2 + 1;
             speedY = 0;
@@ -117,11 +119,14 @@ public class Hero extends GameObject {
           }
         } else if(speedY == 0 && speedX < 0) { // moving left
           x = c.getRight() + width/2 + 1;
+          lastWallCollision = c;
         } else if(speedY == 0 && speedX > 0) { // moving right
           x = c.getLeft() - width/2 - 1;
+          lastWallCollision = c;
         } else if(speedY > 0 && speedX < 0) { // flying upward and to the left
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
             x = c.getRight() + width/2 + 1;
+            lastWallCollision = c;
           } else {
             y = c.getBottom() - height/2 - 1;
             speedY = 0;
@@ -129,6 +134,7 @@ public class Hero extends GameObject {
         } else if(speedY > 0 && speedX > 0) { // flying upward and to the right
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
             x = c.getLeft() - width/2 - 1;
+            lastWallCollision = c;
           } else {
             y = c.getBottom() - height/2 - 1;
             speedY = 0;
@@ -149,6 +155,15 @@ public class Hero extends GameObject {
         break;
       default: break;
       }
+    }
+    // Move on top of object if reached the top
+    if(reachedTop()){
+        if(x < lastWallCollision.getX()){
+            x += 20;
+        }else{
+            x -= 20;
+        }
+        isClimbing = false;
     }
     
     return collisions;
@@ -172,6 +187,7 @@ public class Hero extends GameObject {
     jumped = false;
     doubleJumped = false;
     fallCount = 0; // reset fall count, see fallCount in Engine for definition
+    isClimbing = false;
     this.setTextureId(DrawLib.TEX_HERO);
     
     this.setTextureId(DrawLib.TEX_HERO);
@@ -209,16 +225,14 @@ public class Hero extends GameObject {
   public void dropJetpack() { hasDoubleJump = false; };
   
   public boolean canClimb() {
-    return ((getRight() + 1) == lastCollidedObject.getLeft() || (getLeft() - 1) == lastCollidedObject.getRight()) &&
-            !reachedTop();
+    return ((getRight() + 1) == lastWallCollision.getLeft() || (getLeft() - 1) == lastWallCollision.getRight()) &&
+            (getTop() > lastWallCollision.getBottom() && getBottom() < lastWallCollision.getTop());
   }
   
   private boolean reachedTop() {
-    return !(getBottom() <= (lastCollidedObject.getTop() + 3));
+    return isClimbing && getBottom() > lastWallCollision.getTop();
   }
   
   public boolean isClimbing() { return isClimbing; }
   public void setClimbing(boolean to) { isClimbing = to; }
-  
-  public Collidable getLastCollision() { return this.lastCollidedObject; }
 }
