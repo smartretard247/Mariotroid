@@ -1,5 +1,7 @@
 package Main;
 
+import Drawing.DrawLib;
+
 /**
  *
  * @author Jeezy
@@ -10,11 +12,11 @@ public class Collidable extends Drawable {
   }
   
   public Collidable(int texId, double x, double y) {
-    super(texId, x, y, 1, 1);
+    this(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
   }
   
   public Collidable(int texId) {
-    super(texId, 0, 0, 1, 1);
+    this(texId, 0, 0);
   }
   
   public Collidable() {

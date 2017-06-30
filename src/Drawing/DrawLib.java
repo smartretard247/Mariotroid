@@ -40,6 +40,7 @@ public class DrawLib {
   public static final int TEX_SHELL = 7;
   public static final int TEX_JETPACK = 8;
   public static final int TEX_ALT_WEAPON = 9;
+  public static final int TEX_ENEMY_BASIC = 10;
 
   public DrawLib(GL2 context) {
     gl = context;
@@ -55,6 +56,7 @@ public class DrawLib {
     textureIdMap.put(TEX_SHELL, "/res/hud_shell.png");
     textureIdMap.put(TEX_JETPACK, "/res/jetpack.png");
     textureIdMap.put(TEX_ALT_WEAPON, "/res/projectile_blue.png");
+    textureIdMap.put(TEX_ENEMY_BASIC, "/res/enemy_basic.png");
     
     loadTextures(); // must load after filename 'puts' above
   }

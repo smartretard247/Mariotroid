@@ -30,6 +30,10 @@ public class Drawable {
     color = new double[] { 0.0, 0.0, 0.0 };
   }
   
+  public Drawable(int texId, double x, double y) {
+    this(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
+  }
+  
   public int getTextureId() { return textureId; }
   public double getX() { return x; }
   public double getY() { return y; }

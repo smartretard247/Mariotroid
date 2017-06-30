@@ -1,5 +1,6 @@
 package Main;
 
+import Drawing.DrawLib;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -26,10 +27,11 @@ public class GameObject extends Collidable {
   }
   
   public GameObject(int texId, double x, double y) {
-    super(texId, x, y, 1, 1);
-    speedX = 0.0;
-    speedY = 0.0;
-    isSprinting = false;
+    this(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
+  }
+  
+  public GameObject() {
+    this(-1, 0, 0, 1, 1);
   }
   
   public double getSpeedX() { return speedX; }

@@ -25,8 +25,8 @@ public class Hero extends GameObject {
   private boolean isClimbing;
   private Collidable lastWallCollision;
   
-  public Hero(int startLives, long startScore, int startHealth, int texId, double x, double y, double w, double h) {
-    super(texId, x, y, w, h);
+  public Hero(int startLives, long startScore, int startHealth, int texId, double x, double y) {
+    super(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
     lives = startLives;
     score = startScore;
     health = startHealth;
@@ -56,6 +56,8 @@ public class Hero extends GameObject {
     if(health <= 0) {
       die();
       resetHealth();
+      resetPosition();
+      //setSpeed(0, -10);
     }
   }
   
@@ -69,8 +71,6 @@ public class Hero extends GameObject {
     dropSecondaryWeapon();
     dropJetpack();
     doLand(); // reset jump as if on ground
-    
-    //pickupSecondaryWeapon(); // for testing secondary weapon
   }
   
   @Override
@@ -80,10 +80,7 @@ public class Hero extends GameObject {
     List<Collidable> collisions = super.move(nearObjects);
     if(this.getY() < -3000) { //fell off map
       try {
-        resetPosition();
-        setSpeed(0, -10);
-        die();
-        resetHealth();
+        loseHealth(10);
       } catch (GameOverException ex) {
         Engine.gameMode = GAME_MODE.GAME_OVER;
       }
@@ -158,12 +155,12 @@ public class Hero extends GameObject {
     }
     // Move on top of object if reached the top
     if(reachedTop()){
-        if(x < lastWallCollision.getX()){
-            x += 20;
-        }else{
-            x -= 20;
-        }
-        isClimbing = false;
+      if(x < lastWallCollision.getX()){
+        x += 20;
+      }else{
+        x -= 20;
+      }
+      isClimbing = false;
     }
     
     return collisions;

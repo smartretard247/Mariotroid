@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
@@ -135,16 +137,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     
     scene = new Scene(-600, -600, 0.5, 0.5); // initial scale set to 0.5
-    hero = new Hero(3, 0, 10, DrawLib.TEX_HERO, 300, 400, // 3 lives, 0 score, 10 health, texId, x, y
-          DrawLib.getTexture(DrawLib.TEX_HERO).getWidth(), // width
-          DrawLib.getTexture(DrawLib.TEX_HERO).getHeight()); // height
+    hero = new Hero(3, 0, 10, DrawLib.TEX_HERO, 300, 400); // 3 lives, 0 score, 10 health, texId, x, y
     
     // initialize all game objects here
-    gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, 1400, 300, 
-            DrawLib.getTexture(DrawLib.TEX_JETPACK).getWidth(), DrawLib.getTexture(DrawLib.TEX_JETPACK).getHeight()));
-    gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, 300, 1000, 
-            DrawLib.getTexture(DrawLib.TEX_ALT_WEAPON).getWidth(), DrawLib.getTexture(DrawLib.TEX_ALT_WEAPON).getHeight()));
-    gameObjects.put(DrawLib.TEX_TEST, new Enemy(DrawLib.TEX_TEST, 2000, 800));
+    gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, 1400, 300));
+    gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, 300, 1000));
+    gameObjects.put(DrawLib.TEX_ENEMY_BASIC, new Enemy(DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point(-5,0)));
     
     resetVisibles();
     
@@ -155,6 +153,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // only add currently visible objects to this map
     visibleObjects.put(DrawLib.TEX_JETPACK, gameObjects.get(DrawLib.TEX_JETPACK));
     visibleObjects.put(DrawLib.TEX_ALT_WEAPON, gameObjects.get(DrawLib.TEX_ALT_WEAPON));
+    visibleObjects.put(DrawLib.TEX_ENEMY_BASIC, gameObjects.get(DrawLib.TEX_ENEMY_BASIC));
   }
   
   /**
@@ -220,6 +219,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     drawBackground(gl);
     drawHero(gl);
+    
+    fireProjectiles(); // fire projectile from the queue
+    processProjectiles(); // check if any projectiles have left the screen, and remove them
+    
     drawForeground(gl);
     
     gl.glPopMatrix(); // return to initial transform
@@ -256,6 +259,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     // draw game objects
     visibleObjects.values().forEach((c) -> {
+      if((new Enemy()).getClass().isInstance(c)) {
+        Enemy e = (Enemy)c;
+        e.move(visibleObjects);
+        e.draw();
+      }
       c.draw();
     });
   }
@@ -266,10 +274,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawHero(GL2 gl) {
     hero.draw();
+  }
+  
+  private void processProjectiles() {
     ArrayList<Integer> toRemove = new ArrayList<>();
-    
-    fireProjectiles(); // fire projectile from the queue
-    
     projectiles.entrySet().forEach((p) -> {
       p.getValue().draw();
       if(Math.abs(p.getValue().getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(p.getKey());
@@ -280,6 +288,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       projectiles.remove(id);
     });
   }
+  
    /**
     * Draws any foreground objects to simulate depth.
     * @param gl 
@@ -615,6 +624,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         case DrawLib.TEX_ALT_WEAPON:
           Engine.setStatusMessage("Got missles!");
           visibleObjects.remove(id); // remove the shell image from the screen
+          break;
+        case DrawLib.TEX_ENEMY_BASIC:
+          try {
+            hero.loseHealth(1);
+          } catch (GameOverException ex) {
+            gameMode = GAME_MODE.GAME_OVER;
+          }
           break;
         default: break;
         }
