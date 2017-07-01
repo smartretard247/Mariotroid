@@ -47,10 +47,10 @@ public class GameObject extends Collidable {
    * @return 
    */
   public List<Collidable> move(Map<Integer, Collidable> nearObjects) {
-    List<Collidable> collisions = new LinkedList<>();
     x += speedX;
     y += speedY;
     
+    List<Collidable> collisions = new LinkedList<>();
     if(speedX != 0) setFlipY(speedX < 0); // this reverses the sprite with direction changes
     
     for(Collidable near : nearObjects.values()) {

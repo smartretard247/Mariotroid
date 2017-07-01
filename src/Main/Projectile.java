@@ -7,7 +7,7 @@ import java.awt.Point;
  *
  * @author Jeezy
  */
-public class Projectile extends Collidable {
+public class Projectile extends Movable {
   private static final int MAX_SPEED_X = 50;
   private static final int MAX_SPEED_Y = 50;
   

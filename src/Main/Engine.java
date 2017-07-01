@@ -1,5 +1,6 @@
 package Main;
 
+import Drawing.Scene;
 import Drawing.DrawLib;
 import Enumerations.START_MENU_OPTION;
 import Enumerations.GAME_MODE;
@@ -58,9 +59,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public PhysicsEngine phy = new PhysicsEngine();
   public Map<Integer, Collidable> gameObjects = new HashMap<>();
   public Map<Integer, Collidable> visibleObjects = new HashMap<>();
-  public Map<Integer, Collidable> projectiles = new HashMap<>();
+  public Map<Integer, Projectile> projectiles = new HashMap<>();
   private static String statusMessage = "";
-  private LinkedList<NextProjectile> qProjectiles = new LinkedList<>();
+  private final LinkedList<NextProjectile> qProjectiles = new LinkedList<>();
   
   ///// START METHODS
 
@@ -137,12 +138,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     
     scene = new Scene(-600, -600, 0.5, 0.5); // initial scale set to 0.5
-    hero = new Hero(3, 0, 10, DrawLib.TEX_HERO, 300, 400); // 3 lives, 0 score, 10 health, texId, x, y
+    hero = new Hero(3, 10, 0, DrawLib.TEX_HERO, 300, 400); // 3 lives, 10 health, 0 score, texId, x, y
     
     // initialize all game objects here
     gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, 1400, 300));
     gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, 300, 1000));
-    gameObjects.put(DrawLib.TEX_ENEMY_BASIC, new Enemy(DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point(-5,0)));
+    gameObjects.put(DrawLib.TEX_ENEMY_BASIC, new Enemy(1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point(-5,0))); // health, texId, x, y, sx/sy
     
     resetVisibles();
     
@@ -612,7 +613,20 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     frameNumber++;
     
     switch(gameMode) {
-    case RUNNING: List<Collidable> collidedObjects = hero.move(visibleObjects);
+    case RUNNING: for(Projectile p : this.projectiles.values()) {
+        List<Collidable> hitByProjectile = p.move(visibleObjects);
+        for(Collidable c : hitByProjectile)
+          if(new Enemy().getClass().isInstance(c)) {
+            Enemy e = (Enemy)c;
+            try {
+              e.loseHealth(1);
+            } catch (GameOverException ex) { // enemy died
+              visibleObjects.remove(e.getTextureId());
+            }
+          }
+      }
+      
+      List<Collidable> collidedObjects = hero.move(visibleObjects);
       // additional things that the hero should do with each of the collided objects
       for(Collidable c : collidedObjects){
         int id = c.getTextureId();
@@ -637,7 +651,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       }
       
       // set textures based on speed here
-      if(hero.getSpeedX() == 0 && hero.getSpeedY() == 0) hero.setTextureId(DrawLib.TEX_HERO);
+      if(hero.getSpeedX() == 0) hero.setTextureId(DrawLib.TEX_HERO);
       
       break;
     default: break;

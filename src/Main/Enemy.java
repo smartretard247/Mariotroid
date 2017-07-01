@@ -9,20 +9,20 @@ import java.util.Map;
  *
  * @author Jeezy
  */
-public class Enemy extends GameObject {
+public class Enemy extends Living {
   
-  public Enemy(int texId, double x, double y, Point speed) {
-    this(texId, x, y);
+  public Enemy(int startHealth, int texId, double x, double y, Point speed) {
+    this(startHealth, texId, x, y);
     speedX = speed.x;
     speedY = speed.y;
   }
   
-  public Enemy(int texId, double x, double y) {
-    super(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
+  public Enemy(int startHealth, int texId, double x, double y) {
+    super(startHealth, texId, x, y);
   }
   
   public Enemy() {
-    super(DrawLib.TEX_ENEMY_BASIC, 0, 0);
+    super(1, DrawLib.TEX_ENEMY_BASIC, 0, 0);
   }
   
   @Override
@@ -34,28 +34,28 @@ public class Enemy extends GameObject {
       int id = c.getTextureId();
       switch(id) {
       case DrawLib.TEX_LEVEL:
-        if(speedY < 0 && speedX == 0) { // falling straight down
-          y = c.getTop() + height/2 + 1;
+        if(movingDown()) { // falling straight down
+          adjustToTopOf(c);
           speedY = 0;
-        } else if(speedY < 0 && speedX > 0) { // falling right and down
+        } else if(movingDownAndRight()) { // falling right and down
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
-            x = c.getLeft() - width/2 - 1;
+            adjustToLeftOf(c);
           } else {
-            y = c.getTop() + height/2 + 1;
+            adjustToTopOf(c);
             speedY = 0;
           }
-        } else if(speedY < 0 && speedX < 0) { // falling left and down
+        } else if(movingDownAndLeft()) { // falling left and down
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
-            x = c.getRight() + width/2 + 1;
+            adjustToRightOf(c);
           } else {
-            y = c.getTop() + height/2 + 1;
+            adjustToTopOf(c);
             speedY = 0;
           }
-        } else if(speedY == 0 && speedX < 0) { // moving left
-          x = c.getRight() + width/2 + 1;
+        } else if(movingLeft()) { // moving left
+          adjustToRightOf(c);
           speedX = -speedX; // reverse direction
-        } else if(speedY == 0 && speedX > 0) { // moving right
-          x = c.getLeft() - width/2 - 1;
+        } else if(movingRight()) { // moving right
+          adjustToLeftOf(c);
           speedX = -speedX; // reverse direction
         }
         break;
