@@ -334,7 +334,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(this.startMenuSelection) {
       case START_GAME: gameMode = GAME_MODE.RUNNING;
         hero.resetAll();
-        hero.setSpeedY(-PhysicsEngine.GRAVITY);
+        for(int i = ID.ID_ENEMY_1; i <= ID.ID_CALAMITY; i++) {
+          Enemy e = (Enemy)gameObjects.get(i);
+          e.resetAll();
+        }
         resetVisibles();
         break;
       case EXIT: System.exit(0);
@@ -539,6 +542,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       default: break;
       }
       break; // END START_MENU
+    case CREDITS:
     case GAME_OVER:
       if(key == KeyEvent.VK_ENTER) gameMode = GAME_MODE.START_MENU;
       break;
@@ -813,6 +817,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       default: break;
       }
       break; // END START_MENU
+    case CREDITS:
     case GAME_OVER:
       switch(key) {
       case MouseEvent.BUTTON1:
