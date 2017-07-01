@@ -12,16 +12,12 @@ public class Living extends Movable {
   private int lives;
   private final int defLives;
   
-  public Living(int startLives, int startHealth, int texId, double x, double y) {
-    super(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
+  public Living(int objId, int startLives, int startHealth, int texId, double x, double y) {
+    super(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
     lives = startLives;
     defLives = startLives;
     health = startHealth;
     defHealth = startHealth;
-  }
-  
-  public Living(int startHealth, int texId, double x, double y) {
-    this(1, startHealth, texId, x, y);
   }
   
   public int getHealth() { return health; }

@@ -4,6 +4,7 @@ import Drawing.Scene;
 import Drawing.DrawLib;
 import Enumerations.START_MENU_OPTION;
 import Enumerations.GAME_MODE;
+import Enumerations.ID;
 //import Test.Test;
 import java.awt.event.*;
 import javax.swing.*;
@@ -26,8 +27,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
@@ -59,7 +58,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public PhysicsEngine phy = new PhysicsEngine();
   public Map<Integer, Collidable> gameObjects = new HashMap<>();
   public Map<Integer, Collidable> visibleObjects = new HashMap<>();
-  public Map<Integer, Projectile> projectiles = new HashMap<>();
+  public List<Projectile> projectiles = new LinkedList<>();
   private static String statusMessage = "";
   private final LinkedList<NextProjectile> qProjectiles = new LinkedList<>();
   
@@ -138,12 +137,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     
     scene = new Scene(-600, -600, 0.5, 0.5); // initial scale set to 0.5
-    hero = new Hero(3, 10, 0, DrawLib.TEX_HERO, 300, 400); // 3 lives, 10 health, 0 score, texId, x, y
+    hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
     
     // initialize all game objects here
-    gameObjects.put(DrawLib.TEX_JETPACK, new Collidable(DrawLib.TEX_JETPACK, 1400, 300));
-    gameObjects.put(DrawLib.TEX_ALT_WEAPON, new Collidable(DrawLib.TEX_ALT_WEAPON, 300, 1000));
-    gameObjects.put(DrawLib.TEX_ENEMY_BASIC, new Enemy(1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point(-5,0))); // health, texId, x, y, sx/sy
+    gameObjects.put(ID.ID_JETPACK, new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 300));
+    gameObjects.put(ID.ID_ALT_WEAPON, new Collidable(ID.ID_ALT_WEAPON, DrawLib.TEX_ALT_WEAPON, 300, 1000));
+    gameObjects.put(ID.ID_ENEMY_1, new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
+    gameObjects.put(ID.ID_ENEMY_2, new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point(5,0)));
+    gameObjects.put(ID.ID_ENEMY_3, new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point(5,0)));
     
     resetVisibles();
     
@@ -152,9 +153,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   private void resetVisibles() {
     // only add currently visible objects to this map
-    visibleObjects.put(DrawLib.TEX_JETPACK, gameObjects.get(DrawLib.TEX_JETPACK));
-    visibleObjects.put(DrawLib.TEX_ALT_WEAPON, gameObjects.get(DrawLib.TEX_ALT_WEAPON));
-    visibleObjects.put(DrawLib.TEX_ENEMY_BASIC, gameObjects.get(DrawLib.TEX_ENEMY_BASIC));
+    visibleObjects.put(ID.ID_JETPACK, gameObjects.get(ID.ID_JETPACK));
+    visibleObjects.put(ID.ID_ALT_WEAPON, gameObjects.get(ID.ID_ALT_WEAPON));
+    visibleObjects.put(ID.ID_ENEMY_1, gameObjects.get(ID.ID_ENEMY_1));
+    visibleObjects.put(ID.ID_ENEMY_2, gameObjects.get(ID.ID_ENEMY_2));
+    visibleObjects.put(ID.ID_ENEMY_3, gameObjects.get(ID.ID_ENEMY_3));
   }
   
   /**
@@ -177,11 +180,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
     for(Rectangle r : level) {
       // need to scale the rectangle before adding it to the visible objects.....
-      visibleObjects.put(lastId--, new Collidable(DrawLib.TEX_LEVEL,
+      visibleObjects.put(lastId, new Collidable(lastId, DrawLib.TEX_LEVEL,
               r.x(),
               r.y(),
               r.w(),
               r.h()));
+      lastId--;
     }
   }
   
@@ -264,8 +268,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         Enemy e = (Enemy)c;
         e.move(visibleObjects);
         e.draw();
+      } else {
+        c.draw();
       }
-      c.draw();
     });
   }
   
@@ -278,15 +283,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   private void processProjectiles() {
-    ArrayList<Integer> toRemove = new ArrayList<>();
-    projectiles.entrySet().forEach((p) -> {
-      p.getValue().draw();
-      if(Math.abs(p.getValue().getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(p.getKey());
+    ArrayList<Projectile> toRemove = new ArrayList<>();
+    projectiles.forEach((p) -> {
+      p.draw();
+      if(Math.abs(p.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(p);
     });
     
     // remove all projectiles that were flagged in previous step
-    toRemove.forEach((id) -> {
-      projectiles.remove(id);
+    toRemove.forEach((p) -> {
+      projectiles.remove(p);
     });
   }
   
@@ -613,38 +618,34 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     frameNumber++;
     
     switch(gameMode) {
-    case RUNNING: for(Projectile p : this.projectiles.values()) {
+    case RUNNING:
+      // check all projectiles against visible game objects for collisions
+      for(Projectile p : this.projectiles) {
         List<Collidable> hitByProjectile = p.move(visibleObjects);
         for(Collidable c : hitByProjectile)
           if(new Enemy().getClass().isInstance(c)) {
             Enemy e = (Enemy)c;
             try {
-              e.loseHealth(1);
+              e.loseHealth(p.getDamage());
             } catch (GameOverException ex) { // enemy died
-              visibleObjects.remove(e.getTextureId());
+              visibleObjects.remove(e.getObjectId());
             }
+            projectiles.remove(p);
           }
       }
       
-      List<Collidable> collidedObjects = hero.move(visibleObjects);
+      List<Collidable> heroCollisions = hero.move(visibleObjects);
       // additional things that the hero should do with each of the collided objects
-      for(Collidable c : collidedObjects){
-        int id = c.getTextureId();
+      for(Collidable c : heroCollisions){
+        int id = c.getObjectId();
         switch(id) {
-        case DrawLib.TEX_JETPACK:
+        case ID.ID_JETPACK:
           Engine.setStatusMessage("Got double jump!");
           visibleObjects.remove(id); // remove the jetpack image from the screen
           break;
-        case DrawLib.TEX_ALT_WEAPON:
+        case ID.ID_ALT_WEAPON:
           Engine.setStatusMessage("Got missles!");
           visibleObjects.remove(id); // remove the shell image from the screen
-          break;
-        case DrawLib.TEX_ENEMY_BASIC:
-          try {
-            hero.loseHealth(1);
-          } catch (GameOverException ex) {
-            gameMode = GAME_MODE.GAME_OVER;
-          }
           break;
         default: break;
         }
@@ -800,7 +801,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       NextProjectile np = qProjectiles.pop();
       Point sc = np.screenCoord;
       Point wc = DrawLib.screenToWorld(sc);
-      setStatusMessage("Clicked point: ( " + sc.x + ", " + sc.y + " ), world coords: (" + wc.x + ", " + wc.y + ")");
+      setStatusMessage("Clicked point in world: (" + wc.x + ", " + wc.y + ")");
       
       // can only shoot in front of direction the hero is facing
       if(wc.x >= hero.getX() - hero.getW()/2 || (hero.isFlippedOnY() && (wc.x <= hero.getX() + hero.getW()/2))) {
@@ -809,7 +810,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           fired = hero.firePrimaryWeapon(wc);
         else
           fired = hero.fireSecondaryWeapon(wc);
-        if(fired != null) projectiles.put(frameNumber, fired);
+        if(fired != null) projectiles.add(fired);
         else System.out.println("Attempted to fire null projectile.");
       }
     }

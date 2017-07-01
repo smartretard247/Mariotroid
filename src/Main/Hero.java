@@ -2,9 +2,12 @@ package Main;
 
 import Drawing.DrawLib;
 import Enumerations.GAME_MODE;
+import Enumerations.ID;
+import static Main.Engine.gameMode;
 import java.awt.Point;
 import java.util.List;
 import java.util.Map;
+import javax.swing.Timer;
 
 /**
  *
@@ -23,9 +26,10 @@ public class Hero extends Living {
   private int secondaryAmmoCount;
   private boolean isClimbing;
   private Collidable lastWallCollision;
+  private Timer recentDamageTimer = new Timer(3000, null);
   
-  public Hero(int startLives, int startHealth, long startScore, int texId, double x, double y) {
-    super(startLives, startHealth, texId, x, y);
+  public Hero(int objId, int startLives, int startHealth, long startScore, int texId, double x, double y) {
+    super(objId, startLives, startHealth, texId, x, y);
     score = startScore;
     fallCount = 0;
     hasSecondaryWeapon = false;
@@ -34,6 +38,7 @@ public class Hero extends Living {
     hasDoubleJump = false;
     doubleJumped = false;
     isClimbing = false;
+    recentDamageTimer.setRepeats(false);
   }
   
   public long getScore() { return score; }
@@ -76,8 +81,9 @@ public class Hero extends Living {
     // additional things that the hero should do with each of the collided objects
     for(Collidable c : collisions) {
       System.out.println("Collision, source object coord/speed: " + x + ", " + y + " / " + speedX + ", " + speedY);
-      int id = c.getTextureId();
-      switch(id) {
+      int texId = c.getTextureId();
+      int objId = c.getObjectId();
+      switch(texId) {
       case DrawLib.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);
@@ -137,16 +143,28 @@ public class Hero extends Living {
       case DrawLib.TEX_ALT_WEAPON:
         pickupSecondaryWeapon();
         break;
-      default: break;
+      default: // then check for object ids to react to (like enemies)
+        switch(objId) {
+          case ID.ID_ENEMY_1:
+          case ID.ID_ENEMY_2:
+          case ID.ID_ENEMY_3:
+            if(!wasRecentlyDamaged()) {
+              recentDamageTimer.start();
+              try {
+                loseHealth(1);
+              } catch (GameOverException ex) {
+                Engine.gameMode = GAME_MODE.GAME_OVER;
+              }
+            }
+            break;
+          default: break;
+        }
+        break;
       }
     }
     // Move on top of object if reached the top
     if(reachedTop()){
-      if(x < lastWallCollision.getX()){
-        x += 20;
-      }else{
-        x -= 20;
-      }
+      x += (x < lastWallCollision.getX()) ? 20 : -20;
       isClimbing = false;
     }
     
@@ -181,18 +199,18 @@ public class Hero extends Living {
   public Projectile firePrimaryWeapon(Point direction) {
     int zRot = Projectile.calcRotation(new Point((int)x, (int)y), direction);
     double xOffset = 80; // so projectile doesn't come from the hero's chest
-    return new Projectile(DrawLib.TEX_SHELL, zRot,
+    return new Projectile(ID.getNewId(), DrawLib.TEX_SHELL, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
-            getY(), isFlippedOnY()); //fire primary
+            getY(), isFlippedOnY(), 1); //fire primary, 1 damage
   }
   public Projectile fireSecondaryWeapon(Point direction) {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
       int zRot = Projectile.calcRotation(new Point((int)x, (int)y), direction);
       double xOffset = 120; // so projectile doesn't come from the hero's chest
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
-      return new Projectile(DrawLib.TEX_ALT_WEAPON, zRot,
+      return new Projectile(ID.getNewId(), DrawLib.TEX_ALT_WEAPON, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
-            getY(), isFlippedOnY()); //fire
+            getY(), isFlippedOnY(), 3); //fire, 3 damage
     }
     return null;
   }
@@ -216,4 +234,6 @@ public class Hero extends Living {
   
   public boolean isClimbing() { return isClimbing; }
   public void setClimbing(boolean to) { isClimbing = to; }
+  
+  public boolean wasRecentlyDamaged() { return recentDamageTimer.isRunning(); }
 }

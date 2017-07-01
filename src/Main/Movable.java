@@ -10,16 +10,16 @@ import java.util.Map;
  * @author Jeezy
  */
 public abstract class Movable extends GameObject {
-  public Movable(int texId, double x, double y, double w, double h) {
-    super(texId, x, y, w, h);
+ 
+  public Movable(int objId, int texId, double x, double y, double w, double h) {
+    super(objId, texId, x, y, w, h);
+  }
+   public Movable(int objId, int texId, double x, double y) {
+    this(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
   }
   
-  public Movable(int texId, double x, double y) {
-    super(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
-  }
-  
-  public Movable(int texId) {
-    super(texId, 0, 0, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
+  public Movable(int objId, int texId) {
+    this(objId, texId, 0, 0, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
   }
   
   public List<Collidable> move(Map<Integer,Collidable> nearObjects) {

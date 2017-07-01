@@ -11,18 +11,18 @@ import java.util.Map;
  */
 public class Enemy extends Living {
   
-  public Enemy(int startHealth, int texId, double x, double y, Point speed) {
-    this(startHealth, texId, x, y);
+  public Enemy(int objId, int startLives, int startHealth, int texId, double x, double y, Point speed) {
+    super(objId, startLives, startHealth, texId, x, y);
     speedX = speed.x;
     speedY = speed.y;
   }
   
-  public Enemy(int startHealth, int texId, double x, double y) {
-    super(startHealth, texId, x, y);
+  public Enemy(int objId, int startLives, int startHealth, int texId, double x, double y) {
+    this(objId, startLives, startHealth, texId, x, y, new Point(0, 0));
   }
   
   public Enemy() {
-    super(1, DrawLib.TEX_ENEMY_BASIC, 0, 0);
+    this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0);
   }
   
   @Override

@@ -19,19 +19,19 @@ public class GameObject extends Collidable {
   protected double speedY; // movement increment y
   private boolean isSprinting;
   
-  public GameObject(int texId, double x, double y, double w, double h) {
-    super(texId, x, y, w, h);
+  public GameObject(int objId, int texId, double x, double y, double w, double h) {
+    super(objId, texId, x, y, w, h);
     speedX = 0.0;
     speedY = 0.0;
     isSprinting = false;
   }
   
-  public GameObject(int texId, double x, double y) {
-    this(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
+  public GameObject(int objId, int texId, double x, double y) {
+    this(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
   }
   
   public GameObject() {
-    this(-1, 0, 0, 1, 1);
+    this(-1, -1, 0, 0, 1, 1);
   }
   
   public double getSpeedX() { return speedX; }

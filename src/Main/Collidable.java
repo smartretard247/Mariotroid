@@ -7,20 +7,23 @@ import Drawing.DrawLib;
  * @author Jeezy
  */
 public class Collidable extends Drawable {
-  public Collidable(int texId, double x, double y, double w, double h) {
+  private final int objectId;
+  
+  public Collidable(int objId, int texId, double x, double y, double w, double h) {
     super(texId, x, y, w, h);
+    objectId = objId;
   }
   
-  public Collidable(int texId, double x, double y) {
-    this(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
+  public Collidable(int objId, int texId, double x, double y) {
+    this(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
   }
   
-  public Collidable(int texId) {
-    this(texId, 0, 0);
+  public Collidable(int objId, int texId) {
+    this(objId, texId, 0, 0);
   }
   
   public Collidable() {
-    super(-1, 0, 0, 0, 0);
+    this(-1, -1, 0, 0, 0, 0);
   }
   
   /**
@@ -43,4 +46,6 @@ public class Collidable extends Drawable {
             || src.y() < dest.y() - dest.h() // dest is above src
             || src.y() - src.h() > dest.y()); // src is above dest
   }
+  
+  public final int getObjectId() { return objectId; }
 }

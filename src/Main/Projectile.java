@@ -8,19 +8,22 @@ import java.awt.Point;
  * @author Jeezy
  */
 public class Projectile extends Movable {
-  private static final int MAX_SPEED_X = 50;
-  private static final int MAX_SPEED_Y = 50;
+  private int damage;
+  
+  private static final int HORIZONTAL_SPEED = 50;
+  private static final int VERTICAL_SPEED = 50;
   
   private int zRot;
   private double speedX, speedY; // speed will be calculated by rise/run
   
-  public Projectile(int texId, int zrot, double x, double y, boolean flipY) {
-    super(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
+  public Projectile(int objId, int texId, int zrot, double x, double y, boolean flipY, int d) {
+    super(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
     Point speed = calcSpeed(zrot);
     speedX = speed.x;
     speedY = speed.y;
     this.flipY = flipY;
     zRot = zrot;
+    damage = d;
   }
   
   public void setZRot(int to) {
@@ -70,7 +73,7 @@ public class Projectile extends Movable {
    * @return 
    */
   private static Point calcSpeed(int rotation) {
-    int maxX = MAX_SPEED_X, maxY = MAX_SPEED_Y;
+    int maxX = HORIZONTAL_SPEED, maxY = VERTICAL_SPEED;
     switch(rotation) {
       case -90: return new Point(0, -maxY);
       case -45: return new Point((int) Math.sqrt(maxX*maxX/2), (int) -Math.sqrt(maxY*maxY/2));
@@ -80,4 +83,7 @@ public class Projectile extends Movable {
       default: return null;
     }
   }
+  
+  public int getDamage() { return damage; }
+  public void setDamage(int to) { damage = to; }
 }
