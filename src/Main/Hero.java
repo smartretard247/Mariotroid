@@ -85,6 +85,8 @@ public class Hero extends Living {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
+      case DrawLib.TEX_ALT_WEAPON: break;
+      case DrawLib.TEX_SHELL: break;
       case DrawLib.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);
