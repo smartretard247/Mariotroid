@@ -3,7 +3,6 @@ package Main;
 import Drawing.DrawLib;
 import Enumerations.GAME_MODE;
 import Enumerations.ID;
-import static Main.Engine.gameMode;
 import java.awt.Point;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,7 @@ public class Hero extends Living {
   private boolean isClimbing;
   private Collidable lastWallCollision;
   private Timer recentDamageTimer = new Timer(3000, null);
+  private double armor; // armor is a MULTIPLIER, do reduce damage set to a value less than 1
   
   public Hero(int objId, int startLives, int startHealth, long startScore, int texId, double x, double y) {
     super(objId, startLives, startHealth, texId, x, y);
@@ -39,6 +39,7 @@ public class Hero extends Living {
     doubleJumped = false;
     isClimbing = false;
     recentDamageTimer.setRepeats(false);
+    armor = 1;
   }
   
   public long getScore() { return score; }
@@ -65,11 +66,11 @@ public class Hero extends Living {
     doLand(); // reset jump as if on ground
   }
   
-  @Override
-  public List<Collidable> move(Map<Integer,Collidable> nearObjects)  {
+  public List<Collidable> processCollisions(Map<Integer,Collidable> nearObjects)  {
     if(!isClimbing) setSpeedY(speedY - PhysicsEngine.GRAVITY);
     
-    List<Collidable> collisions = super.move(nearObjects);
+    //move();
+    List<Collidable> collisions = getCollisions(nearObjects);
     if(this.getY() < -3000) { //fell off map
       try {
         loseHealth(10);
@@ -137,12 +138,6 @@ public class Hero extends Living {
         }
         //lastCollidedObject = c;
         break;
-      case DrawLib.TEX_JETPACK:
-        pickupJetpack();
-        break;
-      case DrawLib.TEX_ALT_WEAPON:
-        pickupSecondaryWeapon();
-        break;
       default: // then check for object ids to react to (like enemies)
         switch(objId) {
           case ID.ID_ENEMY_1:
@@ -151,11 +146,30 @@ public class Hero extends Living {
             if(!wasRecentlyDamaged()) {
               recentDamageTimer.start();
               try {
-                loseHealth(1);
+                loseHealth((int)(2*armor));
               } catch (GameOverException ex) {
                 Engine.gameMode = GAME_MODE.GAME_OVER;
               }
             }
+            break;
+          case ID.ID_CALAMITY:
+            if(!wasRecentlyDamaged()) {
+              recentDamageTimer.start();
+              try {
+                loseHealth((int)(5*armor));
+              } catch (GameOverException ex) {
+                Engine.gameMode = GAME_MODE.GAME_OVER;
+              }
+            }
+            break;
+          case ID.ID_ARMOR:
+            pickupArmor();
+            break;
+          case ID.ID_JETPACK:
+            pickupJetpack();
+            break;
+          case ID.ID_ALT_WEAPON:
+            pickupSecondaryWeapon();
             break;
           default: break;
         }
@@ -224,8 +238,12 @@ public class Hero extends Living {
   public void dropJetpack() { hasDoubleJump = false; };
   
   public boolean canClimb() {
-    return ((getRight() + 1) == lastWallCollision.getLeft() || (getLeft() - 1) == lastWallCollision.getRight()) &&
-            (getTop() > lastWallCollision.getBottom() && getBottom() < lastWallCollision.getTop());
+    if(lastWallCollision != null) {
+      return ((getRight() + 1) == lastWallCollision.getLeft() || (getLeft() - 1) == lastWallCollision.getRight()) &&
+              (getTop() > lastWallCollision.getBottom() && getBottom() < lastWallCollision.getTop());
+    } else {
+      return false;
+    }
   }
   
   private boolean reachedTop() {
@@ -236,4 +254,6 @@ public class Hero extends Living {
   public void setClimbing(boolean to) { isClimbing = to; }
   
   public boolean wasRecentlyDamaged() { return recentDamageTimer.isRunning(); }
+  
+  public void pickupArmor() { armor = 0.75; } // 25% reduction in damage
 }

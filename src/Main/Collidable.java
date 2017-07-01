@@ -1,6 +1,9 @@
 package Main;
 
 import Drawing.DrawLib;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -32,6 +35,20 @@ public class Collidable extends Drawable {
    */
   public Rectangle getBoundary() {
     return new Rectangle(x-width/2, y+height/2, width, height);
+  }
+  
+  /**
+   * Returns a list of collidable objects that have collided with this object.
+   * @param nearObjects
+   * @return 
+   */
+  public List<Collidable> getCollisions(Map<Integer, Collidable> nearObjects) {  
+    List<Collidable> collisions = new LinkedList<>();
+    for(Collidable near : nearObjects.values()) {
+      if(collidesWith(near.getBoundary()))
+        collisions.add(near);
+    }
+    return collisions;
   }
   
   /**

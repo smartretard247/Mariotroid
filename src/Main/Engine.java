@@ -51,14 +51,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
   private final int INTROLENGTHMS = 400;
-  private final int MAX_GAME_OBJECTS = 2;
+  private boolean won = false;
   
   public Scene scene; // trans x & y, scale x & y
   public Hero hero;
   public PhysicsEngine phy = new PhysicsEngine();
   public Map<Integer, Collidable> gameObjects = new HashMap<>();
   public Map<Integer, Collidable> visibleObjects = new HashMap<>();
-  public List<Projectile> projectiles = new LinkedList<>();
+  public final List<Projectile> projectiles = new LinkedList<>();
   private static String statusMessage = "";
   private final LinkedList<NextProjectile> qProjectiles = new LinkedList<>();
   
@@ -141,10 +141,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     // initialize all game objects here
     gameObjects.put(ID.ID_JETPACK, new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 300));
-    gameObjects.put(ID.ID_ALT_WEAPON, new Collidable(ID.ID_ALT_WEAPON, DrawLib.TEX_ALT_WEAPON, 300, 1000));
+    gameObjects.put(ID.ID_ALT_WEAPON, new Collidable(ID.ID_ALT_WEAPON, DrawLib.TEX_ALT_WEAPON, 300, 900));
+    gameObjects.put(ID.ID_ARMOR, new Collidable(ID.ID_ARMOR, DrawLib.TEX_TEST, 5681, 198, 75, 75)); // remove 75x75 after adding real texture
     gameObjects.put(ID.ID_ENEMY_1, new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
     gameObjects.put(ID.ID_ENEMY_2, new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point(5,0)));
     gameObjects.put(ID.ID_ENEMY_3, new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point(5,0)));
+    gameObjects.put(ID.ID_CALAMITY, new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point(10,10)));
+    gameObjects.put(ID.ID_DOOR, new Collidable(ID.ID_DOOR, DrawLib.TEX_TEST, 11200, 197, 100, 200)); // remove dimensions after adding real texture
     
     resetVisibles();
     
@@ -158,6 +161,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     visibleObjects.put(ID.ID_ENEMY_1, gameObjects.get(ID.ID_ENEMY_1));
     visibleObjects.put(ID.ID_ENEMY_2, gameObjects.get(ID.ID_ENEMY_2));
     visibleObjects.put(ID.ID_ENEMY_3, gameObjects.get(ID.ID_ENEMY_3));
+    visibleObjects.put(ID.ID_ARMOR, gameObjects.get(ID.ID_ARMOR));
+    visibleObjects.put(ID.ID_CALAMITY, gameObjects.get(ID.ID_CALAMITY));
   }
   
   /**
@@ -199,6 +204,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case RUNNING: drawNormalGamePlay(gl); break; // END RUNNING
       case PAUSED: drawPauseMenu(gl); break; // END PAUSED
       case GAME_OVER: drawGameOver(gl); break;
+      case CREDITS: drawCredits(gl); break;
       default: break;
     }
   }
@@ -254,6 +260,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
   }
   
+  private void drawCredits(GL2 gl) {
+    gl.glPushMatrix();
+    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
+    String credits = "TEAM MARIOTROID!";
+    DrawLib.drawText(credits, new double[] { 0.0, 1.0, 0.0 }, windowDim.width/2-50, -windowDim.height/2+(frameNumber%500*2));
+    gl.glPopMatrix();
+  }
+  
   /**
    * Draws the background once per frame.
    * @param gl 
@@ -265,7 +279,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     visibleObjects.values().forEach((c) -> {
       if((new Enemy()).getClass().isInstance(c)) {
         Enemy e = (Enemy)c;
-        e.move(visibleObjects);
+        e.move();
+        e.processCollisions(visibleObjects);
         e.draw();
       } else {
         c.draw();
@@ -281,7 +296,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     hero.draw();
   }
   
-  private void processProjectiles() {
+  private synchronized void processProjectiles() {
     ArrayList<Projectile> toRemove = new ArrayList<>();
     projectiles.forEach((p) -> {
       p.draw();
@@ -622,33 +637,63 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     switch(gameMode) {
     case RUNNING:
+      // check for winning conditions
+      if(won) { gameMode = GAME_MODE.CREDITS; return; }
+      
       // check all projectiles against visible game objects for collisions
-      for(Projectile p : this.projectiles) {
-        List<Collidable> hitByProjectile = p.move(visibleObjects);
-        for(Collidable c : hitByProjectile)
-          if(new Enemy().getClass().isInstance(c)) {
-            Enemy e = (Enemy)c;
-            try {
-              e.loseHealth(p.getDamage());
-            } catch (GameOverException ex) { // enemy died
-              visibleObjects.remove(e.getObjectId());
+      synchronized(projectiles) {
+        for(Projectile p : projectiles) {
+          p.move();
+          List<Collidable> hitByProjectile = p.getCollisions(visibleObjects);
+          for(Collidable c : hitByProjectile) {
+            if(new Boss().getClass().isInstance(c)) {
+              Boss e = (Boss)c;
+              try {
+                e.loseHealth(p.getDamage());
+              } catch (GameOverException ex) { // enemy died
+                visibleObjects.remove(e.getObjectId());
+                visibleObjects.put(ID.ID_DOOR, gameObjects.get(ID.ID_DOOR)); // add door after calamity is defeated!
+              }
+              projectiles.remove(p);
+              break;
+            } else if(new Enemy().getClass().isInstance(c)) {
+              Enemy e = (Enemy)c;
+              try {
+                e.loseHealth(p.getDamage());
+              } catch (GameOverException ex) { // enemy died
+                visibleObjects.remove(e.getObjectId());
+              }
+              projectiles.remove(p);
+              break;
             }
-            projectiles.remove(p);
           }
+        }
       }
       
-      List<Collidable> heroCollisions = hero.move(visibleObjects);
+      Boss boss = (Boss)(visibleObjects.get(ID.ID_CALAMITY));
+      boss.move();
+      boss.processCollisions(visibleObjects);
+      
+      hero.move();
+      List<Collidable> heroCollisions = hero.processCollisions(visibleObjects);
       // additional things that the hero should do with each of the collided objects
       for(Collidable c : heroCollisions){
         int id = c.getObjectId();
         switch(id) {
         case ID.ID_JETPACK:
-          Engine.setStatusMessage("Got double jump!");
+          Engine.setStatusMessage("Got jetpack!");
           visibleObjects.remove(id); // remove the jetpack image from the screen
           break;
         case ID.ID_ALT_WEAPON:
           Engine.setStatusMessage("Got missles!");
           visibleObjects.remove(id); // remove the shell image from the screen
+          break;
+        case ID.ID_ARMOR:
+          Engine.setStatusMessage("Got armor!");
+          visibleObjects.remove(id); // remove the armor image from the screen
+          break;
+        case ID.ID_DOOR:
+          won = true;
           break;
         default: break;
         }
@@ -799,7 +844,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     messageTimer.start();
   }
   
-  public void fireProjectiles() {
+  public synchronized void fireProjectiles() {
     if(!qProjectiles.isEmpty()) {
       NextProjectile np = qProjectiles.pop();
       Point sc = np.screenCoord;

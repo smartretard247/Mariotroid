@@ -40,26 +40,6 @@ public class GameObject extends Collidable {
   public void setSpeedY(double spdY) { speedY = spdY; }
   public void setSpeed(double spdX, double spdY) { speedX = spdX; speedY = spdY; }
   
-  /**
-   * Moves object if no collisions detected with nearObjects.  Returns direction of collions if one
-   * is found, otherwise returns DIRECTION.NONE;
-   * @param nearObjects
-   * @return 
-   */
-  public List<Collidable> move(Map<Integer, Collidable> nearObjects) {
-    x += speedX;
-    y += speedY;
-    
-    List<Collidable> collisions = new LinkedList<>();
-    if(speedX != 0) setFlipY(speedX < 0); // this reverses the sprite with direction changes
-    
-    for(Collidable near : nearObjects.values()) {
-      if(collidesWith(near.getBoundary()))
-        collisions.add(near);
-    }
-
-    return collisions;
-  }
   public void increaseSpeed(double deltaX, double deltaY) {
     speedX += deltaX;
     speedY += deltaY;

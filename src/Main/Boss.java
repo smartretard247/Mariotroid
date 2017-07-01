@@ -9,46 +9,52 @@ import java.util.Map;
  *
  * @author Jeezy
  */
-public class Enemy extends Living {
+public class Boss extends Enemy {
+  private final int minXLocation = 9000; // to keep from entering the rest of the level
   
-  public Enemy(int objId, int startLives, int startHealth, int texId, double x, double y, Point speed) {
+  public Boss(int objId, int startLives, int startHealth, int texId, double x, double y, Point speed) {
     super(objId, startLives, startHealth, texId, x, y);
     speedX = speed.x;
     speedY = speed.y;
   }
   
-  public Enemy(int objId, int startLives, int startHealth, int texId, double x, double y) {
+  public Boss(int objId, int startLives, int startHealth, int texId, double x, double y) {
     this(objId, startLives, startHealth, texId, x, y, new Point(0, 0));
   }
   
-  public Enemy() {
+  public Boss() {
     this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0);
   }
   
+  public void move() {
+    super.move();
+    if(x < minXLocation) speedX = -speedX;
+  }
+  
   public List<Collidable> processCollisions(Map<Integer, Collidable> nearObjects) {
-    setSpeedY(speedY - PhysicsEngine.GRAVITY);
-    
-    List<Collidable> collisions = super.getCollisions(nearObjects);
+    List<Collidable> collisions = getCollisions(nearObjects);
     for(Collidable c : collisions) {
       int id = c.getTextureId();
       switch(id) {
       case DrawLib.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);
-          speedY = 0;
+          speedY = -speedY;
         } else if(movingDownAndRight()) { // falling right and down
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
             adjustToLeftOf(c);
+            speedX = -speedX;
           } else {
             adjustToTopOf(c);
-            speedY = 0;
+            speedY = -speedY;
           }
         } else if(movingDownAndLeft()) { // falling left and down
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
             adjustToRightOf(c);
+            speedX = -speedX;
           } else {
             adjustToTopOf(c);
-            speedY = 0;
+            speedY = -speedY;
           }
         } else if(movingLeft()) { // moving left
           adjustToRightOf(c);
@@ -56,6 +62,22 @@ public class Enemy extends Living {
         } else if(movingRight()) { // moving right
           adjustToLeftOf(c);
           speedX = -speedX; // reverse direction
+        } else if(movingUpAndLeft()) { // flying upward and to the left
+          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
+            adjustToRightOf(c);
+            speedX = -speedX;
+          } else {
+            adjustToBottomOf(c);
+            speedY = -speedY;
+          }
+        } else if(movingUpAndRight()) { // flying upward and to the right
+          if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
+            adjustToLeftOf(c);
+            speedX = -speedX;
+          } else {
+            adjustToBottomOf(c);
+            speedY = -speedY;
+          }
         }
         break;
       default: break;

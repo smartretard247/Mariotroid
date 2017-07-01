@@ -13,6 +13,9 @@ public final class ID {
   public static final int ID_ENEMY_1 = 3;
   public static final int ID_ENEMY_2 = 4;
   public static final int ID_ENEMY_3 = 5;
+  public static final int ID_CALAMITY = 6;
+  public static final int ID_ARMOR = 7;
+  public static final int ID_DOOR = 8;
   
   public static final int getNewId() { return nextId++; }
 }

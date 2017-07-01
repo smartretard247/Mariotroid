@@ -1,6 +1,7 @@
 package Main;
 
 import Drawing.DrawLib;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +23,13 @@ public abstract class Movable extends GameObject {
     this(objId, texId, 0, 0, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
   }
   
-  public List<Collidable> move(Map<Integer,Collidable> nearObjects) {
-    return super.move(nearObjects);
+  /**
+   * Moves object by speedX and speedY, also flips image if direction changes.
+   */
+  public void move() {
+    x += speedX;
+    y += speedY;
+    if(speedX != 0) setFlipY(speedX < 0); // this reverses the sprite with direction changes
   }
   
   public boolean standingStill() {

@@ -9,5 +9,6 @@ public enum GAME_MODE {
   START_MENU,
   RUNNING,
   PAUSED,
-  GAME_OVER
+  GAME_OVER,
+  CREDITS
 }
