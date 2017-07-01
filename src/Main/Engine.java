@@ -56,9 +56,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public Scene scene; // trans x & y, scale x & y
   public Hero hero;
   public PhysicsEngine phy = new PhysicsEngine();
-  public Map<Integer, Collidable> gameObjects = new HashMap<>();
-  public Map<Integer, Collidable> visibleObjects = new HashMap<>();
-  public final List<Projectile> projectiles = new LinkedList<>();
+  public final Map<Integer, Collidable> gameObjects = new HashMap<>();
+  public final Map<Integer, Collidable> visibleObjects = new HashMap<>();
   private static String statusMessage = "";
   private final LinkedList<NextProjectile> qProjectiles = new LinkedList<>();
   
@@ -140,7 +139,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
     
     // initialize all game objects here
-    gameObjects.put(ID.ID_JETPACK, new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 300));
+    gameObjects.put(ID.ID_HERO, hero);
+    gameObjects.put(ID.ID_JETPACK, new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
     gameObjects.put(ID.ID_ALT_WEAPON, new Collidable(ID.ID_ALT_WEAPON, DrawLib.TEX_ALT_WEAPON, 300, 900));
     gameObjects.put(ID.ID_ARMOR, new Collidable(ID.ID_ARMOR, DrawLib.TEX_TEST, 5681, 198, 75, 75)); // remove 75x75 after adding real texture
     gameObjects.put(ID.ID_ENEMY_1, new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
@@ -156,6 +156,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   private void resetVisibles() {
     // only add currently visible objects to this map
+    visibleObjects.put(ID.ID_HERO, gameObjects.get(ID.ID_HERO));
     visibleObjects.put(ID.ID_JETPACK, gameObjects.get(ID.ID_JETPACK));
     visibleObjects.put(ID.ID_ALT_WEAPON, gameObjects.get(ID.ID_ALT_WEAPON));
     visibleObjects.put(ID.ID_ENEMY_1, gameObjects.get(ID.ID_ENEMY_1));
@@ -231,12 +232,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawHero(gl);
     
     fireProjectiles(); // fire projectile from the queue
-    processProjectiles(); // check if any projectiles have left the screen, and remove them
     
     drawForeground(gl);
     
     gl.glPopMatrix(); // return to initial transform
-
     drawHud(gl);
     drawStatus(gl); // will only draw status' of new messages, for x seconds
   }
@@ -276,16 +275,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // back ground objects
     
     // draw game objects
-    visibleObjects.values().forEach((c) -> {
-      if((new Enemy()).getClass().isInstance(c)) {
-        Enemy e = (Enemy)c;
-        e.move();
-        e.processCollisions(visibleObjects);
-        e.draw();
-      } else {
-        c.draw();
-      }
-    });
+    visibleObjects.values().forEach((o) -> { o.draw(); });
   }
   
   /**
@@ -294,19 +284,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawHero(GL2 gl) {
     hero.draw();
-  }
-  
-  private synchronized void processProjectiles() {
-    ArrayList<Projectile> toRemove = new ArrayList<>();
-    projectiles.forEach((p) -> {
-      p.draw();
-      if(Math.abs(p.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(p);
-    });
-    
-    // remove all projectiles that were flagged in previous step
-    toRemove.forEach((p) -> {
-      projectiles.remove(p);
-    });
   }
   
    /**
@@ -637,60 +614,68 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     switch(gameMode) {
     case RUNNING:
-      // check for winning conditions
-      if(won) { gameMode = GAME_MODE.CREDITS; return; }
+      if(won) { gameMode = GAME_MODE.CREDITS; return; } // check for winning conditions
       
-      // check all projectiles against visible game objects for collisions
-      synchronized(projectiles) {
-        for(Projectile p : projectiles) {
-          p.move();
-          List<Collidable> hitByProjectile = p.getCollisions(visibleObjects);
-          for(Collidable c : hitByProjectile) {
-            if(new Boss().getClass().isInstance(c)) {
-              Boss e = (Boss)c;
-              try {
-                e.loseHealth(p.getDamage());
-              } catch (GameOverException ex) { // enemy died
-                visibleObjects.remove(e.getObjectId());
-                visibleObjects.put(ID.ID_DOOR, gameObjects.get(ID.ID_DOOR)); // add door after calamity is defeated!
+      ArrayList<Integer> toRemove = new ArrayList<>(); // keep track of ids to remove at end of frame
+      
+      // move all objects
+      for(Collidable c : visibleObjects.values()) {
+        if((new Movable()).getClass().isInstance(c)) {
+          Movable m = (Movable)c;
+          m.move();
+        }
+        if((new Projectile()).getClass().isInstance(c)) {
+          if(Math.abs(c.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(c.getObjectId()); // remove offscreen projectiles
+        }
+      }
+    
+      // enemy movement and collision detection
+      for(int i = ID.ID_ENEMY_1; i <= ID.ID_ENEMY_3; i++) {
+        Enemy enemy = (Enemy)(visibleObjects.get(i));
+        if(enemy != null) {
+          List<Collidable> enemyCollisions = enemy.processCollisions(visibleObjects);
+          for(Collidable c : enemyCollisions) {
+            if(new Projectile().getClass().isInstance(c)) {
+              toRemove.add(c.getObjectId());
+              if(enemy.getHealth() <= 0) { // enemy died
+                toRemove.add(enemy.getObjectId());
               }
-              projectiles.remove(p);
-              break;
-            } else if(new Enemy().getClass().isInstance(c)) {
-              Enemy e = (Enemy)c;
-              try {
-                e.loseHealth(p.getDamage());
-              } catch (GameOverException ex) { // enemy died
-                visibleObjects.remove(e.getObjectId());
-              }
-              projectiles.remove(p);
-              break;
             }
           }
         }
       }
       
+      // boss movement and collision detection
       Boss boss = (Boss)(visibleObjects.get(ID.ID_CALAMITY));
-      boss.move();
-      boss.processCollisions(visibleObjects);
+      if(boss != null) {
+        List<Collidable> bossCollisions = boss.processCollisions(visibleObjects);
+        for(Collidable c : bossCollisions) {
+          if(new Projectile().getClass().isInstance(c)) {
+            toRemove.add(c.getObjectId());
+            if(boss.getHealth() <= 0) { // enemy died
+              toRemove.add(boss.getObjectId());
+              visibleObjects.put(ID.ID_DOOR, gameObjects.get(ID.ID_DOOR)); // add door after calamity is defeated!
+            }
+          }
+        }
+      }
       
-      hero.move();
+      // hero movement and collision detection
       List<Collidable> heroCollisions = hero.processCollisions(visibleObjects);
-      // additional things that the hero should do with each of the collided objects
       for(Collidable c : heroCollisions){
         int id = c.getObjectId();
         switch(id) {
         case ID.ID_JETPACK:
           Engine.setStatusMessage("Got jetpack!");
-          visibleObjects.remove(id); // remove the jetpack image from the screen
+          toRemove.add(id); // remove the jetpack image from the screen
           break;
         case ID.ID_ALT_WEAPON:
           Engine.setStatusMessage("Got missles!");
-          visibleObjects.remove(id); // remove the shell image from the screen
+          toRemove.add(id); // remove the shell image from the screen
           break;
         case ID.ID_ARMOR:
           Engine.setStatusMessage("Got armor!");
-          visibleObjects.remove(id); // remove the armor image from the screen
+          toRemove.add(id); // remove the armor image from the screen
           break;
         case ID.ID_DOOR:
           won = true;
@@ -699,9 +684,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         }
       }
       
+      // remove all ids tagged for removal
+      for(Integer id : toRemove) {
+        visibleObjects.remove(id);
+      }
+      
       // set textures based on speed here
       if(hero.getSpeedX() == 0) hero.setTextureId(DrawLib.TEX_HERO);
-      
       break;
     default: break;
     }
@@ -844,7 +833,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     messageTimer.start();
   }
   
-  public synchronized void fireProjectiles() {
+  public void fireProjectiles() {
     if(!qProjectiles.isEmpty()) {
       NextProjectile np = qProjectiles.pop();
       Point sc = np.screenCoord;
@@ -858,7 +847,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           fired = hero.firePrimaryWeapon(wc);
         else
           fired = hero.fireSecondaryWeapon(wc);
-        if(fired != null) projectiles.add(fired);
+        if(fired != null) visibleObjects.put(fired.getObjectId(), fired);
         else System.out.println("Attempted to fire null projectile.");
       }
     }

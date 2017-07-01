@@ -171,7 +171,15 @@ public class Hero extends Living {
           case ID.ID_ALT_WEAPON:
             pickupSecondaryWeapon();
             break;
-          default: break;
+          default: 
+            if(new Projectile().getClass().isInstance(c)) {
+              Projectile p = (Projectile)c;
+              try {
+                loseHealth(p.getDamage());
+              } catch (GameOverException ex) {
+              }
+            }
+            break;
         }
         break;
       }

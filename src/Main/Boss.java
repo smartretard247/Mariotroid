@@ -80,7 +80,15 @@ public class Boss extends Enemy {
           }
         }
         break;
-      default: break;
+      default: 
+        if(new Projectile().getClass().isInstance(c)) {
+            Projectile p = (Projectile)c;
+            try {
+              loseHealth(p.getDamage());
+            } catch (GameOverException ex) { // enemy died
+            }
+        }
+        break;
       }
     }
     

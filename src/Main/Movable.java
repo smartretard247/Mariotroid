@@ -1,16 +1,12 @@
 package Main;
 
 import Drawing.DrawLib;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 
 /**
  *
  * @author Jeezy
  */
-public abstract class Movable extends GameObject {
+public class Movable extends GameObject {
  
   public Movable(int objId, int texId, double x, double y, double w, double h) {
     super(objId, texId, x, y, w, h);
@@ -21,6 +17,10 @@ public abstract class Movable extends GameObject {
   
   public Movable(int objId, int texId) {
     this(objId, texId, 0, 0, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
+  }
+  
+  public Movable() {
+    super();
   }
   
   /**

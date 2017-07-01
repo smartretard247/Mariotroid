@@ -26,6 +26,10 @@ public class Projectile extends Movable {
     damage = d;
   }
   
+  public Projectile() {
+    super(-1, -1, 0, 0, 0, 0);
+  }
+  
   public void setZRot(int to) {
     zRot = to;
   }

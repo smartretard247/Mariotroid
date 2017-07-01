@@ -30,8 +30,9 @@ public class Enemy extends Living {
     
     List<Collidable> collisions = super.getCollisions(nearObjects);
     for(Collidable c : collisions) {
-      int id = c.getTextureId();
-      switch(id) {
+      int texId = c.getTextureId();
+      int objId = c.getObjectId();
+      switch(texId) {
       case DrawLib.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);
@@ -39,6 +40,7 @@ public class Enemy extends Living {
         } else if(movingDownAndRight()) { // falling right and down
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
             adjustToLeftOf(c);
+            speedX = -speedX; // reverse direction
           } else {
             adjustToTopOf(c);
             speedY = 0;
@@ -46,6 +48,7 @@ public class Enemy extends Living {
         } else if(movingDownAndLeft()) { // falling left and down
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
             adjustToRightOf(c);
+            speedX = -speedX; // reverse direction
           } else {
             adjustToTopOf(c);
             speedY = 0;
@@ -58,7 +61,15 @@ public class Enemy extends Living {
           speedX = -speedX; // reverse direction
         }
         break;
-      default: break;
+      default:
+        if(new Projectile().getClass().isInstance(c)) {
+          Projectile p = (Projectile)c;
+          try {
+            loseHealth(p.getDamage());
+          } catch (GameOverException ex) { // enemy died
+          }
+        }
+        break;
       }
     }
     
