@@ -214,7 +214,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     //if(hero.getX()/2 < scene.transX+1000) scene.transX++;// apply scroll with hero
     //else if(hero.getX()/2 > scene.transX-1000) scene.transX--;// apply scroll with hero      
     
-    //gl.glTranslated(scene.transX, scene.transY, 0);  //move the world to respond to user input
     if(hero.getX() > 600 && hero.getX() < 10500)
       gl.glTranslated(-hero.getX(), scene.transY, 0);
     else if(hero.getX() <= 600)
@@ -301,6 +300,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     */
   private void drawForeground(GL2 gl) {
     // draw foreground objects here
+    gl.glPushMatrix(); //-scene.transY-24
+    gl.glTranslated(DrawLib.getTexture(DrawLib.TEX_LEVEL_DECOR).getWidth()/2, DrawLib.getTexture(DrawLib.TEX_LEVEL_DECOR).getHeight()/2, 0);
+    DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR);
+    gl.glPopMatrix();
   }
   
   private void drawIntro(GL2 gl) {
