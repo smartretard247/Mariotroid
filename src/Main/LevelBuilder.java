@@ -248,7 +248,7 @@ public class LevelBuilder {
         digest.update(byteArray, 0, bytesCount);
       }
     } catch (ClassCastException ex) {
-      System.out.println("Error in getFileChecksum, class cast exception.");
+      System.out.println("Cannot detect level changes in JAR mode.");
     }
     
     byte[] bytes = digest.digest(); // get the hash's bytes
