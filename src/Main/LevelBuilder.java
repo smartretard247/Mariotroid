@@ -5,10 +5,15 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import java.awt.image.Raster;
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -226,7 +231,15 @@ public class LevelBuilder {
   }
   
   private  String getFileChecksum(MessageDigest digest, String fileName) throws IOException {
-    try (BufferedInputStream fis = (BufferedInputStream)getClass().getClassLoader().getResourceAsStream(fileName)) { // get file input stream for reading the file content
+    String pathToExportedFile = fileName;
+    try {
+      pathToExportedFile = ExportResource(fileName);
+    } catch (Exception ex) {
+      System.out.println(ex.getMessage() + ", using local.");
+    }
+    
+    try {
+      BufferedInputStream fis = (BufferedInputStream)getClass().getClassLoader().getResourceAsStream(pathToExportedFile); // get file input stream for reading the file content
       byte[] byteArray = new byte[1024];
       int bytesCount = 0;
       
@@ -234,6 +247,8 @@ public class LevelBuilder {
       while ((bytesCount = fis.read(byteArray)) != -1) {
         digest.update(byteArray, 0, bytesCount);
       }
+    } catch (ClassCastException ex) {
+      System.out.println("Error in getFileChecksum, class cast exception.");
     }
     
     byte[] bytes = digest.digest(); // get the hash's bytes
@@ -243,5 +258,32 @@ public class LevelBuilder {
     }
     
     return sb.toString(); // return complete hash
+  }
+  
+  private static String ExportResource(String resourceName) throws Exception {
+    InputStream stream = null;
+    OutputStream resStreamOut = null;
+    String jarFolder;
+    try {
+      stream = LevelBuilder.class.getResourceAsStream(resourceName);
+      if(stream == null) {
+        throw new Exception("Cannot get resource \"" + resourceName + "\" from Jar file.");
+      }
+
+      int readBytes;
+      byte[] buffer = new byte[4096];
+      jarFolder = new File(LevelBuilder.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getPath().replace('\\', '/');
+      resStreamOut = new FileOutputStream(jarFolder + resourceName);
+      while ((readBytes = stream.read(buffer)) > 0) {
+        resStreamOut.write(buffer, 0, readBytes);
+      }
+    } catch (Exception ex) {
+      throw ex;
+    } finally {
+      if(stream != null) stream.close();
+      if(resStreamOut != null) resStreamOut.close();
+    }
+
+    return jarFolder + resourceName;
   }
 }
