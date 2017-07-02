@@ -13,17 +13,11 @@ public class Boss extends Enemy {
   private final int minXLocation = 9000; // to keep from entering the rest of the level
   
   public Boss(int objId, int startLives, int startHealth, int texId, double x, double y, Point speed) {
-    super(objId, startLives, startHealth, texId, x, y);
-    speedX = speed.x;
-    speedY = speed.y;
-  }
-  
-  public Boss(int objId, int startLives, int startHealth, int texId, double x, double y) {
-    this(objId, startLives, startHealth, texId, x, y, new Point(0, 0));
+    super(objId, startLives, startHealth, texId, x, y, speed);
   }
   
   public Boss() {
-    this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0);
+    this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0, new Point(0, 0));
   }
   
   public void move() {
@@ -65,7 +59,6 @@ public class Boss extends Enemy {
         } else if(movingUpAndLeft()) { // flying upward and to the left
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
             adjustToRightOf(c);
-            speedX = -speedX;
           } else {
             adjustToBottomOf(c);
             speedY = -speedY;
@@ -73,7 +66,6 @@ public class Boss extends Enemy {
         } else if(movingUpAndRight()) { // flying upward and to the right
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
             adjustToLeftOf(c);
-            speedX = -speedX;
           } else {
             adjustToBottomOf(c);
             speedY = -speedY;

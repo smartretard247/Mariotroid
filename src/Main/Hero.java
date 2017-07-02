@@ -29,7 +29,7 @@ public class Hero extends Living {
   private double armor; // armor is a MULTIPLIER, do reduce damage set to a value less than 1
   
   public Hero(int objId, int startLives, int startHealth, long startScore, int texId, double x, double y) {
-    super(objId, startLives, startHealth, texId, x, y);
+    super(objId, startLives, startHealth, texId, x, y, new Point(0, 0));
     score = startScore;
     fallCount = 0;
     hasSecondaryWeapon = false;
@@ -40,6 +40,10 @@ public class Hero extends Living {
     isClimbing = false;
     recentDamageTimer.setRepeats(false);
     armor = 1;
+  }
+  
+  public Hero() {
+    this(-1, 1, 1, 0, DrawLib.TEX_HERO, 0, 0);
   }
   
   public long getScore() { return score; }
@@ -85,7 +89,9 @@ public class Hero extends Living {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
-      case DrawLib.TEX_ALT_WEAPON: break;
+      case DrawLib.TEX_ALT_WEAPON:
+          pickupSecondaryWeapon();
+          break;
       case DrawLib.TEX_SHELL: break;
       case DrawLib.TEX_LEVEL:
         if(movingDown()) { // falling straight down
@@ -169,9 +175,6 @@ public class Hero extends Living {
             break;
           case ID.ID_JETPACK:
             pickupJetpack();
-            break;
-          case ID.ID_ALT_WEAPON:
-            pickupSecondaryWeapon();
             break;
           default: 
             if(new Projectile().getClass().isInstance(c)) {

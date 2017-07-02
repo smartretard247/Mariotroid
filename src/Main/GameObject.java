@@ -1,9 +1,7 @@
 package Main;
 
 import Drawing.DrawLib;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.awt.Point;
 
 /**
  *
@@ -19,19 +17,19 @@ public class GameObject extends Collidable {
   protected double speedY; // movement increment y
   private boolean isSprinting;
   
-  public GameObject(int objId, int texId, double x, double y, double w, double h) {
+  public GameObject(int objId, int texId, double x, double y, double w, double h, Point speed) {
     super(objId, texId, x, y, w, h);
-    speedX = 0.0;
-    speedY = 0.0;
+    speedX = speed.x;
+    speedY = speed.y;
     isSprinting = false;
   }
   
   public GameObject(int objId, int texId, double x, double y) {
-    this(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
+    this(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight(), new Point(0, 0));
   }
   
   public GameObject() {
-    this(-1, -1, 0, 0, 1, 1);
+    this(-1, -1, 0, 0, 1, 1, new Point(0, 0));
   }
   
   public double getSpeedX() { return speedX; }

@@ -149,8 +149,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gameObjects.put(ID.ID_CALAMITY, new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point(10,10)));
     gameObjects.put(ID.ID_DOOR, new Collidable(ID.ID_DOOR, DrawLib.TEX_TEST, 11200, 197, 100, 200)); // remove dimensions after adding real texture
     
-    resetVisibles();
-    
     loadLevel(gl, "res/layer_collision_1.png");
   }
   
@@ -334,10 +332,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(this.startMenuSelection) {
       case START_GAME: gameMode = GAME_MODE.RUNNING;
         hero.resetAll();
-        for(int i = ID.ID_ENEMY_1; i <= ID.ID_CALAMITY; i++) {
-          Enemy e = (Enemy)gameObjects.get(i);
-          e.resetAll();
-        }
         resetVisibles();
         break;
       case EXIT: System.exit(0);
@@ -624,11 +618,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       
       // move all objects
       for(Collidable c : visibleObjects.values()) {
-        if((new Movable()).getClass().isInstance(c)) {
+        if((new Boss()).getClass().isInstance(c)) {
+          Boss b = (Boss)c;
+          b.move();
+        } else if((new Movable()).getClass().isInstance(c)) {
           Movable m = (Movable)c;
           m.move();
-        }
-        if((new Projectile()).getClass().isInstance(c)) {
+        } else if((new Projectile()).getClass().isInstance(c)) {
           if(Math.abs(c.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(c.getObjectId()); // remove offscreen projectiles
         }
       }

@@ -1,6 +1,7 @@
 package Main;
 
 import Drawing.DrawLib;
+import java.awt.Point;
 
 /**
  *
@@ -12,8 +13,8 @@ public class Living extends Movable {
   private int lives;
   private final int defLives;
   
-  public Living(int objId, int startLives, int startHealth, int texId, double x, double y) {
-    super(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
+  public Living(int objId, int startLives, int startHealth, int texId, double x, double y, Point speed) {
+    super(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight(), speed);
     lives = startLives;
     defLives = startLives;
     health = startHealth;

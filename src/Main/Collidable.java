@@ -45,8 +45,9 @@ public class Collidable extends Drawable {
   public List<Collidable> getCollisions(Map<Integer, Collidable> nearObjects) {  
     List<Collidable> collisions = new LinkedList<>();
     for(Collidable near : nearObjects.values()) {
-      if(collidesWith(near.getBoundary()))
-        collisions.add(near);
+      if(!getBoundary().equals(near.getBoundary()))
+        if(collidesWith(near.getBoundary()))
+          collisions.add(near);
     }
     return collisions;
   }
