@@ -142,17 +142,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gameObjects.put(ID.ID_HERO, hero);
     gameObjects.put(ID.ID_JETPACK, new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
     gameObjects.put(ID.ID_ALT_WEAPON, new Collidable(ID.ID_ALT_WEAPON, DrawLib.TEX_ALT_WEAPON, 300, 900));
-    gameObjects.put(ID.ID_ARMOR, new Collidable(ID.ID_ARMOR, DrawLib.TEX_TEST, 5681, 198, 75, 75)); // remove 75x75 after adding real texture
+    gameObjects.put(ID.ID_ARMOR, new Collidable(ID.ID_ARMOR, DrawLib.TEX_ARMOR, 5681, 198));
     gameObjects.put(ID.ID_ENEMY_1, new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
     gameObjects.put(ID.ID_ENEMY_2, new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point(5,0)));
     gameObjects.put(ID.ID_ENEMY_3, new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point(5,0)));
     gameObjects.put(ID.ID_CALAMITY, new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point(10,10)));
-    gameObjects.put(ID.ID_DOOR, new Collidable(ID.ID_DOOR, DrawLib.TEX_TEST, 11200, 197, 100, 200)); // remove dimensions after adding real texture
-    
-    loadLevel(gl, "res/layer_collision_1.png");
+    gameObjects.put(ID.ID_DOOR, new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11200, 189));
+    gameObjects.put(ID.ID_DOOR_POWERED, new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 11200, 189));
   }
   
   private void resetVisibles() {
+    visibleObjects.clear();
+    
     // only add currently visible objects to this map
     visibleObjects.put(ID.ID_HERO, gameObjects.get(ID.ID_HERO));
     visibleObjects.put(ID.ID_JETPACK, gameObjects.get(ID.ID_JETPACK));
@@ -162,24 +163,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     visibleObjects.put(ID.ID_ENEMY_3, gameObjects.get(ID.ID_ENEMY_3));
     visibleObjects.put(ID.ID_ARMOR, gameObjects.get(ID.ID_ARMOR));
     visibleObjects.put(ID.ID_CALAMITY, gameObjects.get(ID.ID_CALAMITY));
+    visibleObjects.put(ID.ID_DOOR, gameObjects.get(ID.ID_DOOR));
   }
   
   /**
    * Loads all black rectangles in the supplied PNG as collision boundaries for the level.  Will
    * remove all collision boundaries from previous level if found.
-   * @param gl
    * @param fileName 
    */
-  public void loadLevel(GL2 gl, String fileName) {
+  public void loadLevel(String fileName) {
+    resetVisibles();
     int lastId = 99999;
-    
-    // check if a level was previously loaded.  If so remove it first.
-    while(visibleObjects.containsKey(lastId)) {
-      visibleObjects.remove(lastId--);
-    }
-    
-    lastId = 99999; // start at last id
-    
     LevelBuilder levelBuilder = new LevelBuilder(fileName);
     ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
     for(Rectangle r : level) {
@@ -331,8 +325,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void doStartMenuSelection() {
     switch(this.startMenuSelection) {
       case START_GAME: gameMode = GAME_MODE.RUNNING;
+        won = false;
         hero.resetAll();
-        resetVisibles();
+        loadLevel("res/layer_collision_1.png");
         break;
       case EXIT: System.exit(0);
         break;
@@ -654,7 +649,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             toRemove.add(c.getObjectId());
             if(boss.getHealth() <= 0) { // enemy died
               toRemove.add(boss.getObjectId());
-              visibleObjects.put(ID.ID_DOOR, gameObjects.get(ID.ID_DOOR)); // add door after calamity is defeated!
+              visibleObjects.put(ID.ID_DOOR_POWERED, gameObjects.get(ID.ID_DOOR_POWERED)); // add door after calamity is defeated!
+              visibleObjects.remove(ID.ID_DOOR);
             }
           }
         }
@@ -677,7 +673,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           Engine.setStatusMessage("Got armor!");
           toRemove.add(id); // remove the armor image from the screen
           break;
-        case ID.ID_DOOR:
+        case ID.ID_DOOR_POWERED:
           won = true;
           break;
         default: break;

@@ -43,6 +43,9 @@ public class DrawLib {
   public static final int TEX_ENEMY_BASIC = 10;
   public static final int TEX_LEVEL_DECOR = 11;
   public static final int TEX_CALAMITY = 12;
+  public static final int TEX_DOOR = 13;
+  public static final int TEX_DOOR_POWERED = 14;
+  public static final int TEX_ARMOR = 15;
 
   public DrawLib(GL2 context) {
     gl = context;
@@ -60,7 +63,10 @@ public class DrawLib {
     textureIdMap.put(TEX_ALT_WEAPON, "/res/projectile_blue.png");
     textureIdMap.put(TEX_ENEMY_BASIC, "/res/enemy_basic.png");
     textureIdMap.put(TEX_LEVEL_DECOR, "/res/layer_decor_1.png");
-    textureIdMap.put(TEX_CALAMITY, "/res/calamity_placeholder.png");
+    textureIdMap.put(TEX_CALAMITY, "/res/calamity.png");
+    textureIdMap.put(TEX_DOOR, "/res/door.png");
+    textureIdMap.put(TEX_DOOR_POWERED, "/res/door_powered.png");
+    textureIdMap.put(TEX_ARMOR, "/res/armor.png");
     
     loadTextures(); // must load after filename 'puts' above
   }
