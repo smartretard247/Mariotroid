@@ -27,6 +27,7 @@ public class Hero extends Living {
   private Collidable lastWallCollision;
   private Timer recentDamageTimer = new Timer(3000, null);
   private double armor; // armor is a MULTIPLIER, do reduce damage set to a value less than 1
+  private boolean hasArmor;
   
   public Hero(int objId, int startLives, int startHealth, long startScore, int texId, double x, double y) {
     super(objId, startLives, startHealth, texId, x, y, new Point(0, 0));
@@ -40,6 +41,7 @@ public class Hero extends Living {
     isClimbing = false;
     recentDamageTimer.setRepeats(false);
     armor = 1;
+    hasArmor = false;
   }
   
   public Hero() {
@@ -268,5 +270,6 @@ public class Hero extends Living {
   
   public boolean wasRecentlyDamaged() { return recentDamageTimer.isRunning(); }
   
-  public void pickupArmor() { armor = 0.5; } // 50% reduction in damage
+  public void pickupArmor() { armor = 0.5; hasArmor = true; } // 50% reduction in damage
+  public boolean hasArmor() { return hasArmor; }
 }

@@ -50,7 +50,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private DrawLib drawLib;
   public static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
-  private final int INTROLENGTHMS = 400;
+  private final int INTROLENGTHMS = 4000;
   private boolean won = false;
   
   public Scene scene; // trans x & y, scale x & y
