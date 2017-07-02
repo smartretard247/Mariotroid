@@ -237,7 +237,7 @@ public class Hero extends Living {
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
       return new Projectile(ID.getNewId(), DrawLib.TEX_ALT_WEAPON, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
-            getY(), isFlippedOnY(), 3); //fire, 3 damage
+            getY(), isFlippedOnY(), 5); //fire, 3 damage
     }
     return null;
   }
@@ -268,5 +268,5 @@ public class Hero extends Living {
   
   public boolean wasRecentlyDamaged() { return recentDamageTimer.isRunning(); }
   
-  public void pickupArmor() { armor = 0.75; } // 25% reduction in damage
+  public void pickupArmor() { armor = 0.5; } // 50% reduction in damage
 }
