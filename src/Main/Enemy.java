@@ -10,6 +10,7 @@ import java.util.Map;
  * @author Jeezy
  */
 public class Enemy extends Living {
+  protected int pointsWorth = 100;
   
   public Enemy(int objId, int startLives, int startHealth, int texId, double x, double y, Point speed) {
     super(objId, startLives, startHealth, texId, x, y, speed);
@@ -67,4 +68,6 @@ public class Enemy extends Living {
     
     return collisions;
   }
+  
+  public int getPointsWorth() { return pointsWorth; }
 }

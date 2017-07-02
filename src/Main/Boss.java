@@ -14,6 +14,7 @@ public class Boss extends Enemy {
   
   public Boss(int objId, int startLives, int startHealth, int texId, double x, double y, Point speed) {
     super(objId, startLives, startHealth, texId, x, y, speed);
+    pointsWorth = 500;
   }
   
   public Boss() {

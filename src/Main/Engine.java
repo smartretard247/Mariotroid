@@ -471,21 +471,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         gameMode = GAME_MODE.PAUSED;
         break;
       case KeyEvent.VK_W: // climb up
-        //hero.setTextureId(DrawLib.TEX_HERO_CLIMB);
         if(hero.canClimb()) {
           hero.setClimbing(true);
           hero.setSpeedY(5);
         }
         break;
       case KeyEvent.VK_S: // climb down
-        //hero.setTextureId(DrawLib.TEX_HERO_CLIMB);
         if(hero.canClimb()) {
           hero.setClimbing(true);
           hero.setSpeedY(-5);
         }
         break;
       case KeyEvent.VK_A: // move left
-        hero.setTextureId(DrawLib.TEX_HERO_RUN1);
         hero.increaseSpeed(-10, 0);
         if(hero.isClimbing()) {
           hero.setClimbing(false);
@@ -493,7 +490,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         }
         break;
       case KeyEvent.VK_D: // move right
-        hero.setTextureId(DrawLib.TEX_HERO_RUN1);
         hero.increaseSpeed(10, 0);
         if(hero.isClimbing()) {
           hero.setClimbing(false);
@@ -633,6 +629,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             if(new Projectile().getClass().isInstance(c)) {
               toRemove.add(c.getObjectId());
               if(enemy.getHealth() <= 0) { // enemy died
+                hero.addScore(enemy.getPointsWorth());
                 toRemove.add(enemy.getObjectId());
               }
             }
@@ -649,6 +646,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             toRemove.add(c.getObjectId());
             if(boss.getHealth() <= 0) { // enemy died
               toRemove.add(boss.getObjectId());
+              hero.addScore(boss.getPointsWorth());
               visibleObjects.put(ID.ID_DOOR_POWERED, gameObjects.get(ID.ID_DOOR_POWERED)); // add door after calamity is defeated!
               visibleObjects.remove(ID.ID_DOOR);
             }
@@ -663,14 +661,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         switch(id) {
         case ID.ID_JETPACK:
           Engine.setStatusMessage("Got jetpack!");
+          hero.addScore(250);
           toRemove.add(id); // remove the jetpack image from the screen
           break;
         case ID.ID_ALT_WEAPON:
           Engine.setStatusMessage("Got missles!");
+          hero.addScore(1000);
           toRemove.add(id); // remove the shell image from the screen
           break;
         case ID.ID_ARMOR:
           Engine.setStatusMessage("Got armor!");
+          hero.addScore(275);
           toRemove.add(id); // remove the armor image from the screen
           break;
         case ID.ID_DOOR_POWERED:
@@ -686,7 +687,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       }
       
       // set textures based on speed here
-      if(hero.getSpeedX() == 0) hero.setTextureId(DrawLib.TEX_HERO);
+      if(hero.standingStill()) hero.setTextureId(DrawLib.TEX_HERO);
+      else if(hero.movingLeft() || hero.movingRight()) hero.setTextureId(DrawLib.TEX_HERO_RUN1);
       break;
     default: break;
     }
