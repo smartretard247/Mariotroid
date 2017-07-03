@@ -210,6 +210,28 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   /**
+   * Adjusts the scene with the hero's movement.  Will adjust a background scene when forBackground
+   * is set to true.
+   * @param gl
+   * @param forBackground 
+   */
+  public void adjustScene(GL2 gl, boolean forBackground) {
+    if(!forBackground) {
+      if(hero.getX() > 600 && hero.getX() < 10500)
+        gl.glTranslated(-hero.getX(), scene.transY, scene.transZ);
+      else if(hero.getX() <= 600)
+        gl.glTranslated(scene.transX, scene.transY, scene.transZ);
+      else if(hero.getX() >= 10500)
+        gl.glTranslated(-10500, scene.transY, scene.transZ);
+    } else {
+      if(hero.getX() <= 600)
+        gl.glTranslated(-scene.transX*10, -scene.transY*3, -40);
+      else
+        gl.glTranslated(-scene.transX*10+hero.getX()/10, -scene.transY*3, -40);
+    }
+  }
+  
+  /**
    * This is the standard loop for the game, showing level, character, enemies, etc.
    * @param gl 
    */
@@ -217,12 +239,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPushMatrix(); // save initial transform
     gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
     
-    if(hero.getX() > 600 && hero.getX() < 10500)
-      gl.glTranslated(-hero.getX(), scene.transY, scene.transZ);
-    else if(hero.getX() <= 600)
-      gl.glTranslated(scene.transX, scene.transY, scene.transZ);
-    else if(hero.getX() >= 10500)
-      gl.glTranslated(-10500, scene.transY, scene.transZ);
+    adjustScene(gl, false);
     
     drawBackground(gl);
     drawHero(gl);
@@ -270,7 +287,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawBackground(GL2 gl) {
     // back ground level
     gl.glPushMatrix();
-    gl.glTranslated(0, 0, -50);
+    adjustScene(gl, true);
     DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_LEVEL);
     gl.glPopMatrix();
     
