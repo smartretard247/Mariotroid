@@ -8,7 +8,6 @@ import Enumerations.ID;
 //import Test.Test;
 import java.awt.event.*;
 import javax.swing.*;
-import com.jogamp.opengl.GL;
 import static com.jogamp.opengl.GL.GL_BLEND;
 import static com.jogamp.opengl.GL.GL_ONE;
 import static com.jogamp.opengl.GL.GL_ONE_MINUS_SRC_ALPHA;
@@ -24,7 +23,6 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JFrame;
@@ -107,9 +105,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   @Override
   public void display(GLAutoDrawable drawable) { // called when the panel needs to be drawn
     GL2 gl = drawable.getGL().getGL2();
-    gl.glClearColor(0, 0.4f, 0.8f, 0);
-    gl.glClear( GL.GL_COLOR_BUFFER_BIT );
-    gl.glLoadIdentity();
+    gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+    //gl.glLoadIdentity();
     draw(gl);
   }
 
@@ -122,17 +119,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void init(GLAutoDrawable drawable) { // called when the panel is created
     GL2 gl = drawable.getGL().getGL2();
     
-    //gl.glEnable(GL2.GL_DEPTH_TEST);  // required for 3D drawing, not usually for 2D.
     gl.glMatrixMode(GL2.GL_PROJECTION);
     gl.glLoadIdentity();
-    gl.glOrtho(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, -2, 2);
+    gl.glOrtho(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, -2, 51);
+    //gl.glFrustum(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, -2, 51);
+    
     gl.glMatrixMode(GL2.GL_MODELVIEW);
-    gl.glClearColor( 0, 0, 0, 1 );
+    gl.glClearColor(0, 0.4f, 0.8f, 0);
     gl.glEnable(GL_BLEND);
     gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    messageTimer.setRepeats(false);
     
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
+    messageTimer.setRepeats(false);
     
     scene = new Scene(-600, -600, 0.5, 0.5); // initial scale set to 0.5
     hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
@@ -272,13 +270,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawBackground(GL2 gl) {
     // back ground level
     gl.glPushMatrix();
-    gl.glTranslated(0, 0, 50);
-    DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_LEVEL);
+    gl.glTranslated(0, 0, -50);
+    //DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_LEVEL);
     gl.glPopMatrix();
     
     // draw game objects
     game.getVisibles().forEach((c) -> { c.draw(); });
-    //game.getVisibles().values().forEach((o) -> { o.draw(); });
   }
   
   /**
