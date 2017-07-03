@@ -70,4 +70,5 @@ public class Enemy extends Living {
   }
   
   public int getPointsWorth() { return pointsWorth; }
+  public void setPointsWorth(int to) { pointsWorth = to; }
 }

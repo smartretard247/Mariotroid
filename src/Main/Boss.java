@@ -10,7 +10,7 @@ import java.util.Map;
  * @author Jeezy
  */
 public class Boss extends Enemy {
-  private final int minXLocation = 9000; // to keep from entering the rest of the level
+  private int minXLocation = 9000; // to keep from entering the rest of the level
   
   public Boss(int objId, int startLives, int startHealth, int texId, double x, double y, Point speed) {
     super(objId, startLives, startHealth, texId, x, y, speed);
@@ -87,4 +87,7 @@ public class Boss extends Enemy {
     
     return collisions;
   }
+  
+  public int getMinX() { return minXLocation; }
+  public void setMinX(int to) { minXLocation = to; }
 }
