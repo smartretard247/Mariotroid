@@ -729,6 +729,26 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   @Override
   public void mousePressed(MouseEvent evt) {
+    int key = evt.getButton();
+    Point sc = evt.getPoint(); // clicked location, to convert to world coords
+    
+    switch(gameMode) { // controls are based on the game mode
+    case RUNNING:
+      switch(key) {
+      case MouseEvent.BUTTON1: // left click
+        qProjectiles.add(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
+        break;
+      case MouseEvent.BUTTON2: // middle click
+        break;
+      case MouseEvent.BUTTON3: // right click
+        qProjectiles.add(new NextProjectile(sc, false)); // add the projectile to the queue, to be fired during next update
+        break;
+      default: break;
+      }
+      break;
+    default: break;
+    }
+          
     if (dragging) {
       return;  // don't start a new drag while one is already in progress
     }
@@ -799,19 +819,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       default: break;
       }
       break; // END PAUSED
-    case RUNNING:
-      switch(key) {
-      case MouseEvent.BUTTON1: // left click
-        qProjectiles.add(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
-        break;
-      case MouseEvent.BUTTON2: // middle click
-        break;
-      case MouseEvent.BUTTON3: // right click
-        qProjectiles.add(new NextProjectile(sc, false)); // add the projectile to the queue, to be fired during next update
-        break;
-      default: break;
-      }
-      break; // END START_MENU
     case CREDITS:
     case GAME_OVER:
       switch(key) {
@@ -819,6 +826,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         this.gameMode = GAME_MODE.START_MENU;
       default: break;
       }
+    default: break;
     }
   }
   @Override public void mouseEntered(MouseEvent evt) { 
