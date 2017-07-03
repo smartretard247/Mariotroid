@@ -2,6 +2,7 @@ package Main;
 
 import Drawing.DrawLib;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class Enemy extends Living {
     this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0, new Point(0, 0));
   }
   
-  public List<Collidable> processCollisions(Map<Integer, Collidable> nearObjects) {
+  public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
     setSpeedY(speedY - PhysicsEngine.GRAVITY);
     
     List<Collidable> collisions = getCollisions(nearObjects);
@@ -35,6 +36,7 @@ public class Enemy extends Living {
         } else if(movingDownAndRight()) { // falling right and down
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
             adjustToLeftOf(c);
+            speedX = -speedX;
           } else {
             adjustToTopOf(c);
             speedY = 0;
@@ -42,6 +44,7 @@ public class Enemy extends Living {
         } else if(movingDownAndLeft()) { // falling left and down
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
             adjustToRightOf(c);
+            speedX = -speedX;
           } else {
             adjustToTopOf(c);
             speedY = 0;

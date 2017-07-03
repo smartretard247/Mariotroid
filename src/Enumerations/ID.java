@@ -1,12 +1,12 @@
 package Enumerations;
 
+import Main.ObjectContainer;
+
 /**
  *
  * @author Jeezy
  */
 public final class ID {
-  private static int nextId = 1000;
-  
   public static final int ID_HERO = 0;
   public static final int ID_JETPACK = 1;
   public static final int ID_ALT_WEAPON = 2;
@@ -18,5 +18,5 @@ public final class ID {
   public static final int ID_DOOR = 8;
   public static final int ID_DOOR_POWERED = 9;
   
-  public static final int getNewId() { return nextId++; }
+  public static final int getNewId() { return ObjectContainer.getNewId(); }
 }

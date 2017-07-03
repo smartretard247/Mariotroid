@@ -15,12 +15,12 @@ public class Projectile extends Movable {
   
   private int zRot;
   
-  public Projectile(int objId, int texId, int zrot, double x, double y, int d) {
+  public Projectile(int objId, int texId, double zrot, double x, double y, int d) {
     super(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
-    Point speed = calcSpeed(zrot);
+    Point.Double speed = calcSpeed((int) zrot);
     speedX = speed.x;
     speedY = speed.y;
-    zRot = zrot;
+    zRot = (int) zrot;
     damage = d;
   }
   
@@ -47,11 +47,11 @@ public class Projectile extends Movable {
     GL.glPopMatrix();
   }
   
-  public static int calcRotation(Point center, Point direction) {
-    float dirX = direction.x, dirY = direction.y, cX = center.x, cY = center.y;
-    float rise = (dirY - cY), run = (dirX - cX);
+  public static double calcRotation(Point.Double center, Point.Double direction) {
+    double dirX = direction.x, dirY = direction.y, cX = center.x, cY = center.y;
+    double rise = (dirY - cY), run = (dirX - cX);
     if(run == 0) { return cY < 0 ? -90 : 90; } // shoot up or down when div by 0
-    float slope = rise / run;
+    double slope = rise / run;
     
     if(slope >= -2.0 && slope < -0.5) {
       return (rise < 0) ? -45 : 135; // shoot down and right, or up and left
@@ -71,17 +71,17 @@ public class Projectile extends Movable {
    * @param rotation
    * @return 
    */
-  private static Point calcSpeed(int rotation) {
+  private static Point.Double calcSpeed(int rotation) {
     int maxX = HORIZONTAL_SPEED, maxY = VERTICAL_SPEED;
     switch(rotation) {
-      case -135: return new Point((int) Math.sqrt(maxX*maxX/2) * -1, (int) Math.sqrt(maxY*maxY/2) * -1);
-      case -90: return new Point(0, -maxY);
-      case -45: return new Point((int) Math.sqrt(maxX*maxX/2), (int) -Math.sqrt(maxY*maxY/2));
-      case 0: return new Point(maxX, 0);
-      case 45: return new Point((int) Math.sqrt(maxX*maxX/2), (int) Math.sqrt(maxY*maxY/2));
-      case 90: return new Point(0, maxY);
-      case 135: return new Point((int) Math.sqrt(maxX*maxX/2) * -1, (int) Math.sqrt(maxY*maxY/2));
-      case 180: return new Point(-maxX, 0);
+      case -135: return new Point.Double(Math.sqrt(maxX*maxX/2) * -1, Math.sqrt(maxY*maxY/2) * -1);
+      case -90: return new Point.Double(0, -maxY);
+      case -45: return new Point.Double(Math.sqrt(maxX*maxX/2), -Math.sqrt(maxY*maxY/2));
+      case 0: return new Point.Double(maxX, 0);
+      case 45: return new Point.Double(Math.sqrt(maxX*maxX/2), Math.sqrt(maxY*maxY/2));
+      case 90: return new Point.Double(0, maxY);
+      case 135: return new Point.Double(Math.sqrt(maxX*maxX/2) * -1, Math.sqrt(maxY*maxY/2));
+      case 180: return new Point.Double(-maxX, 0);
       default: return null;
     }
   }

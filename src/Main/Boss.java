@@ -2,6 +2,7 @@ package Main;
 
 import Drawing.DrawLib;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public class Boss extends Enemy {
     if(x < minXLocation) speedX = -speedX;
   }
   
-  public List<Collidable> processCollisions(Map<Integer, Collidable> nearObjects) {
+  public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
     List<Collidable> collisions = getCollisions(nearObjects);
     for(Collidable c : collisions) {
       int id = c.getTextureId();

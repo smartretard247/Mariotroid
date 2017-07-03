@@ -4,8 +4,8 @@ import Drawing.DrawLib;
 import Enumerations.GAME_MODE;
 import Enumerations.ID;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.swing.Timer;
 
 /**
@@ -14,7 +14,7 @@ import javax.swing.Timer;
  */
 public class Hero extends Living {
   private static final int MAX_SECONDARY_AMMO = 5;
-  private static final int JUMP_SPEED = 70;
+  private static final int JUMP_SPEED = 60;
   public int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
   private long score;
   
@@ -72,7 +72,7 @@ public class Hero extends Living {
     doLand(); // reset jump as if on ground
   }
   
-  public List<Collidable> processCollisions(Map<Integer,Collidable> nearObjects)  {
+  public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects)  {
     if(!isClimbing) setSpeedY(speedY - PhysicsEngine.GRAVITY);
     
     //move();
@@ -225,17 +225,17 @@ public class Hero extends Living {
   public void pickupSecondaryWeapon() { hasSecondaryWeapon = true; }
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
   
-  public Projectile firePrimaryWeapon(Point direction) {
-    int zRot = Projectile.calcRotation(new Point((int)x, (int)y), direction);
+  public Projectile firePrimaryWeapon(Point.Double direction) {
+    double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
     flipY = (zRot == 135 || zRot == -135 || zRot == 180);
     double xOffset = 0; // so projectile doesn't come from the hero's chest
     return new Projectile(ID.getNewId(), DrawLib.TEX_SHELL, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
             getY(), 1); //fire primary, 1 damage
   }
-  public Projectile fireSecondaryWeapon(Point direction) {
+  public Projectile fireSecondaryWeapon(Point.Double direction) {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
-      int zRot = Projectile.calcRotation(new Point((int)x, (int)y), direction);
+      double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
       flipY = (zRot == 135 || zRot == -135 || zRot == 180);
       double xOffset = 0; // so projectile doesn't come from the hero's chest
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;

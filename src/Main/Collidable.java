@@ -1,6 +1,7 @@
 package Main;
 
 import Drawing.DrawLib;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,9 +43,9 @@ public class Collidable extends Drawable {
    * @param nearObjects
    * @return 
    */
-  public List<Collidable> getCollisions(Map<Integer, Collidable> nearObjects) {  
+  public List<Collidable> getCollisions(ArrayList<Collidable> nearObjects) {  
     List<Collidable> collisions = new LinkedList<>();
-    for(Collidable near : nearObjects.values()) {
+    for(Collidable near : nearObjects) {
       if(!getBoundary().equals(near.getBoundary()))
         if(collidesWith(near.getBoundary()))
           collisions.add(near);

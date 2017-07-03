@@ -172,7 +172,7 @@ public class DrawLib {
    * @param p
    * @return 
    */
-  public static Point screenToWorld(Point p) {
+  public static Point.Double screenToWorld(Point p) {
     int[] viewport = new int[4]; //var to hold the viewport info
     double[] modelview = new double[16]; //var to hold the modelview info
     double[] projection = new double[16]; //var to hold the projection matrix info
@@ -189,6 +189,6 @@ public class DrawLib {
               projection, 0, 
               viewport, 0, 
               wcoord, 0);
-    return new Point((int)wcoord[0], (int)wcoord[1]);
+    return new Point.Double(wcoord[0], wcoord[1]);
   }
 }

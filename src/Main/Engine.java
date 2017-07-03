@@ -57,8 +57,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public Scene scene; // trans x & y, scale x & y
   public Hero hero;
   public PhysicsEngine phy = new PhysicsEngine();
-  public final Map<Integer, Collidable> gameObjects = new HashMap<>();
-  public final Map<Integer, Collidable> visibleObjects = new HashMap<>();
+  //public final Map<Integer, Collidable> gameObjects = new HashMap<>();
+  //public final Map<Integer, Collidable> visibleObjects = new HashMap<>();
+  public ObjectContainer game = new ObjectContainer();
   private static String statusMessage = "";
   private final LinkedList<NextProjectile> qProjectiles = new LinkedList<>();
   
@@ -138,52 +139,59 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
     
     // initialize all game objects here
-    gameObjects.put(ID.ID_HERO, hero);
-    gameObjects.put(ID.ID_JETPACK, new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
-    gameObjects.put(ID.ID_ALT_WEAPON, new Collidable(ID.ID_ALT_WEAPON, DrawLib.TEX_ALT_WEAPON, 300, 900));
-    gameObjects.put(ID.ID_ARMOR, new Collidable(ID.ID_ARMOR, DrawLib.TEX_ARMOR, 5681, 198));
-    gameObjects.put(ID.ID_ENEMY_1, new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
-    gameObjects.put(ID.ID_ENEMY_2, new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point(5,0)));
-    gameObjects.put(ID.ID_ENEMY_3, new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point(5,0)));
-    gameObjects.put(ID.ID_CALAMITY, new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point(10,10)));
-    gameObjects.put(ID.ID_DOOR, new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11200, 189));
-    gameObjects.put(ID.ID_DOOR_POWERED, new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 11200, 189));
+    game.addGO(hero);
+    game.addGO(new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
+    game.addGO(new Collidable(ID.ID_ALT_WEAPON, DrawLib.TEX_ALT_WEAPON, 300, 900));
+    game.addGO(new Collidable(ID.ID_ARMOR, DrawLib.TEX_ARMOR, 5681, 198));
+    game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
+    game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point(5,0)));
+    game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point(5,0)));
+    game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point(10,10)));
+    game.addGO(new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11200, 189));
+    game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 11200, 189));
   }
   
-  private void resetVisibles() {
-    visibleObjects.clear();
-    
-    // only add currently visible objects to this map
-    visibleObjects.put(ID.ID_HERO, gameObjects.get(ID.ID_HERO));
-    visibleObjects.put(ID.ID_JETPACK, gameObjects.get(ID.ID_JETPACK));
-    visibleObjects.put(ID.ID_ALT_WEAPON, gameObjects.get(ID.ID_ALT_WEAPON));
-    visibleObjects.put(ID.ID_ENEMY_1, gameObjects.get(ID.ID_ENEMY_1));
-    visibleObjects.put(ID.ID_ENEMY_2, gameObjects.get(ID.ID_ENEMY_2));
-    visibleObjects.put(ID.ID_ENEMY_3, gameObjects.get(ID.ID_ENEMY_3));
-    visibleObjects.put(ID.ID_ARMOR, gameObjects.get(ID.ID_ARMOR));
-    visibleObjects.put(ID.ID_CALAMITY, gameObjects.get(ID.ID_CALAMITY));
-    visibleObjects.put(ID.ID_DOOR, gameObjects.get(ID.ID_DOOR));
+  private void resetVisibles(int level) {
+    game.clearVisibles();
+    game.addVisible(ID.ID_HERO); // all levels need the hero!
+    switch(level) {
+    case 1:// only add level 1 visible objects to this map
+      game.addVisible(ID.ID_JETPACK);
+      game.addVisible(ID.ID_ALT_WEAPON);
+      game.addVisible(ID.ID_ENEMY_1);
+      game.addVisible(ID.ID_ENEMY_2);
+      game.addVisible(ID.ID_ENEMY_3);
+      game.addVisible(ID.ID_ARMOR);
+      game.addVisible(ID.ID_CALAMITY);
+      game.addVisible(ID.ID_DOOR);
+      break;
+    default: System.out.println("Unknown level number while resetting visibles."); break;
+    }
+  }
+  
+  public void jumpToLevel(int num) {
+    switch(num) {
+      case 1: loadLevel(1, "res/layer_collision_1.png"); break;
+      case 2: loadLevel(2, "res/layer_collision_1.png"); break;
+      default: System.out.println("Unknown level number while jumping to level."); break;
+    }
   }
   
   /**
    * Loads all black rectangles in the supplied PNG as collision boundaries for the level.  Will
    * remove all collision boundaries from previous level if found.
+   * @param levelNum
    * @param fileName 
    */
-  public void loadLevel(String fileName) {
-    resetVisibles();
-    int lastId = 99999;
+  private void loadLevel(int levelNum, String fileName) {
+    resetVisibles(levelNum);
     LevelBuilder levelBuilder = new LevelBuilder(fileName);
     ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
-    for(Rectangle r : level) {
-      // need to scale the rectangle before adding it to the visible objects.....
-      visibleObjects.put(lastId, new Collidable(lastId, DrawLib.TEX_LEVEL,
-              r.x(),
-              r.y(),
-              r.w(),
-              r.h()));
-      lastId--;
-    }
+    level.stream().forEach((r) -> {
+      int id = ID.getNewId();
+      game.addVisible(id, new Collidable(id, DrawLib.TEX_LEVEL,
+              r.x(), r.y(), r.w(), r.h()));
+    });
   }
   
   /* 
@@ -266,7 +274,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // back ground objects
     
     // draw game objects
-    visibleObjects.values().forEach((o) -> { o.draw(); });
+    game.getVisibles().forEach((c) -> { c.draw(); });
+    //game.getVisibles().values().forEach((o) -> { o.draw(); });
   }
   
   /**
@@ -326,7 +335,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case START_GAME: gameMode = GAME_MODE.RUNNING;
         won = false;
         hero.resetAll();
-        loadLevel("res/layer_collision_1.png");
+        jumpToLevel(1);
         break;
       case EXIT: System.exit(0);
         break;
@@ -461,10 +470,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case RUNNING:
       switch (key) {
       case KeyEvent.VK_SHIFT:
-        if(!hero.isSprinting()) {
-          hero.toggleSprint();
-          hero.setSpeedX(hero.getSpeedX()*2); // double current speed
-        }
+        hero.toggleSprint();
         break;
       case KeyEvent.VK_P: // pause/unpause
         gameMode = GAME_MODE.PAUSED;
@@ -482,14 +488,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         }
         break;
       case KeyEvent.VK_A: // move left
-        hero.increaseSpeed(-10, 0);
+        hero.setSpeed(-GameObject.MAX_SPEED_X, 0);
         if(hero.isClimbing()) {
           hero.setClimbing(false);
           hero.setSpeedY(-1);
         }
         break;
       case KeyEvent.VK_D: // move right
-        hero.increaseSpeed(10, 0);
+        hero.setSpeed(GameObject.MAX_SPEED_X, 0);
         if(hero.isClimbing()) {
           hero.setClimbing(false);
           hero.setSpeedY(-1);
@@ -558,12 +564,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(gameMode) { // controls are based on the game mode
     case RUNNING:
       switch (key) {
-      case KeyEvent.VK_SHIFT:
-        if(hero.isSprinting()) {
-          hero.toggleSprint();
-          hero.setSpeedX(hero.getSpeedX()/2); // halve current speed
-        }
-        break;
       case KeyEvent.VK_W: // stop climbimg
         hero.setSpeedY(0);
         break;
@@ -603,11 +603,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(gameMode) {
     case RUNNING:
       if(won) { gameMode = GAME_MODE.CREDITS; return; } // check for winning conditions
-      
+      ArrayList<Collidable> visibleObjects = game.getVisibles();
       ArrayList<Integer> toRemove = new ArrayList<>(); // keep track of ids to remove at end of frame
       
       // move all objects
-      for(Collidable c : visibleObjects.values()) {
+      for(Collidable c : visibleObjects) {
         if((new Boss()).getClass().isInstance(c)) {
           Boss b = (Boss)c;
           b.move();
@@ -617,13 +617,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         } else if((new Projectile()).getClass().isInstance(c)) {
           Projectile p = (Projectile)c;
           p.move();
-          if(Math.abs(c.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(c.getObjectId()); // remove offscreen projectiles
+          if(Math.abs(c.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(p.getObjectId()); // remove offscreen projectiles
         }
       }
     
       // enemy movement and collision detection
       for(int i = ID.ID_ENEMY_1; i <= ID.ID_ENEMY_3; i++) {
-        Enemy enemy = (Enemy)(visibleObjects.get(i));
+        Enemy enemy = (Enemy)(game.getVisible(i));
         if(enemy != null) {
           List<Collidable> enemyCollisions = enemy.processCollisions(visibleObjects);
           for(Collidable c : enemyCollisions) {
@@ -639,7 +639,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       }
       
       // boss movement and collision detection
-      Boss boss = (Boss)(visibleObjects.get(ID.ID_CALAMITY));
+      Boss boss = (Boss)(game.getVisible(ID.ID_CALAMITY));
       if(boss != null) {
         List<Collidable> bossCollisions = boss.processCollisions(visibleObjects);
         for(Collidable c : bossCollisions) {
@@ -648,8 +648,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             if(boss.getHealth() <= 0) { // enemy died
               toRemove.add(boss.getObjectId());
               hero.addScore(boss.getPointsWorth());
-              visibleObjects.put(ID.ID_DOOR_POWERED, gameObjects.get(ID.ID_DOOR_POWERED)); // add door after calamity is defeated!
-              visibleObjects.remove(ID.ID_DOOR);
+              game.addVisible(ID.ID_DOOR_POWERED); // add door after calamity is defeated!
+              game.removeVisible(ID.ID_DOOR);
             }
           }
         }
@@ -683,9 +683,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       }
       
       // remove all ids tagged for removal
-      for(Integer id : toRemove) {
-        visibleObjects.remove(id);
-      }
+      toRemove.stream().forEach((id) -> { game.removeVisible(id); });
       
       // set textures based on speed here
       if(hero.standingStill()) hero.setTextureId(DrawLib.TEX_HERO);
@@ -841,7 +839,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     if(!qProjectiles.isEmpty()) {
       NextProjectile np = qProjectiles.pop();
       Point sc = np.screenCoord;
-      Point wc = DrawLib.screenToWorld(sc);
+      Point.Double wc = DrawLib.screenToWorld(sc);
       setStatusMessage("Clicked point in world: (" + wc.x + ", " + wc.y + ")");
       
       // can only shoot in front of direction the hero is facing
@@ -851,7 +849,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           fired = hero.firePrimaryWeapon(wc);
         else
           fired = hero.fireSecondaryWeapon(wc);
-        if(fired != null) visibleObjects.put(fired.getObjectId(), fired);
+        if(fired != null) game.addVisible(fired.getObjectId(), fired);
         else System.out.println("Attempted to fire null projectile.");
       //}
     }
