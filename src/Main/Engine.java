@@ -488,14 +488,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         }
         break;
       case KeyEvent.VK_A: // move left
-        hero.setSpeed(-GameObject.MAX_SPEED_X, 0);
+        hero.increaseSpeed(-GameObject.MAX_SPEED_X, 0);
         if(hero.isClimbing()) {
           hero.setClimbing(false);
           hero.setSpeedY(-1);
         }
         break;
       case KeyEvent.VK_D: // move right
-        hero.setSpeed(GameObject.MAX_SPEED_X, 0);
+        hero.increaseSpeed(GameObject.MAX_SPEED_X, 0);
         if(hero.isClimbing()) {
           hero.setClimbing(false);
           hero.setSpeedY(-1);
