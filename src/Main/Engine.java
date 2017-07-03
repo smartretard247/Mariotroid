@@ -18,6 +18,7 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -67,8 +68,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     JFrame window = new JFrame("Mariotroid");
     Engine panel = new Engine();
     window.setContentPane(panel);
-    /* TODO: If you want to have a menu, comment out the following line. */
-    //window.setJMenuBar(panel.createMenuBar());
     window.pack();
     window.setLocation(10,10);
     window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -822,8 +821,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       }
     }
   }
-  @Override public void mouseEntered(MouseEvent evt) { }
-  @Override public void mouseExited(MouseEvent evt) { }
+  @Override public void mouseEntered(MouseEvent evt) { 
+    display.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+  }
+  @Override public void mouseExited(MouseEvent evt) { 
+    display.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+  }
   
   /**
    * Game will automatically display this message at the bottom of the screen for x seconds.
