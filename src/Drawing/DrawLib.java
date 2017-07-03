@@ -41,12 +41,13 @@ public class DrawLib {
   public static final int TEX_JETPACK = 8;
   public static final int TEX_ALT_WEAPON = 9;
   public static final int TEX_ENEMY_BASIC = 10;
-  public static final int TEX_LEVEL_DECOR = 11;
-  public static final int TEX_CALAMITY = 12;
-  public static final int TEX_DOOR = 13;
-  public static final int TEX_DOOR_POWERED = 14;
-  public static final int TEX_ARMOR = 15;
-  public static final int TEX_BACKGROUND_LEVEL = 16;
+  public static final int TEX_CALAMITY = 11;
+  public static final int TEX_DOOR = 12;
+  public static final int TEX_DOOR_POWERED = 13;
+  public static final int TEX_ARMOR = 14;
+  public static final int TEX_BACKGROUND_LEVEL = 15;
+  public static final int TEX_LEVEL_DECOR_1 = 16;
+  public static final int TEX_LEVEL_DECOR_2 = 17;
 
   public DrawLib(GL2 context) {
     gl = context;
@@ -63,7 +64,8 @@ public class DrawLib {
     textureIdMap.put(TEX_JETPACK, "/res/jetpack.png");
     textureIdMap.put(TEX_ALT_WEAPON, "/res/projectile_blue.png");
     textureIdMap.put(TEX_ENEMY_BASIC, "/res/enemy_basic.png");
-    textureIdMap.put(TEX_LEVEL_DECOR, "/res/layer_decor_1.png");
+    textureIdMap.put(TEX_LEVEL_DECOR_1, "/res/layer_decor_1.png");
+    textureIdMap.put(TEX_LEVEL_DECOR_2, "/res/layer_decor_2.png");
     textureIdMap.put(TEX_CALAMITY, "/res/calamity.png");
     textureIdMap.put(TEX_DOOR, "/res/door.png");
     textureIdMap.put(TEX_DOOR_POWERED, "/res/door_powered.png");
