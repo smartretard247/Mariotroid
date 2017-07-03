@@ -51,7 +51,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final int INTROLENGTHMS = 400;
   private boolean won = false;
   
-  public Scene scene; // trans x & y, scale x & y
+  public Scene scene; // trans x & y & z, scale x & y & z
   public Hero hero;
   public PhysicsEngine phy = new PhysicsEngine();
   //public final Map<Integer, Collidable> gameObjects = new HashMap<>();
@@ -106,7 +106,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void display(GLAutoDrawable drawable) { // called when the panel needs to be drawn
     GL2 gl = drawable.getGL().getGL2();
     gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-    //gl.glLoadIdentity();
+    gl.glLoadIdentity();
     draw(gl);
   }
 
@@ -121,8 +121,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     gl.glMatrixMode(GL2.GL_PROJECTION);
     gl.glLoadIdentity();
-    gl.glOrtho(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, -2, 51);
-    //gl.glFrustum(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, -2, 51);
+    //gl.glOrtho(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, -10, 50);
+    gl.glFrustum(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, 9.9, 50);
     
     gl.glMatrixMode(GL2.GL_MODELVIEW);
     gl.glClearColor(0, 0.4f, 0.8f, 0);
@@ -132,7 +132,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     messageTimer.setRepeats(false);
     
-    scene = new Scene(-600, -600, 0.5, 0.5); // initial scale set to 0.5
+    scene = new Scene(-600, -600, 0, 0.5, 0.5, 1.0); // initial scale and translations
     hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
     
     // initialize all game objects here
@@ -195,6 +195,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * Draws the scene, for each given game mode.
   */
   private void draw(GL2 gl) {
+    gl.glPushMatrix(); // save initial transform
+    gl.glTranslated(0, 0, -10); // push everything away by 10
     switch(gameMode) {
       case INTRO: drawIntro(gl); break; // END INTRO
       case START_MENU: drawStartMenu(gl); break; // END START MENU
@@ -204,6 +206,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case CREDITS: drawCredits(gl); break;
       default: break;
     }
+    gl.glPopMatrix(); // return to initial transform
   }
   
   /**
@@ -212,17 +215,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawNormalGamePlay(GL2 gl) {
     gl.glPushMatrix(); // save initial transform
-    gl.glScaled(scene.scaleX, scene.scaleY, 1); // set global scale
-    
-    //if(hero.getX()/2 < scene.transX+1000) scene.transX++;// apply scroll with hero
-    //else if(hero.getX()/2 > scene.transX-1000) scene.transX--;// apply scroll with hero      
+    gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
     
     if(hero.getX() > 600 && hero.getX() < 10500)
-      gl.glTranslated(-hero.getX(), scene.transY, 0);
+      gl.glTranslated(-hero.getX(), scene.transY, scene.transZ);
     else if(hero.getX() <= 600)
-      gl.glTranslated(scene.transX, scene.transY, 0);
+      gl.glTranslated(scene.transX, scene.transY, scene.transZ);
     else if(hero.getX() >= 10500)
-      gl.glTranslated(-10500, scene.transY, 0);
+      gl.glTranslated(-10500, scene.transY, scene.transZ);
     
     drawBackground(gl);
     drawHero(gl);
@@ -271,7 +271,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // back ground level
     gl.glPushMatrix();
     gl.glTranslated(0, 0, -50);
-    //DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_LEVEL);
+    DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_LEVEL);
     gl.glPopMatrix();
     
     // draw game objects
@@ -292,14 +292,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     */
   private void drawForeground(GL2 gl) {
     // draw foreground objects here
-    gl.glPushMatrix(); //-scene.transY-24
+    gl.glPushMatrix();
     gl.glTranslated(DrawLib.getTexture(DrawLib.TEX_LEVEL_DECOR).getWidth()/2, DrawLib.getTexture(DrawLib.TEX_LEVEL_DECOR).getHeight()/2, 0);
     DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR);
     gl.glPopMatrix();
   }
   
   private void drawIntro(GL2 gl) {
+    gl.glPushMatrix();
+    gl.glTranslated(0, 0, 0);
     DrawLib.drawTexturedRectangle(DrawLib.TEX_LOGO);
+    gl.glPopMatrix();
   }
 
   private void drawStartMenu(GL2 gl) {
@@ -345,6 +348,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
 
   private void drawHud(GL2 gl) {
     gl.glPushMatrix();
+    gl.glTranslated(0, 0, 0);
     DrawLib.drawTexturedRectangle(DrawLib.TEX_HUD);
     gl.glPopMatrix();
     
