@@ -46,6 +46,7 @@ public class DrawLib {
   public static final int TEX_DOOR = 13;
   public static final int TEX_DOOR_POWERED = 14;
   public static final int TEX_ARMOR = 15;
+  public static final int TEX_BACKGROUND_LEVEL = 16;
 
   public DrawLib(GL2 context) {
     gl = context;
@@ -67,6 +68,7 @@ public class DrawLib {
     textureIdMap.put(TEX_DOOR, "/res/door.png");
     textureIdMap.put(TEX_DOOR_POWERED, "/res/door_powered.png");
     textureIdMap.put(TEX_ARMOR, "/res/armor.png");
+    textureIdMap.put(TEX_BACKGROUND_LEVEL, "/res/layer_decor_1.png");
     
     loadTextures(); // must load after filename 'puts' above
   }

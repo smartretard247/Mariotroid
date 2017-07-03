@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import javax.swing.JFrame;
 
 /**
@@ -271,7 +270,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawBackground(GL2 gl) {
-    // back ground objects
+    // back ground level
+    gl.glPushMatrix();
+    gl.glTranslated(0, 0, 50);
+    DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_LEVEL);
+    gl.glPopMatrix();
     
     // draw game objects
     game.getVisibles().forEach((c) -> { c.draw(); });

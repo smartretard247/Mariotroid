@@ -10,17 +10,16 @@ import java.awt.Point;
 public class Projectile extends Movable {
   private int damage;
   
-  private static final int HORIZONTAL_SPEED = 50;
-  private static final int VERTICAL_SPEED = 50;
+  private static final int SPEED = 50;
   
   private int zRot;
   
-  public Projectile(int objId, int texId, double zrot, double x, double y, int d) {
+  public Projectile(int objId, int texId, Point.Double zrot, double x, double y, int d) {
     super(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
-    Point.Double speed = calcSpeed((int) zrot);
+    Point.Double speed = calcSpeed(zrot);
     speedX = speed.x;
     speedY = speed.y;
-    zRot = (int) zrot;
+    zRot = (int)Math.toDegrees(Math.atan2(zrot.y, zrot.x));
     damage = d;
   }
   
@@ -47,43 +46,36 @@ public class Projectile extends Movable {
     GL.glPopMatrix();
   }
   
-  public static double calcRotation(Point.Double center, Point.Double direction) {
-    double dirX = direction.x, dirY = direction.y, cX = center.x, cY = center.y;
-    double rise = (dirY - cY), run = (dirX - cX);
-    if(run == 0) { return cY < 0 ? -90 : 90; } // shoot up or down when div by 0
-    double slope = rise / run;
-    
-    if(slope >= -2.0 && slope < -0.5) {
-      return (rise < 0) ? -45 : 135; // shoot down and right, or up and left
-    } else if(slope >= -0.5 && slope < 0.5) {
-      return (run < 0) ? 180 : 0; // directly behind, or shoot straight ahead 
-    } else if(slope >= 0.5 && slope < 2.0) {
-      return (rise > 0) ? 45 : -135;// shoot diagonal up and right, or down and left
-    } else if(slope >= 2.0 || slope < -2.0) {
-      return (rise > 0) ? 90 : -90;// shoot up, or down
-    } else {
-      return 0; // default to shooting straight
+  public static Point.Double calcRotation(Point.Double center, Point.Double direction) {
+    double dx, dy, x, y, mag;
+    dx = direction.x - center.x;
+    dy = direction.y - center.y;
+    if(dx == 0 && dy == 0){
+      x = 0;
+      y = 0;
+    } else if(dx == 0){
+      mag = dy;
+      x = 0;
+      y = dy / mag;
+    } else if(dy == 0){
+      mag = dx;
+      x = dx / mag;
+      y = 0;
+    } else{
+      mag = Math.abs(Math.sqrt((dx*dx) + (dy*dy)));
+      x = dx / mag;
+      y = dy / mag;
     }
-  }
+    return new Point.Double(x, y);
+   }
   
   /**
    * Given a rotation in degrees, calculates horizontal and vertical speeds, and returns as a Point.
    * @param rotation
    * @return 
    */
-  private static Point.Double calcSpeed(int rotation) {
-    int maxX = HORIZONTAL_SPEED, maxY = VERTICAL_SPEED;
-    switch(rotation) {
-      case -135: return new Point.Double(Math.sqrt(maxX*maxX/2) * -1, Math.sqrt(maxY*maxY/2) * -1);
-      case -90: return new Point.Double(0, -maxY);
-      case -45: return new Point.Double(Math.sqrt(maxX*maxX/2), -Math.sqrt(maxY*maxY/2));
-      case 0: return new Point.Double(maxX, 0);
-      case 45: return new Point.Double(Math.sqrt(maxX*maxX/2), Math.sqrt(maxY*maxY/2));
-      case 90: return new Point.Double(0, maxY);
-      case 135: return new Point.Double(Math.sqrt(maxX*maxX/2) * -1, Math.sqrt(maxY*maxY/2));
-      case 180: return new Point.Double(-maxX, 0);
-      default: return null;
-    }
+  private static Point.Double calcSpeed(Point.Double rotation) {
+    return new Point.Double((SPEED * rotation.x), (SPEED * rotation.y));
   }
   
   public int getDamage() { return damage; }

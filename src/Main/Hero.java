@@ -226,8 +226,8 @@ public class Hero extends Living {
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
   
   public Projectile firePrimaryWeapon(Point.Double direction) {
-    double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
-    flipY = (zRot == 135 || zRot == -135 || zRot == 180);
+    Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
+    flipY = (zRot.x < 0);
     double xOffset = 0; // so projectile doesn't come from the hero's chest
     return new Projectile(ID.getNewId(), DrawLib.TEX_SHELL, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
@@ -235,13 +235,13 @@ public class Hero extends Living {
   }
   public Projectile fireSecondaryWeapon(Point.Double direction) {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
-      double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
-      flipY = (zRot == 135 || zRot == -135 || zRot == 180);
+      Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
+      flipY = (zRot.x < 0);
       double xOffset = 0; // so projectile doesn't come from the hero's chest
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
       return new Projectile(ID.getNewId(), DrawLib.TEX_ALT_WEAPON, zRot,
-            (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
-            getY(), 5); //fire, 5 damage
+              (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
+              getY(), 5); //fire, 5 damage
     }
     return null;
   }
