@@ -227,6 +227,7 @@ public class Hero extends Living {
   
   public Projectile firePrimaryWeapon(Point direction) {
     int zRot = Projectile.calcRotation(new Point((int)x, (int)y), direction);
+    flipY = (zRot == 135 || zRot == -135 || zRot == 180);
     double xOffset = 0; // so projectile doesn't come from the hero's chest
     return new Projectile(ID.getNewId(), DrawLib.TEX_SHELL, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
@@ -235,6 +236,7 @@ public class Hero extends Living {
   public Projectile fireSecondaryWeapon(Point direction) {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
       int zRot = Projectile.calcRotation(new Point((int)x, (int)y), direction);
+      flipY = (zRot == 135 || zRot == -135 || zRot == 180);
       double xOffset = 0; // so projectile doesn't come from the hero's chest
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
       return new Projectile(ID.getNewId(), DrawLib.TEX_ALT_WEAPON, zRot,
