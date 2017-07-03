@@ -663,6 +663,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       
       ArrayList<Collidable> visibleObjects = game.getVisibles();
       ArrayList<Integer> toRemove = new ArrayList<>(); // keep track of ids to remove at end of frame
+      ArrayList<Projectile> projectiles = new ArrayList<>();
       
       // move all objects
       for(Collidable c : visibleObjects) {
@@ -672,11 +673,23 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         } else if((new Movable()).getClass().isInstance(c)) {
           Movable m = (Movable)c;
           m.move();
-        } else if((new Projectile()).getClass().isInstance(c)) {
-          Projectile p = (Projectile)c;
-          p.move();
-          if(Math.abs(c.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(p.getObjectId()); // remove offscreen projectiles
+          if((new Projectile()).getClass().isInstance(c)) {
+            Projectile p = (Projectile)c;
+            if(Math.abs(c.getX()) > Math.abs(hero.getX()) + 3000){
+                toRemove.add(p.getObjectId()); // remove offscreen projectiles
+            }else{
+                projectiles.add(p);
+            }
+          }
         }
+      }
+      
+      // Check projectiles for collisions and remove them
+      for(Projectile proj : projectiles){
+          List<Collidable> projectileCollisions = proj.getCollisions(visibleObjects);
+          for(Collidable c : projectileCollisions){
+              if(!(new Hero().getClass().isInstance(c))) toRemove.add(proj.getObjectId());
+          }
       }
     
       // enemy movement and collision detection
@@ -686,7 +699,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           List<Collidable> enemyCollisions = enemy.processCollisions(visibleObjects);
           for(Collidable c : enemyCollisions) {
             if(new Projectile().getClass().isInstance(c)) {
-              toRemove.add(c.getObjectId());
               if(enemy.getHealth() <= 0) { // enemy died
                 hero.addScore(enemy.getPointsWorth());
                 toRemove.add(enemy.getObjectId());
@@ -702,7 +714,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         List<Collidable> bossCollisions = boss.processCollisions(visibleObjects);
         for(Collidable c : bossCollisions) {
           if(new Projectile().getClass().isInstance(c)) {
-            toRemove.add(c.getObjectId());
             if(boss.getHealth() <= 0) { // enemy died
               toRemove.add(boss.getObjectId());
               hero.addScore(boss.getPointsWorth());
