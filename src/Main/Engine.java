@@ -50,7 +50,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private DrawLib drawLib;
   public static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
-  private final int INTROLENGTHMS = 4000;
+  private final int INTROLENGTHMS = 400;
   private boolean won = false;
   
   public Scene scene; // trans x & y, scale x & y
@@ -616,6 +616,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           Movable m = (Movable)c;
           m.move();
         } else if((new Projectile()).getClass().isInstance(c)) {
+          Projectile p = (Projectile)c;
+          p.move();
           if(Math.abs(c.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(c.getObjectId()); // remove offscreen projectiles
         }
       }
@@ -840,7 +842,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       setStatusMessage("Clicked point in world: (" + wc.x + ", " + wc.y + ")");
       
       // can only shoot in front of direction the hero is facing
-      if(wc.x >= hero.getX() - hero.getW()/2 || (hero.isFlippedOnY() && (wc.x <= hero.getX() + hero.getW()/2))) {
+      //if(wc.x >= hero.getX() - hero.getW()/2 || (hero.isFlippedOnY() && (wc.x <= hero.getX() + hero.getW()/2))) {
         Projectile fired;
         if(np.isFromPrimaryWeapon)
           fired = hero.firePrimaryWeapon(wc);
@@ -848,7 +850,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           fired = hero.fireSecondaryWeapon(wc);
         if(fired != null) visibleObjects.put(fired.getObjectId(), fired);
         else System.out.println("Attempted to fire null projectile.");
-      }
+      //}
     }
   }
 }
