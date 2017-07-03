@@ -51,6 +51,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final int INTROLENGTHMS = 3000;
   private boolean won = false;
   private boolean warping = false;
+  private final int LAST_LEVEL = 2;
   
   public Scene scene; // trans x & y & z, scale x & y & z
   public Hero hero;
@@ -216,6 +217,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case RUNNING: drawNormalGamePlay(gl); break; // END RUNNING
       case PAUSED: drawPauseMenu(gl); break; // END PAUSED
       case GAME_OVER: drawGameOver(gl); break;
+      case WIN: drawWin(gl); break;
       case CREDITS: drawCredits(gl); break;
       default: break;
     }
@@ -272,6 +274,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     } else {
       statusMessage = "";
     }
+  }
+  
+  private void drawWin(GL2 gl) {
+    gl.glPushMatrix();
+    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
+    DrawLib.drawText("YOU WIN!", new double[] { 1.0, 0.0, 0.0 }, 100+(frameNumber%500*2), 0);
+    gl.glPopMatrix();
   }
   
   private void drawGameOver(GL2 gl) {
@@ -566,6 +575,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case GAME_OVER:
       if(key == KeyEvent.VK_ENTER) gameMode = GAME_MODE.START_MENU;
       break;
+    case WIN:
+      if(key == KeyEvent.VK_ENTER) gameMode = GAME_MODE.CREDITS;
+      break;
     default: break;
     }
     display.repaint();  // Causes the display() function to be called.
@@ -641,7 +653,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       }
       break;
     case RUNNING:
-      if(won) { gameMode = GAME_MODE.CREDITS; return; } // check for winning conditions
+      if(won) { gameMode = GAME_MODE.WIN; return; } // check for winning conditions
       
       // this is for slow mo jumping to next level
       if(slowMo) { 
@@ -723,15 +735,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           toRemove.add(id); // remove the armor image from the screen
           break;
         case ID.ID_WARP:
-          hero.setSpeedX(0);
-          warping = true;
-          gameMode = GAME_MODE.WARPING;
-          hero.doJump();
-          jumpToLevel(++currLevel); // "jump" to next level
-          break;
-        case ID.ID_EOG:
-          setStatusMessage("YOU WIN!!"); 
-          won = true;
+          if(++currLevel <= LAST_LEVEL){
+            hero.setSpeedX(0);
+            warping = true;
+            gameMode = GAME_MODE.WARPING;
+            hero.doJump();
+            jumpToLevel(currLevel); // "jump" to next level
+          }else{
+            setStatusMessage("YOU WIN!!");
+            won = true;
+          }
           break;
         default: break;
         }
