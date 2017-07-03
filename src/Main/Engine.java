@@ -121,7 +121,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     gl.glMatrixMode(GL2.GL_PROJECTION);
     gl.glLoadIdentity();
-    //gl.glOrtho(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, -10, 50);
+    //gl.glOrtho(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, -9.9, 50);
     gl.glFrustum(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, 9.9, 50);
     
     gl.glMatrixMode(GL2.GL_MODELVIEW);
