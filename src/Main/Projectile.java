@@ -10,17 +10,16 @@ import java.awt.Point;
 public class Projectile extends Movable {
   private int damage;
   
-  private static final int HORIZONTAL_SPEED = 50;
-  private static final int VERTICAL_SPEED = 50;
+  private static final int SPEED = 50;
   
   private int zRot;
   
-  public Projectile(int objId, int texId, int zrot, double x, double y, int d) {
+  public Projectile(int objId, int texId, Point.Double zrot, double x, double y, int d) {
     super(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
     Point speed = calcSpeed(zrot);
     speedX = speed.x;
     speedY = speed.y;
-    zRot = zrot;
+    zRot = (int)Math.toDegrees(Math.atan2(zrot.y, zrot.x));
     damage = d;
   }
   
@@ -47,23 +46,27 @@ public class Projectile extends Movable {
     GL.glPopMatrix();
   }
   
-  public static int calcRotation(Point center, Point direction) {
-    float dirX = direction.x, dirY = direction.y, cX = center.x, cY = center.y;
-    float rise = (dirY - cY), run = (dirX - cX);
-    if(run == 0) { return cY < 0 ? -90 : 90; } // shoot up or down when div by 0
-    float slope = rise / run;
-    
-    if(slope >= -2.0 && slope < -0.5) {
-      return (rise < 0) ? -45 : 135; // shoot down and right, or up and left
-    } else if(slope >= -0.5 && slope < 0.5) {
-      return (run < 0) ? 180 : 0; // directly behind, or shoot straight ahead 
-    } else if(slope >= 0.5 && slope < 2.0) {
-      return (rise > 0) ? 45 : -135;// shoot diagonal up and right, or down and left
-    } else if(slope >= 2.0 || slope < -2.0) {
-      return (rise > 0) ? 90 : -90;// shoot up, or down
-    } else {
-      return 0; // default to shooting straight
-    }
+  public static Point.Double calcRotation(Point center, Point direction) {
+    double dx, dy, x, y, mag;
+      dx = direction.x - center.x;
+      dy = direction.y - center.y;
+      if(dx == 0 && dy == 0){
+          x = 0;
+          y = 0;
+      }else if(dx == 0){
+          mag = dy;
+          x = 0;
+          y = dy / mag;
+      }else if(dy == 0){
+          mag = dx;
+          x = dx / mag;
+          y = 0;
+      }else{
+          mag = Math.abs(Math.sqrt((dx*dx) + (dy*dy)));
+          x = dx / mag;
+          y = dy / mag;
+      }
+      return new Point.Double(x, y);
   }
   
   /**
@@ -72,18 +75,7 @@ public class Projectile extends Movable {
    * @return 
    */
   private static Point calcSpeed(int rotation) {
-    int maxX = HORIZONTAL_SPEED, maxY = VERTICAL_SPEED;
-    switch(rotation) {
-      case -135: return new Point((int) Math.sqrt(maxX*maxX/2) * -1, (int) Math.sqrt(maxY*maxY/2) * -1);
-      case -90: return new Point(0, -maxY);
-      case -45: return new Point((int) Math.sqrt(maxX*maxX/2), (int) -Math.sqrt(maxY*maxY/2));
-      case 0: return new Point(maxX, 0);
-      case 45: return new Point((int) Math.sqrt(maxX*maxX/2), (int) Math.sqrt(maxY*maxY/2));
-      case 90: return new Point(0, maxY);
-      case 135: return new Point((int) Math.sqrt(maxX*maxX/2) * -1, (int) Math.sqrt(maxY*maxY/2));
-      case 180: return new Point(-maxX, 0);
-      default: return null;
-    }
+    return new Point((int)(SPEED * rotation.x), (int)(SPEED * rotation.y));
   }
   
   public int getDamage() { return damage; }
