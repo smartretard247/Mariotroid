@@ -48,7 +48,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private DrawLib drawLib;
   public static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
-  private final int INTROLENGTHMS = 400;
+  private final int INTROLENGTHMS = 3000;
   private boolean won = false;
   
   public Scene scene; // trans x & y & z, scale x & y & z
@@ -59,6 +59,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public ObjectContainer game = new ObjectContainer();
   private static String statusMessage = "";
   private final LinkedList<NextProjectile> qProjectiles = new LinkedList<>();
+  private int currLevel = 1;
   
   ///// START METHODS
 
@@ -133,7 +134,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     messageTimer.setRepeats(false);
     
     scene = new Scene(-600, -600, 0, 0.5, 0.5, 1.0); // initial scale and translations
-    hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
+    hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 10300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
     
     // initialize all game objects here
     game.addGO(hero);
@@ -161,6 +162,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addVisible(ID.ID_ARMOR);
       game.addVisible(ID.ID_CALAMITY);
       game.addVisible(ID.ID_DOOR);
+      game.addVisible(ID.ID_WARP, new Collidable(11275, 200));
+      break;
+    case 2:// only add level 2 visible objects to this map
+      game.addVisible(ID.ID_CALAMITY); // add calamity as a test
+      game.addVisible(ID.ID_EOG, new Collidable(300, 50));
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;
     }
@@ -169,7 +175,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void jumpToLevel(int num) {
     switch(num) {
       case 1: loadLevel(1, "res/layer_collision_1.png"); break;
-      case 2: loadLevel(2, "res/layer_collision_1.png"); break;
+      case 2: loadLevel(2, "res/layer_collision_2.png"); break;
       default: System.out.println("Unknown level number while jumping to level."); break;
     }
   }
@@ -238,16 +244,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawNormalGamePlay(GL2 gl) {
     gl.glPushMatrix(); // save initial transform
     gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
-    
     adjustScene(gl, false);
-    
     drawBackground(gl);
     drawHero(gl);
-    
     fireProjectiles(); // fire projectile from the queue
-    
     drawForeground(gl);
-    
     gl.glPopMatrix(); // return to initial transform
     drawHud(gl);
     drawStatus(gl); // will only draw status' of new messages, for x seconds
@@ -696,7 +697,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           hero.addScore(275);
           toRemove.add(id); // remove the armor image from the screen
           break;
-        case ID.ID_DOOR_POWERED:
+        case ID.ID_WARP:
+          hero.doJump();
+          //jumpToLevel(++currLevel);
+          break;
+        case ID.ID_EOG:
+          setStatusMessage("YOU WIN!!"); 
           won = true;
           break;
         default: break;

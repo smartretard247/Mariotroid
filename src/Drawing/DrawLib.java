@@ -68,7 +68,7 @@ public class DrawLib {
     textureIdMap.put(TEX_DOOR, "/res/door.png");
     textureIdMap.put(TEX_DOOR_POWERED, "/res/door_powered.png");
     textureIdMap.put(TEX_ARMOR, "/res/armor.png");
-    textureIdMap.put(TEX_BACKGROUND_LEVEL, "/res/layer_decor_1.png");
+    textureIdMap.put(TEX_BACKGROUND_LEVEL, "/res/layer_decor_2.png");
     
     loadTextures(); // must load after filename 'puts' above
   }

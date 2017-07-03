@@ -21,12 +21,12 @@ public class Collidable extends Drawable {
     this(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
   }
   
-  public Collidable(int objId, int texId) {
-    this(objId, texId, 0, 0);
+  public Collidable(int x, int y) {
+    this(-1, DrawLib.TEX_NONE, x, y, 1, 1);
   }
   
   public Collidable() {
-    this(-1, -1, 0, 0, 0, 0);
+    this(-1, DrawLib.TEX_NONE, 0, 0, 1, 1);
   }
   
   /**
