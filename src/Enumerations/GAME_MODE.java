@@ -10,6 +10,7 @@ public enum GAME_MODE {
   RUNNING,
   PAUSED,
   GAME_OVER,
+  WIN,
   CREDITS,
   WARPING
 }
