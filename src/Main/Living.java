@@ -13,12 +13,19 @@ public class Living extends Movable {
   private int lives;
   private final int defLives;
   
-  public Living(int objId, int startLives, int startHealth, int texId, double x, double y, Point speed) {
+  public Living(int objId, int startLives, int startHealth, int texId, double x, double y, Point.Double speed) {
     super(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight(), speed);
     lives = startLives;
     defLives = startLives;
     health = startHealth;
     defHealth = startHealth;
+  }
+  
+  @Override
+  public void resetAll() {
+    super.resetAll();
+    resetHealth();
+    resetLives();
   }
   
   public int getHealth() { return health; }

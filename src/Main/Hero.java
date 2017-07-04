@@ -30,7 +30,7 @@ public class Hero extends Living {
   private boolean hasArmor;
   
   public Hero(int objId, int startLives, int startHealth, long startScore, int texId, double x, double y) {
-    super(objId, startLives, startHealth, texId, x, y, new Point(0, 0));
+    super(objId, startLives, startHealth, texId, x, y, new Point.Double(0, 0));
     score = startScore;
     fallCount = 0;
     hasSecondaryWeapon = false;
@@ -64,8 +64,6 @@ public class Hero extends Living {
   public void resetAll() {
     super.resetAll();
     resetScore();
-    resetHealth();
-    resetLives();
     resetAmmo();
     dropSecondaryWeapon();
     dropJetpack();

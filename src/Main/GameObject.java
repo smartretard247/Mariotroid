@@ -14,21 +14,23 @@ public class GameObject extends Collidable {
   protected String name = "Default";
   protected double speedX; // movement increment x
   protected double speedY; // movement increment y
+  private Point.Double defSpeed;
   private boolean isSprinting;
   
-  public GameObject(int objId, int texId, double x, double y, double w, double h, Point speed) {
+  public GameObject(int objId, int texId, double x, double y, double w, double h, Point.Double speed) {
     super(objId, texId, x, y, w, h);
     speedX = speed.x;
     speedY = speed.y;
+    defSpeed = speed;
     isSprinting = false;
   }
   
   public GameObject(int objId, int texId, double x, double y) {
-    this(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight(), new Point(0, 0));
+    this(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight(), new Point.Double(0, 0));
   }
   
   public GameObject() {
-    this(-1, -1, 0, 0, 1, 1, new Point(0, 0));
+    this(-1, -1, 0, 0, 1, 1, new Point.Double(0, 0));
   }
   
   public double getSpeedX() { return speedX; }
@@ -36,6 +38,8 @@ public class GameObject extends Collidable {
   public void setSpeedX(double spdX) { speedX = spdX; }
   public void setSpeedY(double spdY) { speedY = spdY; }
   public void setSpeed(double spdX, double spdY) { speedX = spdX; speedY = spdY; }
+  public void setSpeed(Point.Double to) { speedX = to.x; speedY = to.y; }
+  public void setDefaultSpeed(Point.Double to) { defSpeed = to; }
   
   public void increaseSpeed(double deltaX, double deltaY) {
     speedX += deltaX;
@@ -48,7 +52,7 @@ public class GameObject extends Collidable {
   
   public void resetAll() {
     this.resetPosition();
-    this.setSpeed(0, 0);
+    this.setSpeed(defSpeed);
   }
   
   public String getName() { return name; }

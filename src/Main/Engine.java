@@ -55,13 +55,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public Scene scene; // trans x & y & z, scale x & y & z
   public Hero hero;
   public PhysicsEngine phy = new PhysicsEngine();
-  //public final Map<Integer, Collidable> gameObjects = new HashMap<>();
-  //public final Map<Integer, Collidable> visibleObjects = new HashMap<>();
   public ObjectContainer game = new ObjectContainer();
   private static String statusMessage = "";
   private final LinkedList<NextProjectile> qProjectiles = new LinkedList<>();
   private boolean slowMo = false;
-  private int globalZ = 0;
   private final int TOTAL_LEVELS = 2;
   private int currLevel = 1;
   
@@ -126,9 +123,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     gl.glMatrixMode(GL2.GL_PROJECTION);
     gl.glLoadIdentity();
-    //gl.glOrtho(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, -9.9, 51);
-    gl.glFrustum(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, 9.9, 51);
-    
+    gl.glFrustum(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, 9.9, 101);
     gl.glMatrixMode(GL2.GL_MODELVIEW);
     gl.glClearColor(0, 0.4f, 0.8f, 0);
     gl.glEnable(GL_BLEND);
@@ -144,11 +139,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     game.addGO(hero);
     game.addGO(new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
     game.addGO(new Collidable(ID.ID_ALT_WEAPON, DrawLib.TEX_ALT_WEAPON, 300, 900));
-    game.addGO(new Collidable(ID.ID_ARMOR, DrawLib.TEX_ARMOR, 5681, 198));
-    game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
-    game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point(5,0)));
-    game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point(5,0)));
-    game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point(10,10)));
+    game.addGO(new Collidable(ID.ID_ARMOR, DrawLib.TEX_ARMOR, 5660, 198));
+    game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point.Double(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
+    game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
+    game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Double(5,0)));
+    game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Double(10,10)));
     game.addGO(new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11200, 189));
     game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 11200, 189));
   }
@@ -156,8 +151,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void resetVisibles(int level) {
     game.clearVisibles();
     game.addVisible(ID.ID_HERO); // all levels need the hero!
+    Hero h = (Hero)game.getVisible(ID.ID_HERO);
     switch(level) {
     case 1:// only add level 1 visible objects to this map
+      currLevel = 1; // no need to adjust level number on any further cases
+      scene.resetAll(); // again, do not change scene in other cases
+      h.setDefaultPosition(10300, 400);
+      h.resetAll();
       game.addVisible(ID.ID_JETPACK);
       game.addVisible(ID.ID_ALT_WEAPON);
       game.addVisible(ID.ID_ENEMY_1);
@@ -166,14 +166,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addVisible(ID.ID_ARMOR);
       game.addVisible(ID.ID_CALAMITY);
       game.addVisible(ID.ID_DOOR);
-      //game.addVisible(ID.ID_WARP, new Collidable(11275, 200));
       break;
-    case 2:// only add level 2 visible objects to this map
+    case 2:// setup level 2, only add level 2 visible objects to this map
       game.addVisible(ID.ID_ENEMY_1);
-      game.getVisible(ID.ID_ENEMY_1).setPosition(10000, 500);
+      Enemy e = (Enemy)game.getVisible(ID.ID_ENEMY_1);
+      e.setDefaultPosition(10000, 500);
+      e.setDefaultSpeed(new Point.Double(5, 0));
+      e.resetAll();
       game.addVisible(ID.ID_DOOR_POWERED);
       game.getVisible(ID.ID_DOOR_POWERED).setPosition(300, 189);
-      game.addVisible(ID.ID_EOG, new Collidable(300, 200));
+      game.addVisible(ID.ID_WARP, new Collidable(300, 200));
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;
     }
@@ -217,6 +219,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case PAUSED: drawPauseMenu(gl); break; // END PAUSED
       case GAME_OVER: drawGameOver(gl); break;
       case CREDITS: drawCredits(gl); break;
+      case WIN: drawWin(gl); break;
       default: break;
     }
     gl.glPopMatrix(); // return to initial transform
@@ -238,9 +241,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         gl.glTranslated(-10500, scene.transY, scene.transZ);
     } else {
       if(hero.getX() <= 600)
-        gl.glTranslated(-scene.transX*10, -scene.transY*3, scene.transZ-40);
-      else
-        gl.glTranslated(-scene.transX*10+hero.getX()/10, -scene.transY*3, scene.transZ-40);
+        gl.glTranslated(-scene.transX*10, -scene.transY*3, scene.globalZ-40*currLevel);
+      else 
+        gl.glTranslated(-scene.transX*10+hero.getX()/10, -scene.transY*3, scene.globalZ-40*currLevel);
     }
   }
   
@@ -251,7 +254,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawNormalGamePlay(GL2 gl) {
     gl.glPushMatrix(); // save initial transform
     gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
-    gl.glTranslated(0, 0, globalZ); // global z should be 40 after zoom
+    gl.glTranslated(0, 0, scene.globalZ); // global z should decrease by 40 after each zoom
     adjustScene(gl, false);
     drawBackground(gl);
     drawHero(gl);
@@ -284,8 +287,31 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawCredits(GL2 gl) {
     gl.glPushMatrix();
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
-    String credits = "TEAM MARIOTROID!";
-    DrawLib.drawText(credits, new double[] { 0.0, 1.0, 0.0 }, windowDim.width/2-50, -windowDim.height/2+(frameNumber%500*2));
+    ArrayList<String> credits = new ArrayList<>();
+    credits.add("TEAM MARIOTROID!");
+    credits.add("----------------");
+    credits.add("");
+    credits.add("Greggie Pascual – Project Lead");
+    credits.add("");
+    credits.add("Marvelous Agabi – Documentation");
+    credits.add("");
+    credits.add("Nathan Mitson - Testing");
+    credits.add("");
+    credits.add("Matthew Miller - Design");
+    credits.add("");
+    credits.add("Jesse Young – Developer");
+    credits.add("");
+    credits.add("William Malone - Developer");
+
+    for(int i = 0; i < credits.size(); i++)
+      DrawLib.drawText(credits.get(i), new double[] { 0.0, 1.0, 0.0 }, windowDim.width/2-60, -windowDim.height/2+(frameNumber%500*2)-(i*20));
+    gl.glPopMatrix();
+  }
+  
+  private void drawWin(GL2 gl) {
+    gl.glPushMatrix();
+    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
+    DrawLib.drawText("YOU WIN!", new double[] { Math.random(), Math.random(), Math.random() }, 100+(frameNumber%500*2), 0);
     gl.glPopMatrix();
   }
   
@@ -297,7 +323,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // back ground level
     gl.glPushMatrix();
     adjustScene(gl, true);
-    DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_LEVEL);
+    if(currLevel < TOTAL_LEVELS)
+      DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1+currLevel-1);
+    else DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1); // use DECOR_1 as default background when no more levels
     gl.glPopMatrix();
     
     // draw game objects
@@ -363,7 +391,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(this.startMenuSelection) {
       case START_GAME: gameMode = GAME_MODE.RUNNING;
         won = false;
-        hero.resetAll();
         jumpToLevel(1);
         break;
       case EXIT: System.exit(0);
@@ -562,6 +589,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       default: break;
       }
       break; // END START_MENU
+    case WIN:
+      if(key == KeyEvent.VK_ENTER) gameMode = GAME_MODE.CREDITS;
+      break;
     case CREDITS:
     case GAME_OVER:
       if(key == KeyEvent.VK_ENTER) gameMode = GAME_MODE.START_MENU;
@@ -634,6 +664,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case WARPING:
       if(warping) {
         scene.transZ -= 40;
+        hero.setDefaultPosition(hero.getX(), hero.getY()); // continue from this point if die
         warping = false;
       } else {
         slowMo = true;
@@ -641,29 +672,36 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       }
       break;
     case RUNNING:
-      if(won) { gameMode = GAME_MODE.CREDITS; return; } // check for winning conditions
+      if(won) { gameMode = GAME_MODE.WIN; return; } // check for winning conditions
       
       // this is for slow mo jumping to next level
       if(slowMo) { 
-        ++globalZ;
-        if(globalZ % 40 == 0) slowMo = false;
+        ++scene.globalZ;
+        if(scene.globalZ % 40 == 0) slowMo = false;
       }
       
       ArrayList<Collidable> visibleObjects = game.getVisibles();
       ArrayList<Integer> toRemove = new ArrayList<>(); // keep track of ids to remove at end of frame
+      ArrayList<Projectile> projectiles = new ArrayList<>();
       
       // move all objects
       for(Collidable c : visibleObjects) {
-        if((new Boss()).getClass().isInstance(c)) {
-          Boss b = (Boss)c;
-          b.move();
-        } else if((new Movable()).getClass().isInstance(c)) {
+        if((new Projectile()).getClass().isInstance(c)) {
+          Projectile p = (Projectile)c;
+          if(Math.abs(c.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(p.getObjectId()); // remove offscreen projectiles
+          else projectiles.add(p); // track visible projectiles
+        }
+        if((new Movable()).getClass().isInstance(c)) {
           Movable m = (Movable)c;
           m.move();
-        } else if((new Projectile()).getClass().isInstance(c)) {
-          Projectile p = (Projectile)c;
-          p.move();
-          if(Math.abs(c.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(p.getObjectId()); // remove offscreen projectiles
+        } 
+      }
+      
+      // Check projectiles for collisions and remove them
+      for(Projectile proj : projectiles){
+        List<Collidable> projectileCollisions = proj.processCollisions(visibleObjects);
+        for(Collidable c : projectileCollisions){
+          toRemove.add(proj.getObjectId());
         }
       }
     
@@ -723,15 +761,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           toRemove.add(id); // remove the armor image from the screen
           break;
         case ID.ID_WARP:
-          hero.setSpeedX(0);
-          warping = true;
-          gameMode = GAME_MODE.WARPING;
-          hero.doJump();
-          jumpToLevel(++currLevel); // "jump" to next level
-          break;
-        case ID.ID_EOG:
-          setStatusMessage("YOU WIN!!"); 
-          won = true;
+          if(++currLevel <= TOTAL_LEVELS){
+            hero.setSpeedX(0);
+            warping = true;
+            gameMode = GAME_MODE.WARPING;
+            hero.doJump();
+            jumpToLevel(currLevel); // "jump" to next level
+          }else{
+            setStatusMessage("YOU WIN!!");
+            won = true;
+          }
           break;
         default: break;
         }
@@ -871,6 +910,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       default: break;
       }
       break; // END PAUSED
+    case WIN:
+      if(key == MouseEvent.BUTTON1) gameMode = GAME_MODE.CREDITS;
+      break;
     case CREDITS:
     case GAME_OVER:
       switch(key) {
@@ -903,17 +945,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       Point sc = np.screenCoord;
       Point.Double wc = DrawLib.screenToWorld(sc);
       setStatusMessage("(" + wc.x + ", " + wc.y + ")");
-      
-      // can only shoot in front of direction the hero is facing
-      //if(wc.x >= hero.getX() - hero.getW()/2 || (hero.isFlippedOnY() && (wc.x <= hero.getX() + hero.getW()/2))) {
-        Projectile fired;
-        if(np.isFromPrimaryWeapon)
-          fired = hero.firePrimaryWeapon(wc);
-        else
-          fired = hero.fireSecondaryWeapon(wc);
-        if(fired != null) game.addVisible(fired.getObjectId(), fired);
-        else System.out.println("Attempted to fire null projectile.");
-      //}
+      Projectile fired;
+      if(np.isFromPrimaryWeapon)
+        fired = hero.firePrimaryWeapon(wc);
+      else
+        fired = hero.fireSecondaryWeapon(wc);
+      if(fired != null) game.addVisible(fired.getObjectId(), fired);
+      else System.out.println("Attempted to fire null projectile.");
     }
   }
 }

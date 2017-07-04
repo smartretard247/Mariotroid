@@ -12,13 +12,13 @@ import java.util.List;
 public class Boss extends Enemy {
   private int minXLocation = 9000; // to keep from entering the rest of the level
   
-  public Boss(int objId, int startLives, int startHealth, int texId, double x, double y, Point speed) {
+  public Boss(int objId, int startLives, int startHealth, int texId, double x, double y, Point.Double speed) {
     super(objId, startLives, startHealth, texId, x, y, speed);
     pointsWorth = 500;
   }
   
   public Boss() {
-    this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0, new Point(0, 0));
+    this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0, new Point.Double(0, 0));
   }
   
   public void move() {

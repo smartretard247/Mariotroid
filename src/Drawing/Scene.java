@@ -12,15 +12,16 @@ public class Scene {
   public double scaleX;
   public double scaleY;
   public double scaleZ;
+  public double globalZ;
   
-  public Scene() {
-    transX = 0.0; // for moving the entire scene
-    transY = 0.0;
-    transZ = 0.0;
-    scaleX = 1.0; // global scaling, change back to 1.0 for distrobution
-    scaleY = 1.0;
-    scaleY = 1.0;
-  }
+  private double defTransX;
+  private double defTransY;
+  private double defTransZ;
+  private double defScaleX;
+  private double defScaleY;
+  private double defScaleZ;
+  private double defGlobalZ;
+  
   public Scene(double tX, double tY, double tZ, double sX, double sY, double sZ) {
     transX = tX;
     transY = tY;
@@ -28,6 +29,18 @@ public class Scene {
     scaleX = sX;
     scaleY = sY;
     scaleZ = sZ;
+    
+    defTransX = tX;
+    defTransY = tY;
+    defTransZ = tZ;
+    defScaleX = sX;
+    defScaleY = sY;
+    defScaleZ = sZ;
+    defGlobalZ = 0;
+  }
+  
+  public Scene() {
+    this(0, 0, 0, 1, 1, 1);
   }
   
   public void setTranslation(double tX, double tY, double tZ) {
@@ -40,5 +53,28 @@ public class Scene {
     transX = sX;
     transY = sY;
     transZ = sZ;
+  }
+  
+  public void resetTranslation() {
+    transX = defTransX;
+    transY = defTransY;
+    transZ = defTransZ;
+  }
+  
+  public void resetGlobalZ() {
+    globalZ = defGlobalZ;
+  }
+  
+  public void resetScale() {
+    scaleX = defScaleX;
+    scaleY = defScaleY;
+    scaleZ = defScaleZ;
+  }
+  
+  public void resetAll() {
+    resetTranslation();
+    resetGlobalZ();
+    resetScale();
+    resetGlobalZ();
   }
 }

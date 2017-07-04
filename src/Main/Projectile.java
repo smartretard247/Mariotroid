@@ -1,7 +1,10 @@
 package Main;
 
 import Drawing.DrawLib;
+import Enumerations.ID;
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -80,4 +83,21 @@ public class Projectile extends Movable {
   
   public int getDamage() { return damage; }
   public void setDamage(int to) { damage = to; }
+  
+  public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
+    List<Collidable> collisions = getCollisions(nearObjects);
+    for(Collidable c : collisions) {
+      int texId = c.getTextureId();
+      switch(texId) {
+      case DrawLib.TEX_LEVEL:
+        // do nothing
+        break;
+      default:
+        collisions.remove(c); // remove all but level collisions
+          break;
+      }
+    }
+    
+    return collisions;
+  }
 }

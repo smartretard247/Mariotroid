@@ -11,5 +11,6 @@ public enum GAME_MODE {
   PAUSED,
   GAME_OVER,
   CREDITS,
-  WARPING
+  WARPING,
+  WIN
 }
