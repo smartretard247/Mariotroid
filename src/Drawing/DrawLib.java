@@ -31,28 +31,33 @@ public class DrawLib {
   public static final int TEX_LEVEL = -2;
   public static final int TEX_NONE = -1;
   public static final int TEX_HERO = 0; // easier texture identification
-  public static final int TEX_HERO_RUN1 = 1;
-  public static final int TEX_HERO_RUN2 = 2;
-  public static final int TEX_HERO_BACKPACK1 = 3;
-  public static final int TEX_LOGO = 4;
-  public static final int TEX_HEALTH = 5;
-  public static final int TEX_HUD = 6;
-  public static final int TEX_SHELL = 7;
-  public static final int TEX_JETPACK = 8;
-  public static final int TEX_ALT_WEAPON = 9;
-  public static final int TEX_ENEMY_BASIC = 10;
-  public static final int TEX_CALAMITY = 11;
-  public static final int TEX_DOOR = 12;
-  public static final int TEX_DOOR_POWERED = 13;
-  public static final int TEX_ARMOR = 14;
-  public static final int TEX_LEVEL_DECOR_1 = 15;
-  public static final int TEX_LEVEL_DECOR_2 = 16;
+  public static final int TEX_HERO_DEAD = 1;
+  public static final int TEX_HERO_RUN1 = 2;
+  public static final int TEX_HERO_RUN2 = 3;
+  public static final int TEX_HERO_BACKPACK1 = 4;
+  public static final int TEX_LOGO = 5;
+  public static final int TEX_HEALTH = 6;
+  public static final int TEX_HUD = 7;
+  public static final int TEX_SHELL = 8;
+  public static final int TEX_PRI_WEAPON = 9;
+  public static final int TEX_ALT_WEAPON = 10;
+  public static final int TEX_ENEMY_WEAPON_1 = 11;
+  public static final int TEX_ENEMY_WEAPON_2 = 12;
+  public static final int TEX_JETPACK = 13;
+  public static final int TEX_ENEMY_BASIC = 14;
+  public static final int TEX_CALAMITY = 15;
+  public static final int TEX_DOOR = 16;
+  public static final int TEX_DOOR_POWERED = 17;
+  public static final int TEX_ARMOR = 18;
+  public static final int TEX_LEVEL_DECOR_1 = 19;
+  public static final int TEX_LEVEL_DECOR_2 = 20;
 
   public DrawLib(GL2 context) {
     gl = context;
     
   // all images should be listed here, and stored in the textures directory
     textureIdMap.put(TEX_HERO, "/res/hero.png");
+    textureIdMap.put(TEX_HERO_DEAD, "/res/hero_dead.png");
     textureIdMap.put(TEX_HERO_RUN1, "/res/hero_run_step_1.png");
     textureIdMap.put(TEX_HERO_RUN2, "/res/hero_run_step_2.png");
     textureIdMap.put(TEX_HERO_BACKPACK1, "/res/hero_backpack_run_step_1.png");
@@ -60,8 +65,11 @@ public class DrawLib {
     textureIdMap.put(TEX_HEALTH, "/res/hud_health.png");
     textureIdMap.put(TEX_HUD, "/res/layer_hud.png");
     textureIdMap.put(TEX_SHELL, "/res/hud_shell.png");
-    textureIdMap.put(TEX_JETPACK, "/res/jetpack.png");
     textureIdMap.put(TEX_ALT_WEAPON, "/res/projectile_blue.png");
+    textureIdMap.put(TEX_PRI_WEAPON, "/res/projectile_orange.png");
+    textureIdMap.put(TEX_ENEMY_WEAPON_1, "/res/projectile_purple.png");
+    textureIdMap.put(TEX_ENEMY_WEAPON_2, "/res/projectile_green.png");
+    textureIdMap.put(TEX_JETPACK, "/res/jetpack.png");
     textureIdMap.put(TEX_ENEMY_BASIC, "/res/enemy_basic.png");
     textureIdMap.put(TEX_LEVEL_DECOR_1, "/res/layer_decor_1.png");
     textureIdMap.put(TEX_LEVEL_DECOR_2, "/res/layer_decor_2.png");

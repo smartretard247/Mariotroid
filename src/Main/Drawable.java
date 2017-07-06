@@ -2,6 +2,8 @@ package Main;
 
 import Drawing.DrawLib;
 import com.jogamp.opengl.GL2;
+import java.awt.Point;
+import java.awt.geom.Point2D;
 
 /**
  *
@@ -37,6 +39,7 @@ public class Drawable {
   public int getTextureId() { return textureId; }
   public double getX() { return x; }
   public double getY() { return y; }
+  public Point.Double getPosition() { return new Point.Double(x, y); }
   public double getW() { return width; }
   public double getH() { return height; }
   public double getLeft() { return x-width/2; }

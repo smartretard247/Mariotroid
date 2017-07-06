@@ -87,14 +87,13 @@ public class Projectile extends Movable {
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
     List<Collidable> collisions = getCollisions(nearObjects);
     for(Collidable c : collisions) {
-      int texId = c.getTextureId();
-      switch(texId) {
-      case DrawLib.TEX_LEVEL:
-        // do nothing
+      int collisiontexId = c.getTextureId();
+      switch(collisiontexId) {
+      case DrawLib.TEX_LEVEL: // do nothing
         break;
       default:
-        collisions.remove(c); // remove all but level collisions
-          break;
+        collisions.remove(c); // remove all but level collisions, will be processed be other classes
+        break;
       }
     }
     

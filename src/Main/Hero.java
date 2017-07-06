@@ -25,7 +25,7 @@ public class Hero extends Living {
   private int secondaryAmmoCount;
   private boolean isClimbing;
   private Collidable lastWallCollision;
-  private Timer recentDamageTimer = new Timer(3000, null);
+  private final Timer recentDamageTimer = new Timer(3000, null);
   private double armor; // armor is a MULTIPLIER, do reduce damage set to a value less than 1
   private boolean hasArmor;
   
@@ -88,11 +88,12 @@ public class Hero extends Living {
       System.out.println("Collision, source object coord/speed: " + x + ", " + y + " / " + speedX + ", " + speedY);
       int texId = c.getTextureId();
       int objId = c.getObjectId();
+      
       switch(texId) {
+      case DrawLib.TEX_PRI_WEAPON: break;
       case DrawLib.TEX_ALT_WEAPON:
-          pickupSecondaryWeapon();
-          break;
-      case DrawLib.TEX_SHELL: break;
+        pickupSecondaryWeapon();
+        break;
       case DrawLib.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);
@@ -144,27 +145,17 @@ public class Hero extends Living {
         } else if(standingStill()) { // not moving, must be a different object
           System.out.println("Hero not moving, source must be a different object");
         }
-        //lastCollidedObject = c;
         break;
       default: // then check for object ids to react to (like enemies)
         switch(objId) {
-          case ID.ID_ENEMY_1:
+          case ID.ID_ENEMY_1: // these are simple damage, from contact with enemy sprites
           case ID.ID_ENEMY_2:
           case ID.ID_ENEMY_3:
-            if(!wasRecentlyDamaged()) {
-              recentDamageTimer.start();
-              try {
-                loseHealth((int)(2*armor));
-              } catch (GameOverException ex) {
-                Engine.gameMode = GAME_MODE.GAME_OVER;
-              }
-            }
-            break;
           case ID.ID_CALAMITY:
             if(!wasRecentlyDamaged()) {
               recentDamageTimer.start();
               try {
-                loseHealth((int)(5*armor));
+                loseHealth((int)(2*armor));
               } catch (GameOverException ex) {
                 Engine.gameMode = GAME_MODE.GAME_OVER;
               }
@@ -178,10 +169,16 @@ public class Hero extends Living {
             break;
           default: 
             if(new Projectile().getClass().isInstance(c)) {
-              Projectile p = (Projectile)c;
-              try {
-                loseHealth(p.getDamage());
-              } catch (GameOverException ex) {
+              if(c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_1 || c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_2) {
+                Projectile p = (Projectile)c;
+                try {
+                  loseHealth(p.getDamage());
+                } catch (GameOverException ex) {
+                  this.setLives(0);
+                  this.setTextureId(DrawLib.TEX_HERO_DEAD);
+                }
+              } else {
+                collisions.remove(c);
               }
             }
             break;
@@ -227,7 +224,7 @@ public class Hero extends Living {
     Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
     flipY = (zRot.x < 0);
     double xOffset = 0; // so projectile doesn't come from the hero's chest
-    return new Projectile(ID.getNewId(), DrawLib.TEX_SHELL, zRot,
+    return new Projectile(ID.getNewId(), DrawLib.TEX_PRI_WEAPON, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
             getY(), 1); //fire primary, 1 damage
   }

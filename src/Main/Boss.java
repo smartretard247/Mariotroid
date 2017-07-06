@@ -1,9 +1,11 @@
 package Main;
 
 import Drawing.DrawLib;
+import Enumerations.ID;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.Timer;
 
 /**
  *
@@ -11,10 +13,12 @@ import java.util.List;
  */
 public class Boss extends Enemy {
   private int minXLocation = 9000; // to keep from entering the rest of the level
+  private final Timer fireTimer = new Timer(5000, null);
   
   public Boss(int objId, int startLives, int startHealth, int texId, double x, double y, Point.Double speed) {
     super(objId, startLives, startHealth, texId, x, y, speed);
     pointsWorth = 500;
+    fireTimer.setRepeats(false);
   }
   
   public Boss() {
@@ -73,13 +77,17 @@ public class Boss extends Enemy {
           }
         }
         break;
-      default: 
+      default:
         if(new Projectile().getClass().isInstance(c)) {
+          if(!(c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_1 || c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_2)) {
             Projectile p = (Projectile)c;
             try {
               loseHealth(p.getDamage());
             } catch (GameOverException ex) { // enemy died
             }
+          } else {
+            collisions.remove(c); // do not count as true collision, "friendly fire"
+          }
         }
         break;
       }
@@ -90,4 +98,13 @@ public class Boss extends Enemy {
   
   public int getMinX() { return minXLocation; }
   public void setMinX(int to) { minXLocation = to; }
+  
+  public Projectile firePrimaryWeapon(Point.Double direction) {
+    fireTimer.start();
+    Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
+    flipY = (zRot.x < 0);
+    return new Projectile(ID.getNewId(), DrawLib.TEX_ENEMY_WEAPON_1, zRot, getX(), getY(), 5); // fire primary, 5 damage
+  }
+  
+  public boolean didRecentlyFire() { return fireTimer.isRunning(); }
 }

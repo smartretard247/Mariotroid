@@ -156,7 +156,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case 1:// only add level 1 visible objects to this map
       currLevel = 1; // no need to adjust level number on any further cases
       scene.resetAll(); // again, do not change scene in other cases
-      h.setDefaultPosition(10300, 400);
+      h.setDefaultPosition(300, 400);
       h.resetAll();
       game.addVisible(ID.ID_JETPACK);
       game.addVisible(ID.ID_ALT_WEAPON);
@@ -413,17 +413,19 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   private void drawAmmoCount(GL2 gl) {
     if(hero.hasSecondaryWeapon()) {
-      double xDiff = -30;
+      double xDiff = 10;
+      double yDiff = -35;
       double[] textColor = new double[] { 1.0, 1.0, 1.0 };
+      double hudWidth = DrawLib.getTexture(DrawLib.TEX_HUD).getWidth();
+      double hudHeight = DrawLib.getTexture(DrawLib.TEX_HUD).getHeight();
+      double healthHeight = DrawLib.getTexture(DrawLib.TEX_HEALTH).getHeight();
+      double shellWidth = DrawLib.getTexture(DrawLib.TEX_SHELL).getWidth()*2;
+      double shellHeight = DrawLib.getTexture(DrawLib.TEX_SHELL).getHeight()*2;
+      
       gl.glPushMatrix();
-      gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2+DrawLib.getTexture(DrawLib.TEX_ALT_WEAPON).getWidth()/2+xDiff,
-              DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2
-                      -DrawLib.getTexture(DrawLib.TEX_HEALTH).getHeight()
-                      -DrawLib.getTexture(DrawLib.TEX_ALT_WEAPON).getHeight(), 0);
-      DrawLib.drawTexturedRectangle(DrawLib.TEX_ALT_WEAPON,
-              DrawLib.getTexture(DrawLib.TEX_ALT_WEAPON).getWidth()/3,
-              DrawLib.getTexture(DrawLib.TEX_ALT_WEAPON).getHeight()/3);
-      DrawLib.drawText(Integer.toString(hero.getAmmoCount()), textColor, 20, -6);
+      gl.glTranslated(-hudWidth/2+shellWidth/2+xDiff, hudHeight/2 - healthHeight - shellHeight + yDiff, 0);
+      DrawLib.drawTexturedRectangle(DrawLib.TEX_SHELL, shellWidth, shellHeight);
+      DrawLib.drawText(Integer.toString(hero.getAmmoCount()), textColor, 25, -6);
       gl.glPopMatrix();
     }
   }
@@ -525,49 +527,51 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     int key = e.getKeyCode();  // Tells which key was pressed.
     switch(gameMode) { // controls are based on the game mode
     case RUNNING:
-      switch (key) {
-      case KeyEvent.VK_SHIFT:
-        hero.toggleSprint();
-        break;
-      case KeyEvent.VK_P: // pause/unpause
-        gameMode = GAME_MODE.PAUSED;
-        break;
-      case KeyEvent.VK_W: // climb up
-        if(hero.canClimb()) {
-          hero.setClimbing(true);
-          hero.setSpeedY(5);
-        }
-        break;
-      case KeyEvent.VK_S: // climb down
-        if(hero.canClimb()) {
-          hero.setClimbing(true);
-          hero.setSpeedY(-5);
-        }
-        break;
-      case KeyEvent.VK_A: // move left
-        hero.increaseSpeed(-GameObject.MAX_SPEED_X, 0);
-        if(hero.isClimbing()) {
-          hero.setClimbing(false);
-          hero.setSpeedY(-1);
-        }
-        break;
-      case KeyEvent.VK_D: // move right
-        hero.increaseSpeed(GameObject.MAX_SPEED_X, 0);
-        if(hero.isClimbing()) {
-          hero.setClimbing(false);
-          hero.setSpeedY(-1);
-        }
-        break;
-      case KeyEvent.VK_SPACE: // jump
-        if(hero.canJump()) {
-          hero.doJump();
-        } else {
-          if(hero.canDoubleJump()) {
-            hero.doDoubleJump();
+      if(hero.getLives() > 0) {
+        switch (key) {
+        case KeyEvent.VK_SHIFT:
+          hero.toggleSprint();
+          break;
+        case KeyEvent.VK_P: // pause/unpause
+          gameMode = GAME_MODE.PAUSED;
+          break;
+        case KeyEvent.VK_W: // climb up
+          if(hero.canClimb()) {
+            hero.setClimbing(true);
+            hero.setSpeedY(5);
           }
+          break;
+        case KeyEvent.VK_S: // climb down
+          if(hero.canClimb()) {
+            hero.setClimbing(true);
+            hero.setSpeedY(-5);
+          }
+          break;
+        case KeyEvent.VK_A: // move left
+          hero.increaseSpeed(-GameObject.MAX_SPEED_X, 0);
+          if(hero.isClimbing()) {
+            hero.setClimbing(false);
+            hero.setSpeedY(-1);
+          }
+          break;
+        case KeyEvent.VK_D: // move right
+          hero.increaseSpeed(GameObject.MAX_SPEED_X, 0);
+          if(hero.isClimbing()) {
+            hero.setClimbing(false);
+            hero.setSpeedY(-1);
+          }
+          break;
+        case KeyEvent.VK_SPACE: // jump
+          if(hero.canJump()) {
+            hero.doJump();
+          } else {
+            if(hero.canDoubleJump()) {
+              hero.doDoubleJump();
+            }
+          }
+          break;
+        default: break;
         }
-        break;
-      default: break;
       }
       break; // END RUNNING
     case PAUSED: // then we are paused, so change keyboard options
@@ -686,18 +690,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       
       // move all objects
       for(Collidable c : visibleObjects) {
+        if((new Movable()).getClass().isInstance(c)) {
+          Movable m = (Movable)c;
+          m.move();
+        }
         if((new Projectile()).getClass().isInstance(c)) {
           Projectile p = (Projectile)c;
           if(Math.abs(c.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(p.getObjectId()); // remove offscreen projectiles
           else projectiles.add(p); // track visible projectiles
         }
-        if((new Movable()).getClass().isInstance(c)) {
-          Movable m = (Movable)c;
-          m.move();
-        } 
       }
       
-      // Check projectiles for collisions and remove them
+      // Check projectiles for collisions with LEVEL and remove them
       for(Projectile proj : projectiles){
         List<Collidable> projectileCollisions = proj.processCollisions(visibleObjects);
         for(Collidable c : projectileCollisions){
@@ -709,7 +713,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       for(int i = ID.ID_ENEMY_1; i <= ID.ID_ENEMY_3; i++) {
         Enemy enemy = (Enemy)(game.getVisible(i));
         if(enemy != null) {
-          List<Collidable> enemyCollisions = enemy.processCollisions(visibleObjects);
+          List<Collidable> enemyCollisions = enemy.processCollisions(visibleObjects); // return valid collisions
           for(Collidable c : enemyCollisions) {
             if(new Projectile().getClass().isInstance(c)) {
               toRemove.add(c.getObjectId());
@@ -725,6 +729,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       // boss movement and collision detection
       Boss boss = (Boss)(game.getVisible(ID.ID_CALAMITY));
       if(boss != null) {
+        if(!boss.didRecentlyFire()) qProjectiles.add(new NextProjectile(hero.getPosition(), true));
         List<Collidable> bossCollisions = boss.processCollisions(visibleObjects);
         for(Collidable c : bossCollisions) {
           if(new Projectile().getClass().isInstance(c)) {
@@ -732,9 +737,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             if(boss.getHealth() <= 0) { // enemy died
               toRemove.add(boss.getObjectId());
               hero.addScore(boss.getPointsWorth());
-              game.addVisible(ID.ID_DOOR_POWERED); // add door after calamity is defeated!
-              game.removeVisible(ID.ID_DOOR);
-              game.addVisible(ID.ID_WARP, new Collidable(11275, 200));
+              createWarp(11275, 200); // set warp point, and show powered door
             }
           }
         }
@@ -780,11 +783,25 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       toRemove.stream().forEach((id) -> { game.removeVisible(id); });
       
       // set textures based on speed here
-      if(hero.standingStill()) hero.setTextureId(DrawLib.TEX_HERO);
-      else if(hero.movingLeft() || hero.movingRight()) hero.setTextureId(DrawLib.TEX_HERO_RUN1);
+      if(hero.getLives() > 0) {
+        if(hero.standingStill()) hero.setTextureId(DrawLib.TEX_HERO);
+        else if(hero.movingLeft() || hero.movingRight()) hero.setTextureId(DrawLib.TEX_HERO_RUN1);
+      }
       break;
     default: break;
     }
+  }
+  
+  /**
+   * Removes the "closed" door and adds a "powered" door.  Also creates a collidable point at which
+   * contact will change game mode to WARPING.
+   * @param x
+   * @param y 
+   */
+  private void createWarp(int x, int y) {
+    game.addVisible(ID.ID_DOOR_POWERED); // add door after calamity is defeated!
+    game.removeVisible(ID.ID_DOOR);
+    game.addVisible(ID.ID_WARP, new Collidable(x, y));
   }
 
   public void startAnimation() {
@@ -917,7 +934,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case GAME_OVER:
       switch(key) {
       case MouseEvent.BUTTON1:
-        this.gameMode = GAME_MODE.START_MENU;
+        gameMode = GAME_MODE.START_MENU;
       default: break;
       }
     default: break;
@@ -942,14 +959,24 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void fireProjectiles() {
     if(!qProjectiles.isEmpty()) {
       NextProjectile np = qProjectiles.pop();
-      Point sc = np.screenCoord;
-      Point.Double wc = DrawLib.screenToWorld(sc);
-      setStatusMessage("(" + wc.x + ", " + wc.y + ")");
       Projectile fired;
-      if(np.isFromPrimaryWeapon)
-        fired = hero.firePrimaryWeapon(wc);
-      else
-        fired = hero.fireSecondaryWeapon(wc);
+      if(!np.isFromEnemy) {
+        Point.Double wc = DrawLib.screenToWorld(np.screenCoord);
+        setStatusMessage("(" + wc.x + ", " + wc.y + ")"); // comment to remove coordinate display
+        if(np.isFromPrimaryWeapon)
+          fired = hero.firePrimaryWeapon(wc);
+        else
+          fired = hero.fireSecondaryWeapon(wc);
+      } else {
+        Collidable c = game.getVisible(ID.ID_CALAMITY);
+        if(c != null) {
+          Boss b = (Boss)c;
+          fired = b.firePrimaryWeapon(np.worldCoord);
+        } else {
+          fired = null;
+        }
+      }
+
       if(fired != null) game.addVisible(fired.getObjectId(), fired);
       else System.out.println("Attempted to fire null projectile.");
     }

@@ -58,10 +58,14 @@ public class Enemy extends Living {
         break;
       default:
         if(new Projectile().getClass().isInstance(c)) {
-          Projectile p = (Projectile)c;
-          try {
-            loseHealth(p.getDamage());
-          } catch (GameOverException ex) { // enemy died
+          if(!(c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_1 || c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_2)) {
+            Projectile p = (Projectile)c;
+            try {
+              loseHealth(p.getDamage());
+            } catch (GameOverException ex) { // enemy died
+            }
+          } else {
+            collisions.remove(c); // do not count this as true collision
           }
         }
         break;
