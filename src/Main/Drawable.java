@@ -3,7 +3,6 @@ package Main;
 import Drawing.DrawLib;
 import com.jogamp.opengl.GL2;
 import java.awt.Point;
-import java.awt.geom.Point2D;
 
 /**
  *
