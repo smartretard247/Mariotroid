@@ -30,6 +30,8 @@ public class Hero extends Living {
   private double armor; // armor is a MULTIPLIER, do reduce damage set to a value less than 1
   private boolean hasArmor;
   
+  private int lastTexId; // for tracking animations
+  
   public Hero(int objId, int startLives, int startHealth, long startScore, int texId, double x, double y) {
     super(objId, startLives, startHealth, texId, x, y, new Point.Double(0, 0));
     score = startScore;
@@ -177,7 +179,6 @@ public class Hero extends Living {
                   loseHealth(p.getDamage());
                 } catch (GameOverException ex) {
                   this.setLives(0);
-                  this.setTextureId(DrawLib.TEX_HERO_DEAD);
                 }
               } else {
                 invalidCollisions.add(c);
@@ -206,7 +207,7 @@ public class Hero extends Living {
   public void doDoubleJump() {
     doubleJumped = true;
     setSpeedY(JUMP_SPEED);
-    this.setTextureId(DrawLib.TEX_HERO_BACKPACK1);
+    setTextureId(DrawLib.TEX_HERO_BACKPACK1); // TODO: move all setTextureId() calls to draw() method
   }
   public boolean didLand() {
     return !jumped && !doubleJumped;
@@ -271,4 +272,21 @@ public class Hero extends Living {
   
   public void pickupArmor() { armor = 0.5; hasArmor = true; } // 50% reduction in damage
   public boolean hasArmor() { return hasArmor; }
+  
+  @Override
+  public void draw() {
+    int animationLengthInFrames = (isSprinting()) ? 8 : 16;
+    // set texture id then call standard draw function
+    if(getLives() > 0) {
+      if(standingStill()) setTextureId(DrawLib.TEX_HERO);
+      else if(movingLeft() || movingRight()) {
+        if(Engine.frameNumber % animationLengthInFrames < animationLengthInFrames/2) setTextureId(DrawLib.TEX_HERO_RUN1);
+        else setTextureId(DrawLib.TEX_HERO_RUN2);
+      }
+    } else {
+      setTextureId(DrawLib.TEX_HERO_DEAD);
+    }
+    
+    super.draw();
+  }
 }

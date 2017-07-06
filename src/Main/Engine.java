@@ -23,7 +23,6 @@ import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
@@ -47,7 +46,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final Dimension windowDim = new Dimension(1280,720);
   private Timer animationTimer;
   private static final Timer messageTimer = new Timer(5000, null);
-  private int frameNumber = 0; // The current frame number for an animation.
+  public static int frameNumber = 0; // The current frame number for an animation.
   private DrawLib drawLib;
   public static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
@@ -97,7 +96,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     startAnimation(); // also control pause function (and remove keyboard response)
     
     Timer introTimer = new Timer(INTROLENGTHMS, (evt)-> {
-      this.gameMode = GAME_MODE.START_MENU;
+      gameMode = GAME_MODE.START_MENU;
     });
     introTimer.setRepeats(false);
     introTimer.start();
@@ -290,14 +289,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   private void drawControls(GL2 gl) {
     double yOffset = 10;
-    String[] keyboardControls = { "Keyboard Controls:", "A - Move left", "D - Move right", "W - Climb wall", "S - Descend wall", "SPACE - Jump/Double jump", "P - Pause" };
-    String[] mouseControls = { "Mouse Controls:", "Left click - Fire primary weapon", "Right click - Fire alternate weapon" };
+    String[] keyboardControls = { "Keyboard:", "A - Move left", "D - Move right", "W - Climb wall", "S - Descend wall", "SHIFT - Toggle run", "SPACE - Jump/Double jump", "P - Pause" };
+    String[] mouseControls = { "Mouse:", "Left click - Fire primary weapon", "Right click - Fire alternate weapon" };
     gl.glPushMatrix();
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+yOffset, 0);
     gl.glPushMatrix();
     for(String s : keyboardControls) {
       DrawLib.drawText(s, new double[] { 1.0, 1.0, 1.0 }, 0, 0);
-      gl.glTranslated(s.length()*12,0,0);
+      gl.glTranslated(s.length()*11,0,0);
     }
     gl.glPopMatrix();
     gl.glTranslated(0,20,0);
@@ -713,7 +712,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       ArrayList<Projectile> projectiles = new ArrayList<>();
       
       // move all objects
-      for(Collidable c : visibleObjects) {
+      visibleObjects.stream().forEach((c) ->
+      /*for(Collidable c : visibleObjects)*/ {
         if((new Movable()).getClass().isInstance(c)) {
           Movable m = (Movable)c;
           m.move();
@@ -723,22 +723,25 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           if(Math.abs(c.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(p.getObjectId()); // remove offscreen projectiles
           else projectiles.add(p); // track visible projectiles
         }
-      }
+      });
       
       // Check projectiles for collisions with LEVEL and remove them
-      for(Projectile proj : projectiles){
+      projectiles.stream().forEach((proj) ->
+      /*for(Projectile proj : projectiles)*/ {
         List<Collidable> projectileCollisions = proj.processCollisions(visibleObjects);
-        for(Collidable c : projectileCollisions){
+        projectileCollisions.stream().forEach((c) ->
+        /*for(Collidable c : projectileCollisions)*/ {
           toRemove.add(proj.getObjectId());
-        }
-      }
+        });
+      });
     
       // enemy movement and collision detection
       for(int i = ID.ID_ENEMY_1; i <= ID.ID_ENEMY_3; i++) {
         Enemy enemy = (Enemy)(game.getVisible(i));
         if(enemy != null) {
           List<Collidable> enemyCollisions = enemy.processCollisions(visibleObjects); // return valid collisions
-          for(Collidable c : enemyCollisions) {
+          enemyCollisions.stream().forEach((c) ->
+          /*for(Collidable c : enemyCollisions)*/ {
             if(new Projectile().getClass().isInstance(c)) {
               toRemove.add(c.getObjectId());
               if(enemy.getHealth() <= 0) { // enemy died
@@ -746,7 +749,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
                 toRemove.add(enemy.getObjectId());
               }
             }
-          }
+          });
         }
       }
       
@@ -755,7 +758,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       if(boss != null) {
         if(!boss.didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true));
         List<Collidable> bossCollisions = boss.processCollisions(visibleObjects);
-        for(Collidable c : bossCollisions) {
+        bossCollisions.stream().forEach((c) ->
+        /*for(Collidable c : bossCollisions)*/ {
           if(new Projectile().getClass().isInstance(c)) {
             toRemove.add(c.getObjectId());
             if(boss.getHealth() <= 0) { // enemy died
@@ -764,7 +768,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
               createWarp(11275, 200); // set warp point, and show powered door
             }
           }
-        }
+        });
       }
       
       // hero movement and collision detection
@@ -805,12 +809,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       
       // remove all ids tagged for removal
       toRemove.stream().forEach((id) -> { game.removeVisible(id); });
-      
-      // set textures based on speed here
-      if(hero.getLives() > 0) {
-        if(hero.standingStill()) hero.setTextureId(DrawLib.TEX_HERO);
-        else if(hero.movingLeft() || hero.movingRight()) hero.setTextureId(DrawLib.TEX_HERO_RUN1);
-      }
       break;
     default: break;
     }
