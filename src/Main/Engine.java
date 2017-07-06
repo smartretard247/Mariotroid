@@ -265,6 +265,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawForeground(gl);
     gl.glPopMatrix(); // return to initial transform
     drawHud(gl);
+    drawControls(gl);
     drawStatus(gl); // will only draw status' of new messages, for x seconds
   }
   
@@ -284,6 +285,26 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPushMatrix();
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
     DrawLib.drawText("GAME OVER", new double[] { 1.0, 0.0, 0.0 }, 100+(frameNumber%500*2), 0);
+    gl.glPopMatrix();
+  }
+  
+  private void drawControls(GL2 gl) {
+    double yOffset = 10;
+    String[] keyboardControls = { "Keyboard Controls:", "A - Move left", "D - Move right", "W - Climb wall", "S - Descend wall", "SPACE - Jump/Double jump", "P - Pause" };
+    String[] mouseControls = { "Mouse Controls:", "Left click - Fire primary weapon", "Right click - Fire alternate weapon" };
+    gl.glPushMatrix();
+    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+yOffset, 0);
+    gl.glPushMatrix();
+    for(String s : keyboardControls) {
+      DrawLib.drawText(s, new double[] { 1.0, 1.0, 1.0 }, 0, 0);
+      gl.glTranslated(s.length()*12,0,0);
+    }
+    gl.glPopMatrix();
+    gl.glTranslated(0,20,0);
+    for(String s : mouseControls) {
+      DrawLib.drawText(s, new double[] { 1.0, 1.0, 1.0 }, 0, 0);
+      gl.glTranslated(s.length()*14,0,0);
+    }
     gl.glPopMatrix();
   }
   
@@ -968,7 +989,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         Projectile fired;
         if(!np.isFromEnemy) {
           Point.Double wc = DrawLib.screenToWorld(np.screenCoord);
-          setStatusMessage("(" + wc.x + ", " + wc.y + ")"); // comment to remove coordinate display
+          //setStatusMessage("(" + wc.x + ", " + wc.y + ")"); // comment to remove coordinate display
           if(np.isFromPrimaryWeapon)
             fired = hero.firePrimaryWeapon(wc);
           else
