@@ -5,6 +5,7 @@ import Enumerations.GAME_MODE;
 import Enumerations.ID;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import javax.swing.Timer;
 
@@ -75,6 +76,7 @@ public class Hero extends Living {
     
     //move();
     List<Collidable> collisions = getCollisions(nearObjects);
+    List<Collidable> invalidCollisions = new LinkedList<>();
     if(this.getY() < -3000) { //fell off map
       try {
         loseHealth(10);
@@ -178,7 +180,7 @@ public class Hero extends Living {
                   this.setTextureId(DrawLib.TEX_HERO_DEAD);
                 }
               } else {
-                collisions.remove(c);
+                invalidCollisions.add(c);
               }
             }
             break;
@@ -191,7 +193,7 @@ public class Hero extends Living {
       x += (x < lastWallCollision.getX()) ? 20 : -20;
       isClimbing = false;
     }
-    
+    collisions.removeAll(invalidCollisions);
     return collisions;
   }
   

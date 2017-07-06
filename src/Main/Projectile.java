@@ -4,6 +4,7 @@ import Drawing.DrawLib;
 import Enumerations.ID;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -86,17 +87,18 @@ public class Projectile extends Movable {
   
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
     List<Collidable> collisions = getCollisions(nearObjects);
+    List<Collidable> invalidCollisions = new LinkedList<>();
     for(Collidable c : collisions) {
       int collisiontexId = c.getTextureId();
       switch(collisiontexId) {
       case DrawLib.TEX_LEVEL: // do nothing
         break;
       default:
-        collisions.remove(c); // remove all but level collisions, will be processed be other classes
+        invalidCollisions.add(c); // remove all but level collisions, will be processed be other classes
         break;
       }
     }
-    
+    collisions.removeAll(invalidCollisions);
     return collisions;
   }
 }

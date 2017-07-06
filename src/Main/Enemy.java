@@ -3,6 +3,7 @@ package Main;
 import Drawing.DrawLib;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -24,6 +25,7 @@ public class Enemy extends Living {
     setSpeedY(speedY - PhysicsEngine.GRAVITY);
     
     List<Collidable> collisions = getCollisions(nearObjects);
+    List<Collidable> invalidCollisions = new LinkedList<>();
     for(Collidable c : collisions) {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
@@ -65,13 +67,13 @@ public class Enemy extends Living {
             } catch (GameOverException ex) { // enemy died
             }
           } else {
-            collisions.remove(c); // do not count this as true collision
+            invalidCollisions.add(c);
           }
         }
         break;
       }
     }
-    
+    collisions.removeAll(invalidCollisions); // do not count this as true collision
     return collisions;
   }
   

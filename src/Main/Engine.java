@@ -25,6 +25,9 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
@@ -57,7 +60,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public PhysicsEngine phy = new PhysicsEngine();
   public ObjectContainer game = new ObjectContainer();
   private static String statusMessage = "";
-  private final LinkedList<NextProjectile> qProjectiles = new LinkedList<>();
+  private final LinkedBlockingQueue<NextProjectile> qProjectiles = new LinkedBlockingQueue<>();
   private boolean slowMo = false;
   private final int TOTAL_LEVELS = 2;
   private int currLevel = 1;
@@ -729,7 +732,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       // boss movement and collision detection
       Boss boss = (Boss)(game.getVisible(ID.ID_CALAMITY));
       if(boss != null) {
-        if(!boss.didRecentlyFire()) qProjectiles.add(new NextProjectile(hero.getPosition(), true));
+        if(!boss.didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true));
         List<Collidable> bossCollisions = boss.processCollisions(visibleObjects);
         for(Collidable c : bossCollisions) {
           if(new Projectile().getClass().isInstance(c)) {
@@ -845,12 +848,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case RUNNING:
       switch(key) {
       case MouseEvent.BUTTON1: // left click
-        qProjectiles.add(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
+        qProjectiles.offer(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
         break;
       case MouseEvent.BUTTON2: // middle click
         break;
       case MouseEvent.BUTTON3: // right click
-        qProjectiles.add(new NextProjectile(sc, false)); // add the projectile to the queue, to be fired during next update
+        qProjectiles.offer(new NextProjectile(sc, false)); // add the projectile to the queue, to be fired during next update
         break;
       default: break;
       }
@@ -958,27 +961,33 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   public void fireProjectiles() {
     if(!qProjectiles.isEmpty()) {
-      NextProjectile np = qProjectiles.pop();
-      Projectile fired;
-      if(!np.isFromEnemy) {
-        Point.Double wc = DrawLib.screenToWorld(np.screenCoord);
-        setStatusMessage("(" + wc.x + ", " + wc.y + ")"); // comment to remove coordinate display
-        if(np.isFromPrimaryWeapon)
-          fired = hero.firePrimaryWeapon(wc);
-        else
-          fired = hero.fireSecondaryWeapon(wc);
-      } else {
-        Collidable c = game.getVisible(ID.ID_CALAMITY);
-        if(c != null) {
-          Boss b = (Boss)c;
-          fired = b.firePrimaryWeapon(np.worldCoord);
+      NextProjectile np;
+      try {
+        np = qProjectiles.take();
+      
+        Projectile fired;
+        if(!np.isFromEnemy) {
+          Point.Double wc = DrawLib.screenToWorld(np.screenCoord);
+          setStatusMessage("(" + wc.x + ", " + wc.y + ")"); // comment to remove coordinate display
+          if(np.isFromPrimaryWeapon)
+            fired = hero.firePrimaryWeapon(wc);
+          else
+            fired = hero.fireSecondaryWeapon(wc);
         } else {
-          fired = null;
+          Collidable c = game.getVisible(ID.ID_CALAMITY);
+          if(c != null) {
+            Boss b = (Boss)c;
+            fired = b.firePrimaryWeapon(np.worldCoord);
+          } else {
+            fired = null;
+          }
         }
-      }
 
-      if(fired != null) game.addVisible(fired.getObjectId(), fired);
-      else System.out.println("Attempted to fire null projectile.");
+        if(fired != null) game.addVisible(fired.getObjectId(), fired);
+        else System.out.println("Attempted to fire null projectile.");
+      } catch (InterruptedException ex) {
+        Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+      }
     }
   }
 }

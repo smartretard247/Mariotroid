@@ -4,6 +4,7 @@ import Drawing.DrawLib;
 import Enumerations.ID;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import javax.swing.Timer;
 
@@ -32,6 +33,7 @@ public class Boss extends Enemy {
   
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
     List<Collidable> collisions = getCollisions(nearObjects);
+    List<Collidable> invalidCollisions = new LinkedList<>();
     for(Collidable c : collisions) {
       int id = c.getTextureId();
       switch(id) {
@@ -86,13 +88,13 @@ public class Boss extends Enemy {
             } catch (GameOverException ex) { // enemy died
             }
           } else {
-            collisions.remove(c); // do not count as true collision, "friendly fire"
+            invalidCollisions.add(c); // do not count as true collision, "friendly fire"
           }
         }
         break;
       }
     }
-    
+    collisions.removeAll(invalidCollisions);
     return collisions;
   }
   
