@@ -82,6 +82,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             panel.close();
             window.setVisible(false);
             window.dispose();
+            System.exit(0);
         }
     });
   }
