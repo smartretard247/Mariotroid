@@ -562,7 +562,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void keyPressed(KeyEvent e) {
     int key = e.getKeyCode();  // Tells which key was pressed.
     
-    switch (key) { case KeyEvent.VK_F5: debugging = !debugging; break; }
+    switch (key) {
+    case KeyEvent.VK_F5: debugging = !debugging;
+      setStatusMessage((debugging) ? "--DEBUGGING ON--" : "--DEBUGGING OFF--");
+      break;
+    }
     
     switch(gameMode) { // controls are based on the game mode
     case RUNNING:
