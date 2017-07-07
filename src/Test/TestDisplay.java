@@ -3,7 +3,6 @@ package Test;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import javax.swing.filechooser.FileSystemView;
 import java.util.LinkedList;
 import Drawing.DrawLib;
 import com.jogamp.opengl.GL2;
@@ -28,7 +27,8 @@ public class TestDisplay {
     
     public TestDisplay(){
         logText = "";
-        String docPath = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+        // String docPath = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+        String docPath = ".\\test";
         String fileName = "Test";
         int fileNumber = 1;
         String fileExt = ".txt";
@@ -56,6 +56,7 @@ public class TestDisplay {
     
     /**
      * Writes the test data that hasn't timed out to the screen.
+   * @param gl
      */
     public static void writeToScreen(GL2 gl){
         double yPos = Y_POS;
@@ -80,12 +81,14 @@ public class TestDisplay {
      * Writes the current testResults to the fileWriter to save results
      */
     public void writeToFile(){
+      if(!logText.isEmpty()) {
         try{
-            fw = new FileWriter(f);
-            fw.write(logText);
-            fw.close();
+          fw = new FileWriter(f);
+          fw.write(logText);
+          fw.close();
         }catch(IOException ioe){
-            ioe.printStackTrace();
+          ioe.printStackTrace();
         }
+      }
     }
 }

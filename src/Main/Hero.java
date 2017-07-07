@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.Timer;
+import Test.TestDisplay;
 
 /**
  *
@@ -175,11 +176,14 @@ public class Hero extends Living {
           default: 
             if(new Projectile().getClass().isInstance(c)) {
               if(c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_1 || c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_2) {
-                Projectile p = (Projectile)c;
-                try {
-                  loseHealth(p.getDamage());
-                } catch (GameOverException ex) {
-                  this.setLives(0);
+                if(!wasRecentlyDamaged()) {
+                  recentDamageTimer.start();
+                  Projectile p = (Projectile)c;
+                  try {
+                    loseHealth((int)(p.getDamage()*armor));
+                  } catch (GameOverException ex) {
+                    this.setLives(0);
+                  }
                 }
               } else {
                 invalidCollisions.add(c);

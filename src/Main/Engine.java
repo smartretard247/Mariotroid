@@ -64,6 +64,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private boolean slowMo = false;
   private final int TOTAL_LEVELS = 2;
   private int currLevel = 1;
+  private boolean debugging = false;
   
   ///// START METHODS
 
@@ -236,6 +237,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case WIN: drawWin(gl); break;
       default: break;
     }
+    if(debugging) drawDebug(gl);
     gl.glPopMatrix(); // return to initial transform
   }
   
@@ -284,8 +286,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // check if we need to display a message
     if(messageTimer.isRunning()) {
       gl.glPushMatrix();
-      gl.glTranslated(0, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
-      DrawLib.drawText(statusMessage, new double[] { 1.0, 1.0, 0.0 }, -60, 20);
+      gl.glTranslated(0, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2-60, 0);
+      DrawLib.drawText(statusMessage, new double[] { 1.0, 1.0, 0.0 }, -60, 0);
       gl.glPopMatrix();
     } else {
       statusMessage = "";
@@ -560,6 +562,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   @Override
   public void keyPressed(KeyEvent e) {
     int key = e.getKeyCode();  // Tells which key was pressed.
+    
+    switch (key) { case KeyEvent.VK_F5: debugging = !debugging; break; }
+    
     switch(gameMode) { // controls are based on the game mode
     case RUNNING:
       if(hero.getLives() > 0) {
@@ -786,22 +791,23 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       // hero movement and collision detection
       List<Collidable> heroCollisions = hero.processCollisions(visibleObjects);
       for(Collidable c : heroCollisions){
-        int id = c.getObjectId();
-        switch(id) {
+        int objId = c.getObjectId();
+        int texId = c.getTextureId();
+        switch(objId) {
         case ID.ID_JETPACK:
           Engine.setStatusMessage("Got jetpack!");
           hero.addScore(250);
-          toRemove.add(id); // remove the jetpack image from the screen
+          toRemove.add(objId); // remove the jetpack image from the screen
           break;
         case ID.ID_ALT_WEAPON:
           Engine.setStatusMessage("Got missles!");
           hero.addScore(1000);
-          toRemove.add(id); // remove the shell image from the screen
+          toRemove.add(objId); // remove the shell image from the screen
           break;
         case ID.ID_ARMOR:
           Engine.setStatusMessage("Got armor!");
           hero.addScore(275);
-          toRemove.add(id); // remove the armor image from the screen
+          toRemove.add(objId); // remove the armor image from the screen
           break;
         case ID.ID_WARP:
           if(++currLevel <= TOTAL_LEVELS){
@@ -815,7 +821,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             won = true;
           }
           break;
-        default: break;
+        default: 
+          switch(texId) {
+            case DrawLib.TEX_ENEMY_WEAPON_1:
+            case DrawLib.TEX_ENEMY_WEAPON_2:
+              toRemove.add(objId);
+              break;
+            default: break;
+          }
+          break;
         }
       }
       
@@ -1027,5 +1041,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   public void close(){
       testDisplay.writeToFile();
+  }
+  
+  private void drawDebug(GL2 gl) {
+    TestDisplay.writeToScreen(gl);
   }
 }
