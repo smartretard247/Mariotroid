@@ -60,6 +60,7 @@ public class Hero extends Living {
       resetHealth();
       resetPosition();
     }
+    TestDisplay.addTestData("Damage: " + amount);
     return true;
   }
   
