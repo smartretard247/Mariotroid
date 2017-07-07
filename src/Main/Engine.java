@@ -5,7 +5,7 @@ import Drawing.DrawLib;
 import Enumerations.START_MENU_OPTION;
 import Enumerations.GAME_MODE;
 import Enumerations.ID;
-//import Test.Test;
+import Test.TestDisplay;
 import java.awt.event.*;
 import javax.swing.*;
 import static com.jogamp.opengl.GL.GL_BLEND;
@@ -53,6 +53,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final int INTROLENGTHMS = 3000;
   private boolean won = false;
   private boolean warping = false;
+  private TestDisplay testDisplay;
   
   public Scene scene; // trans x & y & z, scale x & y & z
   public Hero hero;
@@ -72,9 +73,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     window.setContentPane(panel);
     window.pack();
     window.setLocation(10,10);
-    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     window.setVisible(true);
     panel.setFocusable(false);
+    window.addWindowListener(new WindowAdapter(){
+        @Override
+        public void windowClosing(WindowEvent e){
+            panel.close();
+            window.setVisible(false);
+            window.dispose();
+        }
+    });
   }
 
   @SuppressWarnings("LeakingThisInConstructor")
@@ -148,6 +157,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Double(10,10)));
     game.addGO(new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11200, 189));
     game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 11200, 189));
+    
+    testDisplay = new TestDisplay();
   }
   
   private void resetVisibles(int level) {
@@ -1008,5 +1019,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
+  }
+  
+  /**
+   * To run on close
+   */
+  public void close(){
+      testDisplay.writeToFile();
   }
 }
