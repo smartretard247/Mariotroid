@@ -1,6 +1,7 @@
 package Main;
 
 import Drawing.DrawLib;
+import Test.TestDisplay;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -65,6 +66,7 @@ public class Enemy extends Living {
             try {
               loseHealth(p.getDamage());
             } catch (GameOverException ex) { // enemy died
+              TestDisplay.addTestData("Enemy destroyed");
             }
           } else {
             invalidCollisions.add(c);

@@ -2,6 +2,7 @@ package Main;
 
 import Drawing.DrawLib;
 import Enumerations.ID;
+import Test.TestDisplay;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -84,8 +85,10 @@ public class Boss extends Enemy {
           if(!(c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_1 || c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_2)) {
             Projectile p = (Projectile)c;
             try {
+              TestDisplay.addTestData("Boss damage: " + p.getDamage());
               loseHealth(p.getDamage());
             } catch (GameOverException ex) { // enemy died
+              TestDisplay.addTestData("Boss desroyed");
             }
           } else {
             invalidCollisions.add(c); // do not count as true collision, "friendly fire"
@@ -105,6 +108,7 @@ public class Boss extends Enemy {
     fireTimer.start();
     Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
     flipY = (zRot.x < 0);
+    TestDisplay.addTestData("Boss fire to: (" + getX() + ", " + getY() + ")");
     return new Projectile(ID.getNewId(), DrawLib.TEX_ENEMY_WEAPON_1, zRot, getX(), getY(), 5); // fire primary, 5 damage
   }
   

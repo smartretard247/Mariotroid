@@ -732,8 +732,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       ArrayList<Projectile> projectiles = new ArrayList<>();
       
       // move all objects
-      visibleObjects.stream().forEach((c) ->
-      /*for(Collidable c : visibleObjects)*/ {
+      visibleObjects.stream().forEach((c) -> {
         if((new Movable()).getClass().isInstance(c)) {
           Movable m = (Movable)c;
           m.move();
@@ -746,11 +745,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       });
       
       // Check projectiles for collisions with LEVEL and remove them
-      projectiles.stream().forEach((proj) ->
-      /*for(Projectile proj : projectiles)*/ {
+      projectiles.stream().forEach((proj) -> {
         List<Collidable> projectileCollisions = proj.processCollisions(visibleObjects);
-        projectileCollisions.stream().forEach((c) ->
-        /*for(Collidable c : projectileCollisions)*/ {
+        projectileCollisions.stream().forEach((c) -> {
           toRemove.add(proj.getObjectId());
         });
       });
@@ -760,8 +757,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         Enemy enemy = (Enemy)(game.getVisible(i));
         if(enemy != null) {
           List<Collidable> enemyCollisions = enemy.processCollisions(visibleObjects); // return valid collisions
-          enemyCollisions.stream().forEach((c) ->
-          /*for(Collidable c : enemyCollisions)*/ {
+          enemyCollisions.stream().forEach((c) -> {
             if(new Projectile().getClass().isInstance(c)) {
               toRemove.add(c.getObjectId());
               if(enemy.getHealth() <= 0) { // enemy died
@@ -1040,6 +1036,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   private void drawDebug(GL2 gl) {
-    TestDisplay.writeToScreen(gl);
+    TestDisplay.writeToScreen(gl, DrawLib.getTexture(DrawLib.TEX_HUD).getWidth());
   }
 }

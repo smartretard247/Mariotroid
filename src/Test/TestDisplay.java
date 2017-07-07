@@ -23,26 +23,25 @@ public class TestDisplay {
     private static String logText;
     
     private static File f;
-    //private FileWriter fw;
     
     public TestDisplay(){
-        logText = "";
-        // String docPath = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
-        String docPath = ".\\test";
-        String fileName = "Test";
-        int fileNumber = 1;
-        String fileExt = ".txt";
-        String filePath;
-        boolean fileExists = true;
-        do{
-            filePath = docPath + "\\" + fileName + fileNumber + fileExt;
-            f = new File(filePath);
-            if(f.exists()) {
-                fileNumber++;
-            }else{
-                fileExists = false;
-            }
-        }while(fileExists);
+      logText = "";
+      // String docPath = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+      String docPath = ".\\test";
+      String fileName = "Test";
+      int fileNumber = 1;
+      String fileExt = ".txt";
+      String filePath;
+      boolean fileExists = true;
+      do {
+        filePath = docPath + "\\" + fileName + fileNumber + fileExt;
+        f = new File(filePath);
+        if(f.exists()) {
+          fileNumber++;
+        } else {
+          fileExists = false;
+        }
+      } while(fileExists);
     }
     
     /**
@@ -57,24 +56,25 @@ public class TestDisplay {
     /**
      * Writes the test data that hasn't timed out to the screen.
    * @param gl
+   * @param screenWidth
      */
-    public static void writeToScreen(GL2 gl){
-        double yPos = Y_POS;
-        boolean go = true;
-        while(go && DISP_DATA.size() > 0){
-            if(DISP_DATA.peek().isExpired() || DISP_DATA.size() > 7){
-                DISP_DATA.pop();
-            }else{
-                go = false;
-            }
+    public static void writeToScreen(GL2 gl, double screenWidth){
+      double yPos = Y_POS;
+      boolean go = true;
+      while(go && DISP_DATA.size() > 0){
+        if(DISP_DATA.peek().isExpired() || DISP_DATA.size() > 7){
+          DISP_DATA.pop();
+        } else{
+          go = false;
         }
-        gl.glPushMatrix();
-        gl.glTranslated(0, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
-        for(TestData td : DISP_DATA){
-            DrawLib.drawText(td.getTestData(), COLOR, X_POS, yPos);
-            yPos -= SPACE;
-        }
-        gl.glPopMatrix();
+      }
+      gl.glPushMatrix();
+      gl.glTranslated(0, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
+      for(TestData td : DISP_DATA){
+        DrawLib.drawText(td.getTestData(), COLOR, -screenWidth/2, yPos);
+        yPos -= SPACE;
+      }
+      gl.glPopMatrix();
     }
     
     /**

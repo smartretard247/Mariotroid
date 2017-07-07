@@ -1,0 +1,10 @@
+Enemy fire to: (11010.0, 510.0)
+Enemy fire to: (9891.5, 521.5)
+Enemy destroyed
+Enemy fire to: (9711.5, 341.5)
+Enemy destroyed
+Enemy fire to: (11091.5, 721.5)
+Damage: 2
+Enemy fire to: (9471.5, 551.5)
+Enemy destroyed
+Enemy fire to: (10131.5, 731.5)
