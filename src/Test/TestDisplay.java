@@ -22,8 +22,8 @@ public class TestDisplay {
     private static final double Y_POS = 600;
     private static String logText;
     
-    private File f;
-    private FileWriter fw;
+    private static File f;
+    //private FileWriter fw;
     
     public TestDisplay(){
         logText = "";
@@ -80,10 +80,10 @@ public class TestDisplay {
     /**
      * Writes the current testResults to the fileWriter to save results
      */
-    public void writeToFile(){
+    public static void writeToFile(){
       if(!logText.isEmpty()) {
         try{
-          fw = new FileWriter(f);
+          FileWriter fw = new FileWriter(f);
           fw.write(logText);
           fw.close();
         }catch(IOException ioe){

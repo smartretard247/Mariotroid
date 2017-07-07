@@ -80,10 +80,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     window.addWindowListener(new WindowAdapter(){
         @Override
         public void windowClosing(WindowEvent e){
-            panel.close();
-            window.setVisible(false);
-            window.dispose();
-            System.exit(0);
+          TestDisplay.writeToFile();
+          window.dispose();
+          System.exit(0);
         }
     });
   }
@@ -1034,13 +1033,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
-  }
-  
-  /**
-   * To run on close
-   */
-  public void close(){
-      testDisplay.writeToFile();
   }
   
   private void drawDebug(GL2 gl) {
