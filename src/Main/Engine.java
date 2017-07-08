@@ -763,6 +763,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
               if(enemy.getHealth() <= 0) { // enemy died
                 hero.addScore(enemy.getPointsWorth());
                 toRemove.add(enemy.getObjectId());
+                TestDisplay.addTestData("Enemy destroyed");
               }
             }
           });
@@ -781,6 +782,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             if(boss.getHealth() <= 0) { // enemy died
               toRemove.add(boss.getObjectId());
               hero.addScore(boss.getPointsWorth());
+              TestDisplay.addTestData("Boss destroyed");
               createWarp(11275, 200); // set warp point, and show powered door
             }
           }
