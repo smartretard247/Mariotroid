@@ -85,11 +85,10 @@ public class Boss extends Enemy {
           if(!(c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_1 || c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_2)) {
             Projectile p = (Projectile)c;
             try {
-              TestDisplay.addTestData("Boss damage: " + p.getDamage());
+              TestDisplay.addTestData("Boss HP: " + getHealth());
               loseHealth(p.getDamage());
-            } catch (GameOverException ex) { // enemy died
-              TestDisplay.addTestData("Boss desroyed");
-            }
+              TestDisplay.addTestData("Boss damage: " + p.getDamage() + " / Boss HP: " + getHealth());
+            } catch (GameOverException ex) {} // enemy died
           } else {
             invalidCollisions.add(c); // do not count as true collision, "friendly fire"
           }
