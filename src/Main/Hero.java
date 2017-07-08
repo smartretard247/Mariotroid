@@ -60,6 +60,7 @@ public class Hero extends Living {
   public boolean loseHealth(int amount) throws GameOverException {
     if(!godMode) {
       if(!super.loseHealth(amount)) { // if dead after losing health
+        TestDisplay.addTestData("Hero HP: " + getHealth());
         if(getLives() > 0) resetHealth();
         if(getLives() > 0) resetPosition();
       }
