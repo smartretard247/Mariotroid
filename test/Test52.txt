@@ -1,0 +1,3 @@
+Boss fire to: (11010.0, 510.0)
+Hero damage: 2
+Boss fire to: (9981.5, 611.5)

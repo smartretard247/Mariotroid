@@ -30,6 +30,7 @@ public class Hero extends Living {
   private final Timer recentDamageTimer = new Timer(3000, null);
   private double armor; // armor is a MULTIPLIER, do reduce damage set to a value less than 1
   private boolean hasArmor;
+  private boolean godMode = false;
   
   private int lastTexId; // for tracking animations
   
@@ -57,9 +58,11 @@ public class Hero extends Living {
   public void addScore(int points) { score += points; }
   
   public boolean loseHealth(int amount) throws GameOverException {
-    if(!super.loseHealth(amount)) { // if dead after losing health
-      resetHealth();
-      resetPosition();
+    if(!godMode) {
+      if(!super.loseHealth(amount)) { // if dead after losing health
+        if(getLives() > 0) resetHealth();
+        if(getLives() > 0) resetPosition();
+      }
     }
     TestDisplay.addTestData("Hero damage: " + amount);
     return true;
@@ -68,6 +71,8 @@ public class Hero extends Living {
   @Override
   public void resetAll() {
     super.resetAll();
+    godMode = false;
+    setTextureId(DrawLib.TEX_HERO);
     resetScore();
     resetAmmo();
     dropSecondaryWeapon();
@@ -85,7 +90,6 @@ public class Hero extends Living {
       try {
         loseHealth(10);
       } catch (GameOverException ex) {
-        Engine.gameMode = GAME_MODE.GAME_OVER;
       }
     }
     
@@ -163,7 +167,6 @@ public class Hero extends Living {
               try {
                 loseHealth((int)(2*armor));
               } catch (GameOverException ex) {
-                Engine.gameMode = GAME_MODE.GAME_OVER;
               }
             }
             break;
@@ -288,10 +291,20 @@ public class Hero extends Living {
         if(Engine.frameNumber % animationLengthInFrames < animationLengthInFrames/2) setTextureId(DrawLib.TEX_HERO_RUN1);
         else setTextureId(DrawLib.TEX_HERO_RUN2);
       }
-    } else {
-      setTextureId(DrawLib.TEX_HERO_DEAD);
     }
     
     super.draw();
+  }
+  
+  @Override
+  protected void die() {
+    try {
+      super.die();
+    } catch (GameOverException ex) {
+      this.setSpeedX(0);
+      godMode = true;
+      setTextureId(DrawLib.TEX_HERO_DEAD);
+      Engine.gameMode = GAME_MODE.DYING;
+    }
   }
 }

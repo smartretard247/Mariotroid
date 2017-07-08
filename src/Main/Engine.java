@@ -45,6 +45,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final GLJPanel display;
   private final Dimension windowDim = new Dimension(1280,720);
   private Timer animationTimer;
+  private static Timer introTimer;
   private static final Timer messageTimer = new Timer(5000, null);
   public static int frameNumber = 0; // The current frame number for an animation.
   private DrawLib drawLib;
@@ -85,6 +86,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           System.exit(0);
         }
     });
+    introTimer.start();
   }
 
   @SuppressWarnings("LeakingThisInConstructor")
@@ -105,11 +107,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // start the animation
     startAnimation(); // also control pause function (and remove keyboard response)
     
-    Timer introTimer = new Timer(INTROLENGTHMS, (evt)-> {
+    introTimer = new Timer(INTROLENGTHMS, (evt)-> {
       gameMode = GAME_MODE.START_MENU;
     });
     introTimer.setRepeats(false);
-    introTimer.start();
   }
 
   /**
@@ -172,6 +173,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       scene.resetAll(); // again, do not change scene in other cases
       h.setDefaultPosition(300, 400);
       h.resetAll();
+      //h.setLives(1);
+      //h.setHealth(1);
       game.addVisible(ID.ID_JETPACK);
       game.addVisible(ID.ID_ALT_WEAPON);
       game.addVisible(ID.ID_ENEMY_1);
@@ -229,6 +232,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(gameMode) {
       case INTRO: drawIntro(gl); break; // END INTRO
       case START_MENU: drawStartMenu(gl); break; // END START MENU
+      case DYING:
       case RUNNING: drawNormalGamePlay(gl); break; // END RUNNING
       case PAUSED: drawPauseMenu(gl); break; // END PAUSED
       case GAME_OVER: drawGameOver(gl); break;
@@ -285,8 +289,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // check if we need to display a message
     if(messageTimer.isRunning()) {
       gl.glPushMatrix();
+      gl.glColor3dv(new double[] { 1.0, 1.0, 0.0 }, 0);
       gl.glTranslated(0, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2-60, 0);
-      DrawLib.drawText(statusMessage, new double[] { 1.0, 1.0, 0.0 }, -60, 0);
+      DrawLib.drawText(statusMessage, -60, 0);
       gl.glPopMatrix();
     } else {
       statusMessage = "";
@@ -295,8 +300,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   private void drawGameOver(GL2 gl) {
     gl.glPushMatrix();
+    gl.glColor3dv(new double[] { 1.0, 0.0, 0.0 }, 0);
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
-    DrawLib.drawText("GAME OVER", new double[] { 1.0, 0.0, 0.0 }, 100+(frameNumber%500*2), 0);
+    DrawLib.drawText("GAME OVER", 100+(frameNumber%500*2), 0);
     gl.glPopMatrix();
   }
   
@@ -307,14 +313,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPushMatrix();
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+yOffset, 0);
     gl.glPushMatrix();
+    gl.glColor3dv(new double[] { 1.0, 1.0, 1.0 }, 0);
     for(String s : keyboardControls) {
-      DrawLib.drawText(s, new double[] { 1.0, 1.0, 1.0 }, 0, 0);
+      DrawLib.drawText(s, 0, 0);
       gl.glTranslated(s.length()*11,0,0);
     }
     gl.glPopMatrix();
+    gl.glColor3dv(new double[] { 1.0, 1.0, 1.0 }, 0);
     gl.glTranslated(0,20,0);
     for(String s : mouseControls) {
-      DrawLib.drawText(s, new double[] { 1.0, 1.0, 1.0 }, 0, 0);
+      DrawLib.drawText(s, 0, 0);
       gl.glTranslated(s.length()*14,0,0);
     }
     gl.glPopMatrix();
@@ -339,15 +347,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     credits.add("");
     credits.add("William Malone - Developer");
 
+    gl.glColor3dv( new double[] { 0.0, 1.0, 0.0 }, 0);
     for(int i = 0; i < credits.size(); i++)
-      DrawLib.drawText(credits.get(i), new double[] { 0.0, 1.0, 0.0 }, windowDim.width/2-60, -windowDim.height/2+(frameNumber%500*2)-(i*20));
+      DrawLib.drawText(credits.get(i), windowDim.width/2-60, -windowDim.height/2+(frameNumber%500*2)-(i*20));
     gl.glPopMatrix();
   }
   
   private void drawWin(GL2 gl) {
     gl.glPushMatrix();
+    gl.glColor3dv( new double[] { Math.random(), Math.random(), Math.random() }, 0);
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
-    DrawLib.drawText("YOU WIN!", new double[] { Math.random(), Math.random(), Math.random() }, 100+(frameNumber%500*2), 0);
+    DrawLib.drawText("YOU WIN!", 100+(frameNumber%500*2), 0);
     gl.glPopMatrix();
   }
   
@@ -396,23 +406,30 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
 
   private void drawStartMenu(GL2 gl) {
+    int screenWidth = DrawLib.getTexture(DrawLib.TEX_HUD).getWidth();
+    int screenHeight = DrawLib.getTexture(DrawLib.TEX_HUD).getHeight();
     double[] selectedTextColor = new double[] { 1.0, 0.0, 0.0 };
     double[] textColor = new double[] { 0.0, 0.0, 0.0 };
     switch(this.startMenuSelection) {
       case START_GAME:
         gl.glPushMatrix();
         gl.glTranslated(0, 50, 0);
-        DrawLib.drawText("START GAME", selectedTextColor, -50, 0);
+        gl.glColor3dv( selectedTextColor, 0);
+        DrawLib.drawText("START GAME", -50, 0);
+        //DrawLib.drawText("START GAME", new Point(screenWidth/2-50, screenHeight/2));
         gl.glTranslated(0, -100, 0);
-        DrawLib.drawText("EXIT", textColor, -20, 0);
+        gl.glColor3dv( textColor, 0);
+        DrawLib.drawText("EXIT", -20, 0);
         gl.glPopMatrix();
         break;
       case EXIT:
         gl.glPushMatrix();
         gl.glTranslated(0, 50, 0);
-        DrawLib.drawText("START GAME", textColor, -50, 0);
+        gl.glColor3dv( textColor, 0);
+        DrawLib.drawText("START GAME", -50, 0);
         gl.glTranslated(0, -100, 0);
-        DrawLib.drawText("EXIT", selectedTextColor, -20, 0);
+        gl.glColor3dv( selectedTextColor, 0);
+        DrawLib.drawText("EXIT", -20, 0);
         gl.glPopMatrix();
         break;
       default: break;
@@ -420,7 +437,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
 
   private void drawPauseMenu(GL2 gl) {
-    DrawLib.drawText("GAME PAUSED", new double[] { 1.0, 1.0, 0.0 }, -60, 0);
+    double[] textColor = new double[] { 1.0, 1.0, 0.0 };
+    gl.glColor3dv( textColor, 0);
+    DrawLib.drawText("GAME PAUSED", -60, 0);
   }
 
   private void doStartMenuSelection() {
@@ -459,9 +478,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       double shellHeight = DrawLib.getTexture(DrawLib.TEX_SHELL).getHeight()*2;
       
       gl.glPushMatrix();
+      gl.glColor3dv( textColor, 0);
       gl.glTranslated(-hudWidth/2+shellWidth/2+xDiff, hudHeight/2 - healthHeight - shellHeight + yDiff, 0);
       DrawLib.drawTexturedRectangle(DrawLib.TEX_SHELL, shellWidth, shellHeight);
-      DrawLib.drawText(Integer.toString(hero.getAmmoCount()), textColor, 25, -6);
+      DrawLib.drawText(Integer.toString(hero.getAmmoCount()), 25, -6);
       gl.glPopMatrix();
     }
   }
@@ -480,20 +500,24 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   private void drawLives(GL2 gl) {
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
+    gl.glColor3d(textColor[0], textColor[1], textColor[2]);
     gl.glPushMatrix();
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2,
             DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
-    DrawLib.drawText(Integer.toString(hero.getLives()), textColor, 40, -50);
+    DrawLib.drawText(Integer.toString(hero.getLives()), 40, -50);
     gl.glPopMatrix();
   }
 
   private void drawScore(GL2 gl) { // draw score in top right corner
     double diffX = 30;
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
+    gl.glColor3d(textColor[0], textColor[1], textColor[2]);
     gl.glPushMatrix();
     gl.glTranslated(DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2-diffX,
             DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
-    DrawLib.drawText("SCORE: " + Long.toString(hero.getScore()), textColor, -120, -20);
+    String text = "SCORE: " + Long.toString(hero.getScore());
+    //DrawLib.drawText(text, new Point(DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()-120, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()-20));
+    DrawLib.drawText(text, -120, -20);
     gl.glPopMatrix();
   }
   
@@ -569,6 +593,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
     
     switch(gameMode) { // controls are based on the game mode
+    case DYING:
     case RUNNING:
       if(hero.getLives() > 0) {
         switch (key) {
@@ -718,6 +743,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         gameMode = GAME_MODE.RUNNING;
       }
       break;
+    case DYING: if(!hero.wasRecentlyDamaged()) { gameMode = GAME_MODE.GAME_OVER; }
     case RUNNING:
       if(won) { gameMode = GAME_MODE.WIN; return; } // check for winning conditions
       
@@ -774,8 +800,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       if(boss != null) {
         if(!boss.didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true));
         List<Collidable> bossCollisions = boss.processCollisions(visibleObjects);
-        bossCollisions.stream().forEach((c) ->
-        /*for(Collidable c : bossCollisions)*/ {
+        bossCollisions.stream().forEach((c) -> {
           if(new Projectile().getClass().isInstance(c)) {
             toRemove.add(c.getObjectId());
             if(boss.getHealth() <= 0) { // enemy died
@@ -949,7 +974,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
 
   // Other methods required for MouseListener, MouseMotionListener.
   @Override
-  public void mouseMoved(MouseEvent evt) { }    
+  public void mouseMoved(MouseEvent evt) {
+    Point.Double wc = DrawLib.screenToWorld(evt.getPoint());
+  }    
   
   @Override
   public void mouseClicked(MouseEvent evt) {

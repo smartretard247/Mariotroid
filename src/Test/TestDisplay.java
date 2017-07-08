@@ -69,9 +69,10 @@ public class TestDisplay {
         }
       }
       gl.glPushMatrix();
+      gl.glColor3dv( COLOR, 0);
       gl.glTranslated(0, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
       for(TestData td : DISP_DATA){
-        DrawLib.drawText(td.getTestData(), COLOR, -screenWidth/2, yPos);
+        DrawLib.drawText(td.getTestData(), -screenWidth/2, yPos);
         yPos -= SPACE;
       }
       gl.glPopMatrix();

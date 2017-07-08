@@ -52,5 +52,5 @@ public class Living extends Movable {
   public void setLives(int to) { lives = to; }
   public void resetLives() { lives = defLives; }
   public void addLive() { ++lives; }
-  private void die() throws GameOverException { if(--lives <= 0) throw new GameOverException(); }
+  protected void die() throws GameOverException { if(--lives <= 0) throw new GameOverException(); }
 }

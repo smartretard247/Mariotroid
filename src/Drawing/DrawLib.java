@@ -6,12 +6,16 @@ import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.awt.ImageUtil;
+import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +29,7 @@ public class DrawLib {
   public static GL2 gl;
   public static final GLUT glut = new GLUT();
   public static final GLU glu = new GLU();
+  public static TextRenderer textRenderer;
   
   private static final Map<Integer, String> textureIdMap = new HashMap<>();
   public static final int TEX_TEST = -3;
@@ -78,6 +83,20 @@ public class DrawLib {
     textureIdMap.put(TEX_DOOR_POWERED, "/res/door_powered.png");
     textureIdMap.put(TEX_ARMOR, "/res/armor.png");
     
+    // load custom font
+    String fontName = "/res/spac3.ttf";
+    Font font;
+    try {
+      InputStream is = DrawLib.class.getResourceAsStream(fontName);
+      font = Font.createFont(Font.TRUETYPE_FONT, is);
+      font.deriveFont(18f);
+    } catch (FontFormatException | IOException e) {
+      System.err.println(fontName + " could not load.  Using helvetica.");
+      font = new Font("helvetica", Font.PLAIN, 18);
+    }
+    textRenderer = new TextRenderer(font);
+    textRenderer.setSmoothing(true);
+    
     loadTextures(); // must load after filename 'puts' above
   }
 
@@ -122,14 +141,18 @@ public class DrawLib {
    * Draws given text on the screen, in the given color.  Use rasterPosX and rasterPosY to adjust
    * where the text is displayed.
    * @param text
-   * @param color
    * @param rasterPosX
    * @param rasterPosY 
    */
-  public static void drawText(String text, double[] color, double rasterPosX, double rasterPosY) {
-    gl.glColor3d(color[0], color[1], color[2]);
+  public static void drawText(String text, double rasterPosX, double rasterPosY) {
     gl.glRasterPos2d(rasterPosX, rasterPosY);
     glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, text);
+  }
+  
+  public static void drawText(String text, Point at) {
+    textRenderer.beginRendering(DrawLib.getTexture(DrawLib.TEX_HUD).getWidth(), DrawLib.getTexture(DrawLib.TEX_HUD).getHeight());
+    textRenderer.draw(text, at.x, at.y);
+    textRenderer.endRendering();
   }
   
   /**

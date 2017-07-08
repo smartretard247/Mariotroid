@@ -1,0 +1,10 @@
+Boss fire to: (11010.0, 510.0)
+Hero damage: 2
+Boss fire to: (9891.5, 521.5)
+Boss fire to: (9071.5, 724.5)
+Enemy destroyed
+Boss fire to: (10531.5, 521.5)
+Boss fire to: (10271.5, 751.5)
+Hero damage: 5
+Hero damage: 2
+Boss fire to: (9331.5, 721.5)
