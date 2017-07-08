@@ -87,8 +87,8 @@ public class Boss extends Enemy {
             try {
               TestDisplay.addTestData("Boss HP: " + getHealth());
               loseHealth(p.getDamage());
-            } catch (GameOverException ex) { // enemy died
               TestDisplay.addTestData("Boss damage: " + p.getDamage() + " / Boss HP: " + getHealth());
+            } catch (GameOverException ex) { // enemy died
             }
           } else {
             invalidCollisions.add(c); // do not count as true collision, "friendly fire"
