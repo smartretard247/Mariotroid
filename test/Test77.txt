@@ -1,0 +1,7 @@
+Boss fire to: (11010.0, 510.0)
+Boss fire to: (9881.5, 511.5)
+Boss fire to: (9721.5, 331.5)
+Hero hit by enemy
+Hero HP: 10
+Hero damage: 2 / Hero HP: 8
+Boss fire to: (11081.5, 711.5)

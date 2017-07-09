@@ -18,6 +18,7 @@ public final class ID {
   public static final int ID_ARMOR = 7;
   public static final int ID_DOOR = 8;
   public static final int ID_DOOR_POWERED = 9;
+  public static final int ID_SHELL = 10;
   
   public static final int getNewId() { return ObjectContainer.getNewId(); }
 }

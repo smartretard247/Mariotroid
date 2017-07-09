@@ -54,8 +54,10 @@ public class DrawLib {
   public static final int TEX_DOOR = 16;
   public static final int TEX_DOOR_POWERED = 17;
   public static final int TEX_ARMOR = 18;
-  public static final int TEX_LEVEL_DECOR_1 = 19;
-  public static final int TEX_LEVEL_DECOR_2 = 20;
+  public static final int TEX_BACKGROUND_1 = 19;
+  public static final int TEX_BACKGROUND_2 = 20;
+  public static final int TEX_LEVEL_DECOR_1 = 21;
+  public static final int TEX_LEVEL_DECOR_2 = 22;
 
   public DrawLib(GL2 context) {
     gl = context;
@@ -82,6 +84,8 @@ public class DrawLib {
     textureIdMap.put(TEX_DOOR, "/res/door.png");
     textureIdMap.put(TEX_DOOR_POWERED, "/res/door_powered.png");
     textureIdMap.put(TEX_ARMOR, "/res/armor.png");
+    textureIdMap.put(TEX_BACKGROUND_1, "/res/background_1.jpg");
+    textureIdMap.put(TEX_BACKGROUND_2, "/res/background_2.jpg");
     
     // load custom font
     String fontName = "/res/spac3.ttf";

@@ -55,6 +55,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private boolean won = false;
   private boolean warping = false;
   private boolean showControls = true;
+  private boolean showDecor = true;
+  private boolean swapBackground = false;
   private TestDisplay testDisplay;
   
   public Scene scene; // trans x & y & z, scale x & y & z
@@ -152,7 +154,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // initialize all game objects here
     game.addGO(hero);
     game.addGO(new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
-    game.addGO(new Collidable(ID.ID_ALT_WEAPON, DrawLib.TEX_SHELL, 300, 900));
+    game.addGO(new Collidable(ID.ID_SHELL, DrawLib.TEX_SHELL, 300, 800));
     game.addGO(new Collidable(ID.ID_ARMOR, DrawLib.TEX_ARMOR, 5660, 198));
     game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point.Double(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
     game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
@@ -172,12 +174,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case 1:// only add level 1 visible objects to this map
       currLevel = 1; // no need to adjust level number on any further cases
       scene.resetAll(); // again, do not change scene in other cases
-      h.setDefaultPosition(300, 400);
+      h.setDefaultPosition(10300, 400);
       h.resetAll();
       //h.setLives(1);
       //h.setHealth(1);
       game.addVisible(ID.ID_JETPACK);
-      game.addVisible(ID.ID_ALT_WEAPON);
+      game.addVisible(ID.ID_SHELL);
       game.addVisible(ID.ID_ENEMY_1);
       game.addVisible(ID.ID_ENEMY_2);
       game.addVisible(ID.ID_ENEMY_3);
@@ -248,11 +250,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   /**
    * Adjusts the scene with the hero's movement.  Will adjust a background scene when forBackground
    * is set to true.
-   * @param gl
-   * @param forBackground 
+   * @param gl 
+   * @param forBackgroundScene 
    */
-  public void adjustScene(GL2 gl, boolean forBackground) {
-    if(!forBackground) {
+  public void adjustScene(GL2 gl, boolean forBackgroundScene) {
+    if(!forBackgroundScene) {
       if(hero.getX() > 600 && hero.getX() < 10500)
         gl.glTranslated(-hero.getX(), scene.transY, scene.transZ);
       else if(hero.getX() <= 600)
@@ -277,6 +279,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glTranslated(0, 0, scene.globalZ); // global z should decrease by 40 after each zoom
     adjustScene(gl, false);
     drawBackground(gl);
+    drawLevel(gl);
     drawHero(gl);
     fireProjectiles(); // fire projectile from the queue
     drawForeground(gl);
@@ -367,16 +370,30 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawBackground(GL2 gl) {
-    // back ground level
+    gl.glPushMatrix();
+    if(hero.getX() > 600 && hero.getX() < 10500)
+      gl.glTranslated(hero.getX(), DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+250, -40-scene.transZ);
+    else if(hero.getX() <= 600)
+      gl.glTranslated(-scene.transX, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+250, -40-scene.transZ);
+    else if(hero.getX() >= 10500)
+      gl.glTranslated(10500, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+250, -40-scene.transZ);
+    gl.glScaled(7.7, 7.7, 1);
+    if(!swapBackground) {
+      DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_1); // background level
+    } else {
+      DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_2); // secondary background level
+    }
+    gl.glPopMatrix();
+  }
+  
+  private void drawLevel(GL2 gl) {
     gl.glPushMatrix();
     adjustScene(gl, true);
     if(currLevel < TOTAL_LEVELS)
       DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1+currLevel-1);
     else DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1); // use DECOR_1 as default background when no more levels
     gl.glPopMatrix();
-    
-    // draw game objects
-    game.getVisibles().forEach((c) -> { c.draw(); });
+    game.getVisibles().forEach((c) -> { c.draw(); }); // draw game objects
   }
   
   /**
@@ -395,7 +412,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // draw foreground objects here
     gl.glPushMatrix();
     gl.glTranslated(DrawLib.getTexture(DrawLib.TEX_LEVEL_DECOR_1).getWidth()/2, DrawLib.getTexture(DrawLib.TEX_LEVEL_DECOR_1).getHeight()/2, 0); // levels MUST be same size as DECOR_1
-    if(currLevel <= TOTAL_LEVELS) DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1+currLevel-1);
+    if(showDecor) {
+      if(currLevel <= TOTAL_LEVELS) DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1+currLevel-1);
+    }
     gl.glPopMatrix();
   }
   
@@ -593,7 +612,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       if(!debugging) hero.setGodMode(false);
       break;
     case KeyEvent.VK_F6: showControls = !showControls;
-      setStatusMessage((debugging) ? "--CONTROLS ON--" : "--CONTROLS OFF--");
+      setStatusMessage((showControls) ? "--CONTROLS ON--" : "--CONTROLS OFF--");
+      break;
+    case KeyEvent.VK_F7: if(debugging) {
+        swapBackground = !swapBackground;
+        setStatusMessage((!swapBackground) ? "--BACKGROUND 1--" : "--BACKGROUND 2--");
+      }
+      break;
+    case KeyEvent.VK_F8: if(debugging) { 
+        showDecor = !showDecor;
+        setStatusMessage((showDecor) ? "--DECOR ON--" : "--DECOR OFF--");
+      }
       break;
     }
     
@@ -827,7 +856,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           hero.addScore(250);
           toRemove.add(objId); // remove the jetpack image from the screen
           break;
-        case ID.ID_ALT_WEAPON:
+        case ID.ID_SHELL:
           hero.addScore(1000);
           toRemove.add(objId); // remove the shell image from the screen
           break;

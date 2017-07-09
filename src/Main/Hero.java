@@ -104,10 +104,6 @@ public class Hero extends Living {
       switch(texId) {
       case DrawLib.TEX_PRI_WEAPON: break;
       case DrawLib.TEX_ALT_WEAPON: break;
-      case DrawLib.TEX_SHELL:
-        Engine.setStatusMessage("Got missles!");
-        pickupSecondaryWeapon();
-        break;
       case DrawLib.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);
@@ -175,7 +171,12 @@ public class Hero extends Living {
               }
             }
             break;
+          case ID.ID_SHELL:
+            Engine.setStatusMessage("Got missles!");
+            pickupSecondaryWeapon();
+            break;
           case ID.ID_ARMOR:
+            Engine.setStatusMessage("Got armor!");
             pickupArmor();
             break;
           case ID.ID_JETPACK:
