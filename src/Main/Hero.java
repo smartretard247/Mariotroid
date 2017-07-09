@@ -59,13 +59,14 @@ public class Hero extends Living {
   
   public boolean loseHealth(int amount) throws GameOverException {
     if(!godMode) {
+      TestDisplay.addTestData("Hero HP: " + getHealth());
       if(!super.loseHealth(amount)) { // if dead after losing health
         TestDisplay.addTestData("Hero HP: " + getHealth());
         if(getLives() > 0) resetHealth();
         if(getLives() > 0) resetPosition();
       }
     }
-    TestDisplay.addTestData("Hero damage: " + amount);
+    TestDisplay.addTestData("Hero damage: " + amount + " / Hero HP: " + getHealth());
     return true;
   }
   
@@ -164,6 +165,7 @@ public class Hero extends Living {
           case ID.ID_ENEMY_3:
           case ID.ID_CALAMITY:
             if(!wasRecentlyDamaged()) {
+              TestDisplay.addTestData("Hero hit by enemy");
               recentDamageTimer.start();
               try {
                 loseHealth((int)(2*armor));
@@ -181,6 +183,7 @@ public class Hero extends Living {
             if(new Projectile().getClass().isInstance(c)) {
               if(c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_1 || c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_2) {
                 if(!wasRecentlyDamaged()) {
+                  TestDisplay.addTestData("Hero hit by projectile");
                   recentDamageTimer.start();
                   Projectile p = (Projectile)c;
                   try {
