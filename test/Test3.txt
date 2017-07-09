@@ -1,4 +1,0 @@
-Enemy fire to: (11010.0, 510.0)
-Enemy fire to: (9891.5, 521.5)
-Enemy destroyed
-Enemy fire to: (9711.5, 341.5)

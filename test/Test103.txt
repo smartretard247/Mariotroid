@@ -1,7 +1,0 @@
-Boss fire to: (11010.0, 510.0)
-Boss fire to: (9891.5, 521.5)
-Boss fire to: (9711.5, 341.5)
-Boss fire to: (11091.5, 721.5)
-Boss fire to: (9471.5, 551.5)
-Boss fire to: (10131.5, 731.5)
-Boss fire to: (10671.5, 351.5)

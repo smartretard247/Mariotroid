@@ -1,6 +1,0 @@
-Boss fire to: (11010.0, 510.0)
-Boss fire to: (9891.5, 521.5)
-Boss fire to: (9711.5, 341.5)
-Enemy HP: 1
-Enemy destroyed
-Boss fire to: (11091.5, 721.5)
