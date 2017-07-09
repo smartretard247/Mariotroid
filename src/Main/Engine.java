@@ -274,11 +274,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawNormalGamePlay(GL2 gl) {
+    drawBackground(gl);
     gl.glPushMatrix(); // save initial transform
     gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
     gl.glTranslated(0, 0, scene.globalZ); // global z should decrease by 40 after each zoom
     adjustScene(gl, false);
-    drawBackground(gl);
     drawLevel(gl);
     drawHero(gl);
     fireProjectiles(); // fire projectile from the queue
@@ -371,13 +371,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawBackground(GL2 gl) {
     gl.glPushMatrix();
-    if(hero.getX() > 600 && hero.getX() < 10500)
-      gl.glTranslated(hero.getX(), DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+250, -scene.globalZ+(currLevel-1)*scene.LEVEL_DEPTH);
-    else if(hero.getX() <= 600)
-      gl.glTranslated(-scene.transX, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+250, -scene.globalZ+(currLevel-1)*scene.LEVEL_DEPTH);
-    else if(hero.getX() >= 10500)
-      gl.glTranslated(10500, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+250, -scene.globalZ+(currLevel-1)*scene.LEVEL_DEPTH);
-    gl.glScaled(2.1, 2.1, 1);
+    gl.glScaled(1.1, 1.1, 1);
     if(!swapBackground) {
       DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_1, DrawLib.getTexture(DrawLib.TEX_HUD).getWidth(), DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()); // background level
     } else {
