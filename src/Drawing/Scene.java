@@ -13,6 +13,7 @@ public class Scene {
   public double scaleY;
   public double scaleZ;
   public double globalZ;
+  public final int LEVEL_DEPTH = 40;
   
   private double defTransX;
   private double defTransY;

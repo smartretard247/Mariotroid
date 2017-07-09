@@ -174,7 +174,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case 1:// only add level 1 visible objects to this map
       currLevel = 1; // no need to adjust level number on any further cases
       scene.resetAll(); // again, do not change scene in other cases
-      h.setDefaultPosition(10300, 400);
+      h.setDefaultPosition(300, 400);
       h.resetAll();
       //h.setLives(1);
       //h.setHealth(1);
@@ -263,9 +263,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         gl.glTranslated(-10500, scene.transY, scene.transZ);
     } else {
       if(hero.getX() <= 600)
-        gl.glTranslated(-scene.transX*10, -scene.transY*3, scene.globalZ-40*currLevel);
+        gl.glTranslated(-scene.transX*10, -scene.transY*3, scene.globalZ-scene.LEVEL_DEPTH*currLevel);
       else 
-        gl.glTranslated(-scene.transX*10+hero.getX()/10, -scene.transY*3, scene.globalZ-40*currLevel);
+        gl.glTranslated(-scene.transX*10+hero.getX()/10, -scene.transY*3, scene.globalZ-scene.LEVEL_DEPTH*currLevel);
     }
   }
   
@@ -372,16 +372,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawBackground(GL2 gl) {
     gl.glPushMatrix();
     if(hero.getX() > 600 && hero.getX() < 10500)
-      gl.glTranslated(hero.getX(), DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+250, -40-scene.transZ);
+      gl.glTranslated(hero.getX(), DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+250, -scene.globalZ+(currLevel-1)*scene.LEVEL_DEPTH);
     else if(hero.getX() <= 600)
-      gl.glTranslated(-scene.transX, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+250, -40-scene.transZ);
+      gl.glTranslated(-scene.transX, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+250, -scene.globalZ+(currLevel-1)*scene.LEVEL_DEPTH);
     else if(hero.getX() >= 10500)
-      gl.glTranslated(10500, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+250, -40-scene.transZ);
-    gl.glScaled(7.7, 7.7, 1);
+      gl.glTranslated(10500, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+250, -scene.globalZ+(currLevel-1)*scene.LEVEL_DEPTH);
+    gl.glScaled(2.1, 2.1, 1);
     if(!swapBackground) {
-      DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_1); // background level
+      DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_1, DrawLib.getTexture(DrawLib.TEX_HUD).getWidth(), DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()); // background level
     } else {
-      DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_2); // secondary background level
+      DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_2, DrawLib.getTexture(DrawLib.TEX_HUD).getWidth(), DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()); // secondary background level
     }
     gl.glPopMatrix();
   }
@@ -401,7 +401,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawHero(GL2 gl) {
-    hero.draw();
+    //hero.draw(); // handled by drawing visible objects, no need for a second call
   }
   
    /**
@@ -769,7 +769,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(gameMode) {
     case WARPING:
       if(warping) {
-        scene.transZ -= 40;
+        scene.transZ -= scene.LEVEL_DEPTH;
         hero.setDefaultPosition(hero.getX(), hero.getY()); // continue from this point if die
         warping = false;
       } else {
@@ -784,7 +784,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       // this is for slow mo jumping to next level
       if(slowMo) { 
         ++scene.globalZ;
-        if(scene.globalZ % 40 == 0) slowMo = false;
+        if(scene.globalZ % scene.LEVEL_DEPTH == 0) slowMo = false;
       }
       
       ArrayList<Collidable> visibleObjects = game.getVisibles();
