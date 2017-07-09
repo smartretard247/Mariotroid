@@ -103,7 +103,9 @@ public class Hero extends Living {
       
       switch(texId) {
       case DrawLib.TEX_PRI_WEAPON: break;
-      case DrawLib.TEX_ALT_WEAPON:
+      case DrawLib.TEX_ALT_WEAPON: break;
+      case DrawLib.TEX_SHELL:
+        Engine.setStatusMessage("Got missles!");
         pickupSecondaryWeapon();
         break;
       case DrawLib.TEX_LEVEL:
@@ -177,6 +179,7 @@ public class Hero extends Living {
             pickupArmor();
             break;
           case ID.ID_JETPACK:
+            Engine.setStatusMessage("Got jetpack!");
             pickupJetpack();
             break;
           default: 
@@ -265,16 +268,24 @@ public class Hero extends Living {
   public void dropJetpack() { hasDoubleJump = false; };
   
   public boolean canClimb() {
-    if(lastWallCollision != null) {
-      return ((getRight() + 1) == lastWallCollision.getLeft() || (getLeft() - 1) == lastWallCollision.getRight()) &&
-              (getTop() > lastWallCollision.getBottom() && getBottom() < lastWallCollision.getTop());
+    if(!godMode) {
+      if(lastWallCollision != null) {
+        return ((getRight() + 1) == lastWallCollision.getLeft() || (getLeft() - 1) == lastWallCollision.getRight()) &&
+                (getTop() > lastWallCollision.getBottom() && getBottom() < lastWallCollision.getTop());
+      } else {
+        return false;
+      }
     } else {
-      return false;
+      return true;
     }
   }
   
   private boolean reachedTop() {
-    return isClimbing && getBottom() > lastWallCollision.getTop();
+    if(!godMode) {
+      return isClimbing && getBottom() > lastWallCollision.getTop();
+    } else {
+      return false;
+    }
   }
   
   public boolean isClimbing() { return isClimbing; }
@@ -311,4 +322,8 @@ public class Hero extends Living {
       Engine.gameMode = GAME_MODE.DYING;
     }
   }
+  
+  public boolean getGodMode() { return godMode; }
+  public void setGodMode(boolean to) { godMode = to; }
+  public void toggleGodMode() { godMode = !godMode; }
 }

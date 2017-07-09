@@ -54,6 +54,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final int INTROLENGTHMS = 3000;
   private boolean won = false;
   private boolean warping = false;
+  private boolean showControls = true;
   private TestDisplay testDisplay;
   
   public Scene scene; // trans x & y & z, scale x & y & z
@@ -151,7 +152,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // initialize all game objects here
     game.addGO(hero);
     game.addGO(new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
-    game.addGO(new Collidable(ID.ID_ALT_WEAPON, DrawLib.TEX_ALT_WEAPON, 300, 900));
+    game.addGO(new Collidable(ID.ID_ALT_WEAPON, DrawLib.TEX_SHELL, 300, 900));
     game.addGO(new Collidable(ID.ID_ARMOR, DrawLib.TEX_ARMOR, 5660, 198));
     game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point.Double(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
     game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
@@ -281,7 +282,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawForeground(gl);
     gl.glPopMatrix(); // return to initial transform
     drawHud(gl);
-    drawControls(gl);
+    if(showControls) drawControls(gl);
     drawStatus(gl); // will only draw status' of new messages, for x seconds
   }
   
@@ -307,25 +308,25 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   private void drawControls(GL2 gl) {
-    double yOffset = 10;
-    String[] keyboardControls = { "Keyboard:", "A - Move left", "D - Move right", "W - Climb wall", "S - Descend wall", "SHIFT - Toggle run", "SPACE - Jump/Double jump", "P - Pause" };
-    String[] mouseControls = { "Mouse:", "Left click - Fire primary weapon", "Right click - Fire alternate weapon" };
-    gl.glPushMatrix();
-    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+yOffset, 0);
-    gl.glPushMatrix();
-    gl.glColor3dv(new double[] { 1.0, 1.0, 1.0 }, 0);
-    for(String s : keyboardControls) {
-      DrawLib.drawText(s, 0, 0);
-      gl.glTranslated(s.length()*11,0,0);
-    }
-    gl.glPopMatrix();
-    gl.glColor3dv(new double[] { 1.0, 1.0, 1.0 }, 0);
-    gl.glTranslated(0,20,0);
-    for(String s : mouseControls) {
-      DrawLib.drawText(s, 0, 0);
-      gl.glTranslated(s.length()*14,0,0);
-    }
-    gl.glPopMatrix();
+      double yOffset = 10;
+      String[] keyboardControls = { "Keyboard:", "A - Move left", "D - Move right", "W - Climb wall", "S - Descend wall", "SHIFT - Toggle run", "SPACE - Jump/Double jump", "P - Pause" };
+      String[] mouseControls = { "Mouse:", "Left click - Fire primary weapon", "Right click - Fire alternate weapon", (debugging) ? "Middle click - God mode" : "" };
+      gl.glPushMatrix();
+      gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+yOffset, 0);
+      gl.glPushMatrix();
+      gl.glColor3dv(new double[] { 1.0, 1.0, 1.0 }, 0);
+      for(String s : keyboardControls) {
+        DrawLib.drawText(s, 0, 0);
+        gl.glTranslated(s.length()*11,0,0);
+      }
+      gl.glPopMatrix();
+      gl.glColor3dv(new double[] { 1.0, 1.0, 1.0 }, 0);
+      gl.glTranslated(0,20,0);
+      for(String s : mouseControls) {
+        DrawLib.drawText(s, 0, 0);
+        gl.glTranslated(s.length()*14,0,0);
+      }
+      gl.glPopMatrix();
   }
   
   private void drawCredits(GL2 gl) {
@@ -589,6 +590,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch (key) {
     case KeyEvent.VK_F5: debugging = !debugging;
       setStatusMessage((debugging) ? "--DEBUGGING ON--" : "--DEBUGGING OFF--");
+      if(!debugging) hero.setGodMode(false);
+      break;
+    case KeyEvent.VK_F6: showControls = !showControls;
+      setStatusMessage((debugging) ? "--CONTROLS ON--" : "--CONTROLS OFF--");
       break;
     }
     
@@ -789,7 +794,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
               if(enemy.getHealth() <= 0) { // enemy died
                 hero.addScore(enemy.getPointsWorth());
                 toRemove.add(enemy.getObjectId());
-                TestDisplay.addTestData("Enemy destroyed");
               }
             }
           });
@@ -807,7 +811,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             if(boss.getHealth() <= 0) { // enemy died
               toRemove.add(boss.getObjectId());
               hero.addScore(boss.getPointsWorth());
-              TestDisplay.addTestData("Boss destroyed");
               createWarp(11275, 200); // set warp point, and show powered door
             }
           }
@@ -821,12 +824,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         int texId = c.getTextureId();
         switch(objId) {
         case ID.ID_JETPACK:
-          Engine.setStatusMessage("Got jetpack!");
           hero.addScore(250);
           toRemove.add(objId); // remove the jetpack image from the screen
           break;
         case ID.ID_ALT_WEAPON:
-          Engine.setStatusMessage("Got missles!");
           hero.addScore(1000);
           toRemove.add(objId); // remove the shell image from the screen
           break;
@@ -922,6 +923,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         qProjectiles.offer(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
         break;
       case MouseEvent.BUTTON2: // middle click
+        if(debugging) {
+          hero.toggleGodMode();
+          setStatusMessage((hero.getGodMode()) ? "--GOD MODE ON--" : "--GOD MODE OFF--");
+        }
         break;
       case MouseEvent.BUTTON3: // right click
         qProjectiles.offer(new NextProjectile(sc, false)); // add the projectile to the queue, to be fired during next update

@@ -68,6 +68,7 @@ public class Enemy extends Living {
               loseHealth(p.getDamage());
               TestDisplay.addTestData("Enemy damage: " + p.getDamage() + " / Enemy HP: " + getHealth());
             } catch (GameOverException ex) { // enemy died
+              TestDisplay.addTestData("Enemy destroyed");
             }
           } else {
             invalidCollisions.add(c);
