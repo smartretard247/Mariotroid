@@ -194,6 +194,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       e.setDefaultPosition(10000, 500);
       e.setDefaultSpeed(new Point.Double(5, 0));
       e.resetAll();
+      game.addVisible(ID.ID_ENEMY_2);
+      game.addVisible(ID.ID_ENEMY_3);
       game.addVisible(ID.ID_DOOR_POWERED);
       game.getVisible(ID.ID_DOOR_POWERED).setPosition(300, 189);
       game.addVisible(ID.ID_WARP, new Collidable(300, 200));

@@ -60,6 +60,7 @@ public class DrawLib {
   public static final int TEX_LEVEL_DECOR_1 = 21;
   public static final int TEX_LEVEL_DECOR_2 = 22;
   public static final int TEX_HEALTH_ORB = 23;
+  public static final int TEX_TRANSPARENT = 24;
 
   public DrawLib(GL2 context) {
     gl = context;
@@ -89,12 +90,13 @@ public class DrawLib {
     textureIdMap.put(TEX_BACKGROUND_1, "/res/background_1.jpg");
     textureIdMap.put(TEX_BACKGROUND_2, "/res/background_2.jpg");
     textureIdMap.put(TEX_HEALTH_ORB, "/res/health_orb.png");
+    textureIdMap.put(TEX_TRANSPARENT, "/res/transparent.png");
     
     // load custom font
-    String fontName = "res/spac3.ttf";
+    String fontName = "/res/spac3.ttf";
     Font font;
     try {
-      InputStream is = DrawLib.class.getClassLoader().getResourceAsStream(fontName);
+      InputStream is = DrawLib.class.getResourceAsStream(fontName);
       font = Font.createFont(Font.TRUETYPE_FONT, is);
     } catch (FontFormatException | IOException e) {
       System.err.println(fontName + " could not load.  Using helvetica.");
