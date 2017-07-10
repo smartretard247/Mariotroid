@@ -1010,6 +1010,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   @Override
   public void mouseMoved(MouseEvent evt) {
     Point.Double wc = DrawLib.screenToWorld(evt.getPoint());
+    
+    switch(gameMode) {
+    case START_MENU:
+      if(evt.getY() > DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2) this.startMenuSelection = START_MENU_OPTION.EXIT;
+      else this.startMenuSelection = START_MENU_OPTION.START_GAME;
+      break;
+    default: break;
+    }
   }    
   
   @Override
