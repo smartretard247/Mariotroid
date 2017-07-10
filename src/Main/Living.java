@@ -8,6 +8,7 @@ import java.awt.Point;
  * @author Jeezy
  */
 public class Living extends Movable {
+  private final int MAX_HEALTH = 10;
   private int health;
   private final int defHealth;
   private int lives;
@@ -30,6 +31,10 @@ public class Living extends Movable {
   
   public int getHealth() { return health; }
   public void setHealth(int to) { health = to; }
+  public void addHealth(int amount) { 
+    if(amount > 0) health += amount;
+    if(health > MAX_HEALTH) health = MAX_HEALTH;
+  }
   public void resetHealth() { health = defHealth; }
   
   /**

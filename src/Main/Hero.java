@@ -104,6 +104,12 @@ public class Hero extends Living {
       switch(texId) {
       case DrawLib.TEX_PRI_WEAPON: break;
       case DrawLib.TEX_ALT_WEAPON: break;
+      case DrawLib.TEX_HEALTH_ORB:
+        TestDisplay.addTestData("Hero HP: " + getHealth());
+        addHealth(3);
+        TestDisplay.addTestData("Health orb: " + 3 + " / Hero HP: " + getHealth());
+        invalidCollisions.add(c);
+        break;
       case DrawLib.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);

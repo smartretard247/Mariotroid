@@ -85,4 +85,8 @@ public class ObjectContainer {
   }
   
   public static final int getNewId() { return nextId++; }
+  public static final int getLastId() {
+    if(nextId == FIRST_CUSTOM_ID) return FIRST_CUSTOM_ID;
+    else return nextId-1;
+  }
 }

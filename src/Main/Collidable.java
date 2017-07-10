@@ -18,7 +18,7 @@ public class Collidable extends Drawable {
   }
   
   public Collidable(int objId, int texId, double x, double y) {
-    this(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
+    this(objId, texId, x, y, (texId >= 0) ? DrawLib.getTexture(texId).getWidth() : 1, (texId >= 0) ? DrawLib.getTexture(texId).getHeight() : 1);
   }
   
   public Collidable(int x, int y) {

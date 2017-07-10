@@ -339,15 +339,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     credits.add("TEAM MARIOTROID!");
     credits.add("----------------");
     credits.add("");
-    credits.add("Greggie Pascual – Project Lead");
+    credits.add("Greggie Pascual - Project Lead");
     credits.add("");
-    credits.add("Marvelous Agabi – Documentation");
+    credits.add("Marvelous Agabi - Documentation");
     credits.add("");
     credits.add("Nathan Mitson - Testing");
     credits.add("");
     credits.add("Matthew Miller - Design");
     credits.add("");
-    credits.add("Jesse Young – Developer");
+    credits.add("Jesse Young - Developer");
     credits.add("");
     credits.add("William Malone - Developer");
 
@@ -833,6 +833,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             toRemove.add(c.getObjectId());
             if(boss.getHealth() <= 0) { // enemy died
               toRemove.add(boss.getObjectId());
+              game.addVisible(ID.getNewId(), new Collidable(ID.getLastId(), DrawLib.TEX_HEALTH_ORB, boss.getX(), boss.getY()));
               hero.addScore(boss.getPointsWorth());
               createWarp(11275, 200); // set warp point, and show powered door
             }
