@@ -10,6 +10,7 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Point;
@@ -90,12 +91,11 @@ public class DrawLib {
     textureIdMap.put(TEX_HEALTH_ORB, "/res/health_orb.png");
     
     // load custom font
-    String fontName = "/res/spac3.ttf";
+    String fontName = "res/spac3.ttf";
     Font font;
     try {
-      InputStream is = DrawLib.class.getResourceAsStream(fontName);
+      InputStream is = DrawLib.class.getClassLoader().getResourceAsStream(fontName);
       font = Font.createFont(Font.TRUETYPE_FONT, is);
-      font.deriveFont(18f);
     } catch (FontFormatException | IOException e) {
       System.err.println(fontName + " could not load.  Using helvetica.");
       font = new Font("helvetica", Font.PLAIN, 18);
@@ -155,8 +155,9 @@ public class DrawLib {
     glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, text);
   }
   
-  public static void drawText(String text, Point at) {
+  public static void drawText(String text, Point at, Color c) {
     textRenderer.beginRendering(DrawLib.getTexture(DrawLib.TEX_HUD).getWidth(), DrawLib.getTexture(DrawLib.TEX_HUD).getHeight());
+    textRenderer.setColor(c);
     textRenderer.draw(text, at.x, at.y);
     textRenderer.endRendering();
   }

@@ -17,6 +17,7 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -430,7 +431,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         gl.glTranslated(0, 50, 0);
         gl.glColor3dv( selectedTextColor, 0);
         DrawLib.drawText("START GAME", -50, 0);
-        //DrawLib.drawText("START GAME", new Point(screenWidth/2-50, screenHeight/2));
+        //DrawLib.drawText("START GAME", new Point(screenWidth/2-50, screenHeight/2), Color.RED);
         gl.glTranslated(0, -100, 0);
         gl.glColor3dv( textColor, 0);
         DrawLib.drawText("EXIT", -20, 0);
