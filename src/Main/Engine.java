@@ -881,6 +881,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             case DrawLib.TEX_ENEMY_WEAPON_2:
               toRemove.add(objId);
               break;
+            case DrawLib.TEX_HEALTH_ORB:
+              toRemove.add(objId);
+              break;
             default: break;
           }
           break;
