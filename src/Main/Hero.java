@@ -108,7 +108,6 @@ public class Hero extends Living {
         TestDisplay.addTestData("Hero HP: " + getHealth());
         addHealth(3);
         TestDisplay.addTestData("Health orb: " + 3 + " / Hero HP: " + getHealth());
-        invalidCollisions.add(c);
         break;
       case DrawLib.TEX_LEVEL:
         if(movingDown()) { // falling straight down
