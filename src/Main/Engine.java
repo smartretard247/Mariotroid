@@ -5,6 +5,7 @@ import Drawing.DrawLib;
 import Enumerations.START_MENU_OPTION;
 import Enumerations.GAME_MODE;
 import Enumerations.ID;
+import Enumerations.SoundEffect;
 import Test.TestDisplay;
 import java.awt.event.*;
 import javax.swing.*;
@@ -17,7 +18,6 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLJPanel;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -58,6 +58,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private boolean showControls = true;
   private boolean showDecor = true;
   private boolean swapBackground = false;
+  public static boolean soundEnabled = true;
   private TestDisplay testDisplay;
   
   public Scene scene; // trans x & y & z, scale x & y & z
@@ -83,12 +84,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     window.setVisible(true);
     panel.setFocusable(false);
     window.addWindowListener(new WindowAdapter(){
-        @Override
-        public void windowClosing(WindowEvent e){
-          TestDisplay.writeToFile();
-          window.dispose();
-          System.exit(0);
-        }
+      @Override
+      public void windowClosing(WindowEvent e){
+        TestDisplay.writeToFile();
+        window.dispose();
+        System.exit(0);
+      }
     });
     introTimer.start();
   }
@@ -165,6 +166,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 11200, 189));
     
     testDisplay = new TestDisplay();
+    //SoundEffect.init(); // uncommment once all wav's in enum SoundEffect have been added to dir /res/sound
   }
   
   private void resetVisibles(int level) {
@@ -621,6 +623,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         showDecor = !showDecor;
         setStatusMessage((showDecor) ? "--DECOR ON--" : "--DECOR OFF--");
       }
+      break;
+    case KeyEvent.VK_F9:
+        soundEnabled = !soundEnabled;
+        setStatusMessage((soundEnabled) ? "--SOUND ON--" : "--SOUND OFF--");
       break;
     }
     

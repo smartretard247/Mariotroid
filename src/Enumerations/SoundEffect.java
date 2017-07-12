@@ -1,22 +1,25 @@
 package Enumerations;
 
-import java.io.*;
 import java.net.URL;
-import javax.sound.sampled.*;
+import java.io.IOException;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
    
 public enum SoundEffect {
-  SHOOT("shoot.wav");
+  SHOOT("/res/sound/shoot.wav"),
+  JETPACK("/res/sound/jetpack.wav"),
+  LAND("/res/sound/land.wav");
    
-  public static enum Volume {
-    MUTE, LOW, MEDIUM, HIGH
-  }
-   
+  public static enum Volume { MUTE, LOW, MEDIUM, HIGH }
   public static Volume volume = Volume.LOW;
   private Clip clip;
    
   SoundEffect(String soundFileName) {
     try {
-      URL url = getClass().getClassLoader().getResource(soundFileName);
+      URL url = getClass().getResource(soundFileName);
       AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
       clip = AudioSystem.getClip();
       clip.open(audioInputStream);
@@ -24,7 +27,7 @@ public enum SoundEffect {
       System.out.println("Cannot load sound file: " + soundFileName);
     }
   }
-   
+  
   public void play() {
     if (volume != Volume.MUTE) {
       if (clip.isRunning())
@@ -34,7 +37,7 @@ public enum SoundEffect {
     }
   }
    
-  static void init() {
+  public static void init() {
     values(); // calls the constructor for all the elements
   }
 }

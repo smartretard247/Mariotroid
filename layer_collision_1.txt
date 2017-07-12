@@ -1,4 +1,4 @@
-df131135de54bdcd88d8eb8b7c3df696
+4f2c9c23e5839d748768f0f674522b21
 
 Rectangle@( 5753.0 , 1103.5 ), width: 11498.0 , height: 97.0
 
@@ -24,7 +24,7 @@ Rectangle@( 4795.5 , 432.5 ), width: 385.0 , height: 97.0
 
 Rectangle@( 5561.5 , 386.0 ), width: 385.0 , height: 190.0
 
-Rectangle@( 6424.0 , 385.0 ), width: 194.0 , height: 192.0
+Rectangle@( 6424.5 , 384.5 ), width: 193.0 , height: 193.0
 
 Rectangle@( 6903.5 , 432.5 ), width: 385.0 , height: 97.0
 
@@ -41,8 +41,6 @@ Rectangle@( 5370.5 , 195.0 ), width: 385.0 , height: 190.0
 Rectangle@( 6041.0 , 145.5 ), width: 194.0 , height: 289.0
 
 Rectangle@( 8723.5 , 145.5 ), width: 385.0 , height: 289.0
-
-Rectangle@( 6424.5 , 288.5 ), width: 193.0 , height: 1.0
 
 Rectangle@( 5802.0 , 49.5 ), width: 11400.0 , height: 97.0
 

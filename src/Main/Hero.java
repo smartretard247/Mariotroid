@@ -3,6 +3,7 @@ package Main;
 import Drawing.DrawLib;
 import Enumerations.GAME_MODE;
 import Enumerations.ID;
+import Enumerations.SoundEffect;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -19,7 +20,6 @@ public class Hero extends Living {
   private static final int JUMP_SPEED = 60;
   public int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
   private long score;
-  
   private boolean jumped;
   private boolean hasDoubleJump;
   private boolean doubleJumped;
@@ -31,8 +31,6 @@ public class Hero extends Living {
   private double armor; // armor is a MULTIPLIER, do reduce damage set to a value less than 1
   private boolean hasArmor;
   private boolean godMode = false;
-  
-  private int lastTexId; // for tracking animations
   
   public Hero(int objId, int startLives, int startHealth, long startScore, int texId, double x, double y) {
     super(objId, startLives, startHealth, texId, x, y, new Point.Double(0, 0));
@@ -79,7 +77,7 @@ public class Hero extends Living {
     resetAmmo();
     dropSecondaryWeapon();
     dropJetpack();
-    doLand(); // reset jump as if on ground
+    doLand();
   }
   
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects)  {
@@ -226,11 +224,13 @@ public class Hero extends Living {
   }
   public boolean canDoubleJump() { return !doubleJumped && jumped && hasDoubleJump; }
   public void doDoubleJump() {
+    //if(Engine.soundEnabled) SoundEffect.JETPACK.play();
     doubleJumped = true;
     setSpeedY(JUMP_SPEED);
     setTextureId(DrawLib.TEX_HERO_BACKPACK1); // TODO: move all setTextureId() calls to draw() method
   }
   public boolean didLand() {
+    //if(Engine.soundEnabled) SoundEffect.LAND.play();
     return !jumped && !doubleJumped;
   }
   public void doLand() {
@@ -245,6 +245,7 @@ public class Hero extends Living {
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
   
   public Projectile firePrimaryWeapon(Point.Double direction) {
+    //if(Engine.soundEnabled) SoundEffect.SHOOT.play();
     Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
     flipY = (zRot.x < 0);
     double xOffset = 0; // so projectile doesn't come from the hero's chest
