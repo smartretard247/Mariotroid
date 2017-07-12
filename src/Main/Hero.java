@@ -248,7 +248,7 @@ public class Hero extends Living {
     //if(Engine.soundEnabled) SoundEffect.SHOOT.play();
     Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
     flipY = (zRot.x < 0);
-    double xOffset = 0; // so projectile doesn't come from the hero's chest
+    double xOffset = 20; // so projectile doesn't come from the hero's chest
     return new Projectile(ID.getNewId(), DrawLib.TEX_PRI_WEAPON, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
             getY(), 1); //fire primary, 1 damage
@@ -257,7 +257,7 @@ public class Hero extends Living {
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
       Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
       flipY = (zRot.x < 0);
-      double xOffset = 0; // so projectile doesn't come from the hero's chest
+      double xOffset = 20; // so projectile doesn't come from the hero's chest
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
       return new Projectile(ID.getNewId(), DrawLib.TEX_ALT_WEAPON, zRot,
               (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
