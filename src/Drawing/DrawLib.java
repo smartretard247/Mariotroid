@@ -6,13 +6,10 @@ import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.awt.ImageUtil;
-import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.awt.AWTTextureIO;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -30,7 +27,7 @@ public class DrawLib {
   public static GL2 gl;
   public static final GLUT glut = new GLUT();
   public static final GLU glu = new GLU();
-  public static TextRenderer textRenderer;
+  public static CustomFont cf;
   
   private static final Map<Integer, String> textureIdMap = new HashMap<>();
   public static final int TEX_TEST = -3;
@@ -94,16 +91,8 @@ public class DrawLib {
     
     // load custom font
     String fontName = "/res/spac3.ttf";
-    Font font;
-    try {
-      InputStream is = DrawLib.class.getResourceAsStream(fontName);
-      font = Font.createFont(Font.TRUETYPE_FONT, is);
-    } catch (FontFormatException | IOException e) {
-      System.err.println(fontName + " could not load.  Using helvetica.");
-      font = new Font("helvetica", Font.PLAIN, 18);
-    }
-    textRenderer = new TextRenderer(font);
-    textRenderer.setSmoothing(true);
+    InputStream is = DrawLib.class.getResourceAsStream(fontName);
+    cf = new CustomFont(is);
     
     loadTextures(); // must load after filename 'puts' above
   }
@@ -132,7 +121,7 @@ public class DrawLib {
           System.out.println("Invalid textureURL in DrawLib.loadTextures: " + textureIdMap.get(i));
         }
       } catch (IOException | GLException e) {
-        e.printStackTrace();
+        System.out.println("Could not create a texture, see loadTextures().");
       }
     });
     //textures.get(0).enable(gl);
@@ -157,11 +146,20 @@ public class DrawLib {
     glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, text);
   }
   
-  public static void drawText(String text, Point at, Color c) {
-    textRenderer.beginRendering(DrawLib.getTexture(DrawLib.TEX_HUD).getWidth(), DrawLib.getTexture(DrawLib.TEX_HUD).getHeight());
-    textRenderer.setColor(c);
-    textRenderer.draw(text, at.x, at.y);
-    textRenderer.endRendering();
+  /**
+   * Draws the given text with custom font.
+   * @param text 
+   */
+  public static void drawCustomText(String text) {
+    BufferedImage textAsBitmap = cf.getImage(text);
+    Texture temp = AWTTextureIO.newTexture(GLProfile.getDefault(), textAsBitmap, true);
+    temp.enable(gl);
+    temp.bind(gl);  // set texture to use
+    gl.glPushMatrix();
+    gl.glScaled(temp.getWidth(), temp.getHeight(), 1);
+    TexturedShapes.square(gl, 1, true);
+    gl.glPopMatrix();
+    temp.disable(gl);
   }
   
   /**

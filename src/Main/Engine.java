@@ -433,10 +433,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         gl.glTranslated(0, 50, 0);
         gl.glColor3dv( selectedTextColor, 0);
         DrawLib.drawText("START GAME", -50, 0);
-        //DrawLib.drawText("START GAME", new Point(screenWidth/2-50, screenHeight/2), Color.RED);
+        //DrawLib.drawCustomText("START GAME");
         gl.glTranslated(0, -100, 0);
         gl.glColor3dv( textColor, 0);
         DrawLib.drawText("EXIT", -20, 0);
+        //DrawLib.drawCustomText("EXIT");
         gl.glPopMatrix();
         break;
       case EXIT:
