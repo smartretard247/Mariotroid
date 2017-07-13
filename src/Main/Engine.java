@@ -162,8 +162,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
     game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Double(5,0)));
     game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Double(10,10)));
-    game.addGO(new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11200, 189));
-    game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 11200, 189));
+    game.addGO(new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11100, 189));
+    game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 11100, 189));
     
     testDisplay = new TestDisplay();
     //SoundEffect.init(); // uncommment once all wav's in enum SoundEffect have been added to dir /res/sound
@@ -860,7 +860,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
               toRemove.add(boss.getObjectId());
               game.addVisible(ID.getNewId(), new Collidable(ID.getLastId(), DrawLib.TEX_HEALTH_ORB, boss.getX(), boss.getY()));
               hero.addScore(boss.getPointsWorth());
-              createWarp(11275, 200, 11200, 189); // set warp point, and show powered door
+              createWarp(11175, 200, 11100, 189); // set warp point, and show powered door
             }
           }
         });
