@@ -189,6 +189,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addVisible(ID.ID_ARMOR);
       game.addVisible(ID.ID_CALAMITY);
       game.addVisible(ID.ID_DOOR);
+      for(Collidable c : game.getVisibles()){
+          if(new Living(1,1,1,1,1,1,new Point.Double(1,1)).getClass().isInstance(c)){
+              ((Living)(c)).resetAll();
+          }
+      }
+      ((Enemy)(game.getVisible(ID.ID_ENEMY_1))).setPosition(2000, 800);
+      (game.getGO(ID.ID_DOOR_POWERED)).setPosition(11200, 189);
       break;
     case 2:// setup level 2, only add level 2 visible objects to this map
       game.addVisible(ID.ID_ENEMY_1);
@@ -201,6 +208,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addVisible(ID.ID_DOOR_POWERED);
       game.getVisible(ID.ID_DOOR_POWERED).setPosition(300, 189);
       game.addVisible(ID.ID_WARP, new Collidable(300, 200));
+      ((Enemy)(game.getVisible(ID.ID_ENEMY_2))).resetAll();
+      ((Enemy)(game.getVisible(ID.ID_ENEMY_3))).resetAll();
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;
     }
