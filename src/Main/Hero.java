@@ -310,7 +310,7 @@ public class Hero extends Living {
     if(getLives() > 0) {
       if(standingStill()) setTextureId(DrawLib.TEX_HERO);
       else if(movingLeft() || movingRight()) {
-        if(Engine.frameNumber % animationLengthInFrames < animationLengthInFrames/2) setTextureId(DrawLib.TEX_HERO_RUN1);
+        if(Engine.getFrameNumber() % animationLengthInFrames < animationLengthInFrames/2) setTextureId(DrawLib.TEX_HERO_RUN1);
         else setTextureId(DrawLib.TEX_HERO_RUN2);
       }
     }
@@ -326,7 +326,7 @@ public class Hero extends Living {
       this.setSpeedX(0);
       godMode = true;
       setTextureId(DrawLib.TEX_HERO_DEAD);
-      Engine.gameMode = GAME_MODE.DYING;
+      Engine.setGameMode(GAME_MODE.DYING);
     }
   }
   

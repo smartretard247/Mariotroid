@@ -48,9 +48,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private Timer animationTimer;
   private static Timer introTimer;
   private static final Timer messageTimer = new Timer(5000, null);
-  public static int frameNumber = 0; // The current frame number for an animation.
+  private static int frameNumber = 0; // The current frame number for an animation.
   private DrawLib drawLib;
-  public static GAME_MODE gameMode = GAME_MODE.INTRO;
+  private static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
   private final int INTROLENGTHMS = 3000;
   private boolean won = false;
@@ -58,13 +58,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private boolean showControls = true;
   private boolean showDecor = true;
   private boolean swapBackground = false;
-  public static boolean soundEnabled = true;
+  private static boolean soundEnabled = true;
   private TestDisplay testDisplay;
   
-  public Scene scene; // trans x & y & z, scale x & y & z
-  public Hero hero;
-  public PhysicsEngine phy = new PhysicsEngine();
-  public ObjectContainer game = new ObjectContainer();
+  private Scene scene; // trans x & y & z, scale x & y & z
+  private Hero hero;
+  private final PhysicsEngine phy = new PhysicsEngine();
+  private final ObjectContainer game = new ObjectContainer();
   private static String statusMessage = "";
   private final LinkedBlockingQueue<NextProjectile> qProjectiles = new LinkedBlockingQueue<>();
   private boolean slowMo = false;
@@ -1117,4 +1117,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawDebug(GL2 gl) {
     TestDisplay.writeToScreen(gl, DrawLib.getTexture(DrawLib.TEX_HUD).getWidth());
   }
+  
+  public static void setGameMode(GAME_MODE mode) { gameMode = mode; }
+  
+  public static int getFrameNumber() { return frameNumber; }
 }
