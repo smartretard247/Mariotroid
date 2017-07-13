@@ -211,14 +211,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
     
     // reset all living things, except hero
-    for(Collidable c : game.getVisibles()){
+    game.getVisibles().stream().forEach((c) -> {
       if(new Living().getClass().isInstance(c)){
         if(!new Hero().getClass().isInstance(c)) {
           Living l = (Living)c;
           l.resetAll();
         }
       }
-    }
+    });
   }
   
   public void jumpToLevel(int num) {
