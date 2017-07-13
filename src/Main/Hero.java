@@ -78,6 +78,7 @@ public class Hero extends Living {
     dropSecondaryWeapon();
     dropJetpack();
     doLand();
+    armor = 1;
   }
   
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects)  {
