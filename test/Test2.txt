@@ -1,0 +1,11 @@
+Boss fire to: (11010.0, 510.0)
+Hero HP: 10
+Hero HP: 0
+Hero damage: 10 / Hero HP: 10
+Hero HP: 10
+Hero HP: 0
+Hero damage: 10 / Hero HP: 10
+Hero HP: 10
+Hero HP: 0
+Hero damage: 10 / Hero HP: 0
+Hero damage: 10 / Hero HP: 0

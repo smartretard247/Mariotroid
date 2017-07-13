@@ -173,6 +173,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     game.clearVisibles();
     game.addVisible(ID.ID_HERO); // all levels need the hero!
     Hero h = (Hero)game.getVisible(ID.ID_HERO);
+    Enemy e;
+    // **NOTE: any changes made to a game object in one level must be reset in all other levels!
     switch(level) {
     case 1:// only add level 1 visible objects to this map
       currLevel = 1; // no need to adjust level number on any further cases
@@ -184,18 +186,21 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addVisible(ID.ID_JETPACK);
       game.addVisible(ID.ID_SHELL);
       game.addVisible(ID.ID_ENEMY_1);
+      e = (Enemy)game.getVisible(ID.ID_ENEMY_1);
+      e.setDefaultPosition(2000, 800);
+      e.setDefaultSpeed(new Point.Double(5, 0));
       game.addVisible(ID.ID_ENEMY_2);
       game.addVisible(ID.ID_ENEMY_3);
       game.addVisible(ID.ID_ARMOR);
       game.addVisible(ID.ID_CALAMITY);
       game.addVisible(ID.ID_DOOR);
+      if(game.getGO(ID.ID_DOOR_POWERED) != null) game.removeVisible(ID.ID_DOOR_POWERED);
       break;
     case 2:// setup level 2, only add level 2 visible objects to this map
       game.addVisible(ID.ID_ENEMY_1);
-      Enemy e = (Enemy)game.getVisible(ID.ID_ENEMY_1);
+      e = (Enemy)game.getVisible(ID.ID_ENEMY_1);
       e.setDefaultPosition(10000, 500);
       e.setDefaultSpeed(new Point.Double(5, 0));
-      e.resetAll();
       game.addVisible(ID.ID_ENEMY_2);
       game.addVisible(ID.ID_ENEMY_3);
       game.addVisible(ID.ID_DOOR_POWERED);
@@ -203,6 +208,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addVisible(ID.ID_WARP, new Collidable(300, 200));
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;
+    }
+    
+    // reset all living things, except hero
+    for(Collidable c : game.getVisibles()){
+      if(new Living().getClass().isInstance(c)){
+        if(!new Hero().getClass().isInstance(c)) {
+          Living l = (Living)c;
+          l.resetAll();
+        }
+      }
     }
   }
   
@@ -845,7 +860,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
               toRemove.add(boss.getObjectId());
               game.addVisible(ID.getNewId(), new Collidable(ID.getLastId(), DrawLib.TEX_HEALTH_ORB, boss.getX(), boss.getY()));
               hero.addScore(boss.getPointsWorth());
-              createWarp(11275, 200); // set warp point, and show powered door
+              createWarp(11275, 200, 11200, 189); // set warp point, and show powered door
             }
           }
         });
@@ -910,10 +925,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param x
    * @param y 
    */
-  private void createWarp(int x, int y) {
+  private void createWarp(int warpX, int warpY, int doorX, int doorY) {
     game.addVisible(ID.ID_DOOR_POWERED); // add door after calamity is defeated!
+    (game.getGO(ID.ID_DOOR_POWERED)).setPosition(doorX, doorY);
     game.removeVisible(ID.ID_DOOR);
-    game.addVisible(ID.ID_WARP, new Collidable(x, y));
+    game.addVisible(ID.ID_WARP, new Collidable(warpX, warpY));
   }
 
   public void startAnimation() {

@@ -15,11 +15,15 @@ public class Living extends Movable {
   private final int defLives;
   
   public Living(int objId, int startLives, int startHealth, int texId, double x, double y, Point.Double speed) {
-    super(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight(), speed);
+    super(objId, texId, x, y, (texId >= 0) ? DrawLib.getTexture(texId).getWidth() : 0, (texId >= 0) ? DrawLib.getTexture(texId).getHeight() : 0, speed);
     lives = startLives;
     defLives = startLives;
     health = startHealth;
     defHealth = startHealth;
+  }
+  
+  public Living() {
+    this(1, 1, 1, DrawLib.TEX_NONE, 0, 0, new Point.Double(0, 0));
   }
   
   @Override
