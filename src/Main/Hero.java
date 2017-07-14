@@ -220,18 +220,19 @@ public class Hero extends Living {
   
   public boolean canJump() { return !jumped; }
   public void doJump() {
+    if(Engine.isSoundEnabled()) SoundEffect.JUMP.play();
     jumped = true;
     setSpeedY(JUMP_SPEED);
   }
   public boolean canDoubleJump() { return !doubleJumped && jumped && hasDoubleJump; }
   public void doDoubleJump() {
-    //if(Engine.soundEnabled) SoundEffect.JETPACK.play();
+    if(Engine.isSoundEnabled()) SoundEffect.JETPACK.play();
     doubleJumped = true;
     setSpeedY(JUMP_SPEED);
     setTextureId(DrawLib.TEX_HERO_BACKPACK1); // TODO: move all setTextureId() calls to draw() method
   }
   public boolean didLand() {
-    //if(Engine.soundEnabled) SoundEffect.LAND.play();
+    //if(Engine.isSoundEnabled()) SoundEffect.LAND.play();
     return !jumped && !doubleJumped;
   }
   public void doLand() {
@@ -246,7 +247,7 @@ public class Hero extends Living {
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
   
   public Projectile firePrimaryWeapon(Point.Double direction) {
-    //if(Engine.soundEnabled) SoundEffect.SHOOT.play();
+    if(Engine.isSoundEnabled()) SoundEffect.GUN.play();
     Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
     flipY = (zRot.x < 0);
     double xOffset = 20; // so projectile doesn't come from the hero's chest
@@ -255,6 +256,7 @@ public class Hero extends Living {
             getY(), 1); //fire primary, 1 damage
   }
   public Projectile fireSecondaryWeapon(Point.Double direction) {
+    if(Engine.isSoundEnabled()) SoundEffect.LASER.play();
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
       Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
       flipY = (zRot.x < 0);

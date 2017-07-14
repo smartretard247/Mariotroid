@@ -9,9 +9,11 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
    
 public enum SoundEffect {
-  SHOOT("/res/sound/shoot.wav"),
+  GUN("/res/sound/gun.wav"),
   JETPACK("/res/sound/jetpack.wav"),
-  LAND("/res/sound/land.wav");
+  JUMP("/res/sound/jump.wav"),
+  LASER("/res/sound/laser.wav"),
+  WIN("/res/sound/win.wav");
    
   public static enum Volume { MUTE, LOW, MEDIUM, HIGH }
   public static Volume volume = Volume.LOW;

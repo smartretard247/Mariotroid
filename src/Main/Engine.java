@@ -166,7 +166,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 11100, 189));
     
     testDisplay = new TestDisplay();
-    //SoundEffect.init(); // uncommment once all wav's in enum SoundEffect have been added to dir /res/sound
+    SoundEffect.init(); // uncommment once all wav's in enum SoundEffect have been added to dir /res/sound
   }
   
   private void resetVisibles(int level) {
@@ -798,7 +798,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       break;
     case DYING: if(!hero.wasRecentlyDamaged()) { gameMode = GAME_MODE.GAME_OVER; }
     case RUNNING:
-      if(won) { gameMode = GAME_MODE.WIN; return; } // check for winning conditions
+      if(won) {
+        if(Engine.isSoundEnabled()) SoundEffect.WIN.play();
+        gameMode = GAME_MODE.WIN;
+        return;
+      } // check for winning conditions
       
       // this is for slow mo jumping to next level
       if(slowMo) { 
@@ -1137,4 +1141,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public static void setGameMode(GAME_MODE mode) { gameMode = mode; }
   
   public static int getFrameNumber() { return frameNumber; }
+  
+  public static boolean isSoundEnabled() { return soundEnabled; }
 }
