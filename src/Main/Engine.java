@@ -640,8 +640,19 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       }
       break;
     case KeyEvent.VK_F9:
-        soundEnabled = !soundEnabled;
-        setStatusMessage((soundEnabled) ? "--SOUND ON--" : "--SOUND OFF--");
+        cycleVolume();
+        String message = "VOLUME: ";
+        switch(SoundEffect.volume) {
+        case MUTE:
+          message += "MUTED";
+          soundEnabled = false;
+          break;
+        default:
+          message += SoundEffect.volume.toString();
+          soundEnabled = true;
+          break;
+        }
+        setStatusMessage(message);
       break;
     }
     
@@ -1143,4 +1154,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public static int getFrameNumber() { return frameNumber; }
   
   public static boolean isSoundEnabled() { return soundEnabled; }
+  
+  public static void cycleVolume() {
+    SoundEffect.volume = SoundEffect.volume.up();
+  }
 }

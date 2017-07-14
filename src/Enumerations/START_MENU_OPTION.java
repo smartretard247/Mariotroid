@@ -8,7 +8,7 @@ public enum START_MENU_OPTION {
   START_GAME {
     @Override
     public START_MENU_OPTION prev() {
-        return EXIT;
+      return EXIT;
     };
   },
   
@@ -17,15 +17,15 @@ public enum START_MENU_OPTION {
   EXIT {
     @Override
     public START_MENU_OPTION next() {
-        return START_GAME;
+      return START_GAME;
     };
   };
   
   public START_MENU_OPTION next() {
-        return values()[ordinal() + 1];
+    return values()[ordinal() + 1];
   }
   
   public START_MENU_OPTION prev() {
-        return values()[ordinal() - 1];
+    return values()[ordinal() - 1];
   }
 }
