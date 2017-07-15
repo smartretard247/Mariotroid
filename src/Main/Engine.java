@@ -59,7 +59,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private boolean showDecor = true;
   private boolean swapBackground = false;
   private static boolean soundEnabled = true;
-  private TestDisplay testDisplay;
+  private final TestDisplay testDisplay = new TestDisplay();
   
   private Scene scene; // trans x & y & z, scale x & y & z
   private Hero hero;
@@ -70,7 +70,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private boolean slowMo = false;
   private final int TOTAL_LEVELS = 2;
   private int currLevel = 1;
-  private boolean debugging = false;
+  private static boolean debugging = false;
   
   ///// START METHODS
 
@@ -165,8 +165,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     game.addGO(new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11100, 189));
     game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 11100, 189));
     
-    testDisplay = new TestDisplay();
     SoundEffect.init(); // uncommment once all wav's in enum SoundEffect have been added to dir /res/sound
+    SoundEffect.THEME.playLoop();
   }
   
   private void resetVisibles(int level) {
@@ -1155,7 +1155,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   public static boolean isSoundEnabled() { return soundEnabled; }
   
+  public static boolean isDebugging() { return debugging; }
+  
   public static void cycleVolume() {
     SoundEffect.volume = SoundEffect.volume.up();
+    if(SoundEffect.volume == SoundEffect.Volume.MUTE) SoundEffect.THEME.stop();
+    else { SoundEffect.THEME.playLoop(); }
   }
 }

@@ -64,11 +64,11 @@ public class Enemy extends Living {
           if(!(c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_1 || c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_2)) {
             Projectile p = (Projectile)c;
             try {
-              TestDisplay.addTestData("Enemy HP: " + getHealth());
+              if(Engine.isDebugging()) TestDisplay.addTestData("Enemy HP: " + getHealth());
               loseHealth(p.getDamage());
-              TestDisplay.addTestData("Enemy damage: " + p.getDamage() + " / Enemy HP: " + getHealth());
+              if(Engine.isDebugging()) TestDisplay.addTestData("Enemy damage: " + p.getDamage() + " / Enemy HP: " + getHealth());
             } catch (GameOverException ex) { // enemy died
-              TestDisplay.addTestData("Enemy destroyed");
+              if(Engine.isDebugging()) TestDisplay.addTestData("Enemy destroyed");
             }
           } else {
             invalidCollisions.add(c);

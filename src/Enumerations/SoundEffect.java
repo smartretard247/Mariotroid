@@ -14,7 +14,8 @@ public enum SoundEffect {
   JETPACK("/res/sound/jetpack.wav"),
   JUMP("/res/sound/jump.wav"),
   LASER("/res/sound/laser.wav"),
-  WIN("/res/sound/win.wav");
+  WIN("/res/sound/win.wav"),
+  THEME("/res/sound/theme.wav");
    
   public static enum Volume {
     MUTE, LOW, MEDIUM, HIGH {
@@ -52,6 +53,19 @@ public enum SoundEffect {
       gain.setValue(getGain());
       clip.start();     // start playing
     }
+  }
+  
+  public void playLoop() {
+    if (volume != Volume.MUTE) {
+      clip.loop(Clip.LOOP_CONTINUOUSLY);
+      FloatControl gain = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+      gain.setValue(getGain());
+      clip.start();     // start playing
+    }
+  }
+  
+  public void stop() {
+    clip.stop();   // stop the player if it is still running
   }
    
   public static void init() {

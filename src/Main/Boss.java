@@ -85,11 +85,11 @@ public class Boss extends Enemy {
           if(!(c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_1 || c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_2)) {
             Projectile p = (Projectile)c;
             try {
-              TestDisplay.addTestData("Boss HP: " + getHealth());
+              if(Engine.isDebugging()) TestDisplay.addTestData("Boss HP: " + getHealth());
               loseHealth(p.getDamage());
-              TestDisplay.addTestData("Boss damage: " + p.getDamage() + " / Boss HP: " + getHealth());
+              if(Engine.isDebugging()) TestDisplay.addTestData("Boss damage: " + p.getDamage() + " / Boss HP: " + getHealth());
             } catch (GameOverException ex) { // enemy died
-              TestDisplay.addTestData("Boss destroyed");
+              if(Engine.isDebugging()) TestDisplay.addTestData("Boss destroyed");
             }
           } else {
             invalidCollisions.add(c); // do not count as true collision, "friendly fire"
@@ -109,7 +109,7 @@ public class Boss extends Enemy {
     fireTimer.start();
     Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
     flipY = (zRot.x < 0);
-    TestDisplay.addTestData("Boss fire to: (" + getX() + ", " + getY() + ")");
+    if(Engine.isDebugging()) TestDisplay.addTestData("Boss fire to: (" + getX() + ", " + getY() + ")");
     return new Projectile(ID.getNewId(), DrawLib.TEX_ENEMY_WEAPON_1, zRot, getX(), getY(), 5); // fire primary, 5 damage
   }
   
