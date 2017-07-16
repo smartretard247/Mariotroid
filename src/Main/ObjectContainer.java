@@ -18,9 +18,6 @@ public class ObjectContainer {
   
   public ArrayList<Collidable> getVisibles() {
     ArrayList<Collidable> v = new ArrayList<>();
-    /*for(Integer i : visibleObjects) {
-      if(gameObjects.containsKey(i)) v.add(gameObjects.get(i));
-    }*/
     v.addAll(gameObjects.values());
     v.addAll(tempObjects.values());
     return v;

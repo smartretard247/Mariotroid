@@ -169,15 +169,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point.Double(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
       game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Double(5,0)));
-      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Double(10,10)));
+      game.addGO(new LevelBoss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Double(10,10), 500));
+      ((LevelBoss)game.getGO(ID.ID_CALAMITY)).setWarp(new Warp(11175, 200, 11100, 189));
       game.addGO(new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11100, 189));
       break;
     case 2:// setup level 2, only add level 2 game objects to this map
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 500, new Point.Double(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Double(5,0)));
-      game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 300, 189));
-      game.addGO(new Collidable(ID.ID_WARP, DrawLib.TEX_NONE, 300, 200));
+      createWarp(new Warp(300, 200, 300, 189)); // create warp for the "last" level, instead of boss spawning it
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;
     }
@@ -456,7 +456,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glTranslated(0, 0, 0);
     DrawLib.drawTexturedRectangle(DrawLib.TEX_HUD);
     gl.glPopMatrix();
-    
     drawHealth(gl);
     drawLives(gl);
     drawScore(gl);
@@ -787,63 +786,71 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       ArrayList<Integer> toRemove = new ArrayList<>(); // keep track of ids to remove at end of frame
       ArrayList<Projectile> projectiles = new ArrayList<>();
       
-      // move all objects
+      // for all objects
       visibleObjects.stream().forEach((c) -> {
+        // move all movables
         if((new Movable()).getClass().isInstance(c)) {
           Movable m = (Movable)c;
           m.move();
         }
+        // remove projectiles that collide with the level
         if((new Projectile()).getClass().isInstance(c)) {
+          //projectiles.add((Projectile)c); // track visible projectiles
           Projectile p = (Projectile)c;
-          if(Math.abs(c.getX()) > Math.abs(hero.getX()) + 3000) toRemove.add(p.getObjectId()); // remove offscreen projectiles
-          else projectiles.add(p); // track visible projectiles
+          List<Collidable> projectileCollisions = p.processCollisions(visibleObjects);
+          projectileCollisions.stream().forEach((c1) -> {
+            toRemove.add(p.getObjectId());
+          });
+        } else if((new LevelBoss()).getClass().isInstance(c)) {
+          LevelBoss boss = (LevelBoss)c;
+          if(boss != null) {
+            if(!boss.didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true));
+            List<Collidable> bossCollisions = boss.processCollisions(visibleObjects);
+            bossCollisions.stream().forEach((c1) -> {
+              if(new Projectile().getClass().isInstance(c1)) {
+                toRemove.add(c1.getObjectId());
+                if(boss.getHealth() <= 0) { // enemy died
+                  toRemove.add(boss.getObjectId());
+                  game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), DrawLib.TEX_HEALTH_ORB, boss.getX(), boss.getY()));
+                  hero.addScore(boss.getPointsWorth());
+                  createWarp(boss.getWarp()); // set warp point, and show powered door
+                }
+              }
+            });
+          }
+        } else if((new Enemy()).getClass().isInstance(c)) {
+          Enemy enemy = (Enemy)c;
+          if(enemy != null) {
+            List<Collidable> enemyCollisions = enemy.processCollisions(visibleObjects); // return valid collisions
+            enemyCollisions.stream().forEach((c1) -> {
+              if(new Projectile().getClass().isInstance(c1)) {
+                toRemove.add(c1.getObjectId());
+                if(enemy.getHealth() <= 0) { // enemy died
+                  hero.addScore(enemy.getPointsWorth());
+                  toRemove.add(enemy.getObjectId());
+                }
+              }
+            });
+          }
         }
       });
       
-      // Check projectiles for collisions with LEVEL and remove them
+      /*// Check projectiles for collisions with LEVEL and remove them
       projectiles.stream().forEach((proj) -> {
         List<Collidable> projectileCollisions = proj.processCollisions(visibleObjects);
         projectileCollisions.stream().forEach((c) -> {
           toRemove.add(proj.getObjectId());
         });
-      });
+      });*/
     
-      // enemy movement and collision detection
+      /*// enemy collision detection
       for(int i = ID.ID_ENEMY_1; i <= ID.ID_ENEMY_3; i++) {
-        Enemy enemy = (Enemy)(game.getGO(i));
-        if(enemy != null) {
-          List<Collidable> enemyCollisions = enemy.processCollisions(visibleObjects); // return valid collisions
-          enemyCollisions.stream().forEach((c) -> {
-            if(new Projectile().getClass().isInstance(c)) {
-              toRemove.add(c.getObjectId());
-              if(enemy.getHealth() <= 0) { // enemy died
-                hero.addScore(enemy.getPointsWorth());
-                toRemove.add(enemy.getObjectId());
-              }
-            }
-          });
-        }
-      }
+        
+      }*/
       
       // boss movement and collision detection
-      Boss boss = (Boss)(game.getGO(ID.ID_CALAMITY));
-      if(boss != null) {
-        if(!boss.didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true));
-        List<Collidable> bossCollisions = boss.processCollisions(visibleObjects);
-        bossCollisions.stream().forEach((c) -> {
-          if(new Projectile().getClass().isInstance(c)) {
-            toRemove.add(c.getObjectId());
-            if(boss.getHealth() <= 0) { // enemy died
-              toRemove.add(boss.getObjectId());
-              game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), DrawLib.TEX_HEALTH_ORB, boss.getX(), boss.getY()));
-              hero.addScore(boss.getPointsWorth());
-              createWarp(11175, 200, 11100, 189); // set warp point, and show powered door
-            }
-          }
-        });
-      }
       
-      // hero movement and collision detection
+      // hero collision detection
       List<Collidable> heroCollisions = hero.processCollisions(visibleObjects);
       for(Collidable c : heroCollisions){
         int objId = c.getObjectId();
@@ -903,9 +910,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param x
    * @param y 
    */
-  private void createWarp(int warpX, int warpY, int doorX, int doorY) {
-    game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, doorX, doorY));
-    game.addGO(new Collidable(ID.ID_WARP, DrawLib.TEX_NONE, warpX, warpY));
+  private void createWarp(Warp warp) {
+    game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, warp.doorX, warp.doorY));
+    game.addGO(new Collidable(ID.ID_WARP, DrawLib.TEX_NONE, warp.warpX, warp.warpY));
   }
   
   private void removeWarp() {

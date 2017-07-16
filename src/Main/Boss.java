@@ -15,16 +15,17 @@ import javax.swing.Timer;
  */
 public class Boss extends Enemy {
   private int minXLocation = 9000; // to keep from entering the rest of the level
+  //private int maxXLocation = 12000;
   private final Timer fireTimer = new Timer(5000, null);
   
-  public Boss(int objId, int startLives, int startHealth, int texId, double x, double y, Point.Double speed) {
+  public Boss(int objId, int startLives, int startHealth, int texId, double x, double y, Point.Double speed, int points) {
     super(objId, startLives, startHealth, texId, x, y, speed);
-    pointsWorth = 500;
+    pointsWorth = points;
     fireTimer.setRepeats(false);
   }
   
   public Boss() {
-    this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0, new Point.Double(0, 0));
+    this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0, new Point.Double(0, 0), 0);
   }
   
   public void move() {
