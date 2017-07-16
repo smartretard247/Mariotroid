@@ -52,7 +52,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private DrawLib drawLib;
   private static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
-  private final int INTROLENGTHMS = 3000;
+  private final int INTROLENGTHMS = 6000;
   private boolean won = false;
   private boolean warping = false;
   private boolean showControls = true;
@@ -60,9 +60,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private boolean swapBackground = false;
   private static boolean soundEnabled = true;
   private final TestDisplay testDisplay = new TestDisplay();
-  
-  private Scene scene; // trans x & y & z, scale x & y & z
-  private Hero hero;
+  private final Scene scene = new Scene(-600, -600, 0, 0.5, 0.5, 1.0);; // trans x & y & z, scale x & y & z
   private final PhysicsEngine phy = new PhysicsEngine();
   private final ObjectContainer game = new ObjectContainer();
   private static String statusMessage = "";
@@ -71,6 +69,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final int TOTAL_LEVELS = 2;
   private int currLevel = 1;
   private static boolean debugging = false;
+  private Hero hero;
   
   ///// START METHODS
 
@@ -138,7 +137,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   @Override
   public void init(GLAutoDrawable drawable) { // called when the panel is created
     GL2 gl = drawable.getGL().getGL2();
-    
     gl.glMatrixMode(GL2.GL_PROJECTION);
     gl.glLoadIdentity();
     gl.glFrustum(-windowDim.width/2, windowDim.width/2 ,-windowDim.height/2, windowDim.height/2, 9.9, 101);
@@ -146,79 +144,43 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glClearColor(0, 0.4f, 0.8f, 0);
     gl.glEnable(GL_BLEND);
     gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-    
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     messageTimer.setRepeats(false);
-    
-    scene = new Scene(-600, -600, 0, 0.5, 0.5, 1.0); // initial scale and translations
-    hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
-    
-    // initialize all game objects here
-    game.addGO(hero);
-    game.addGO(new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
-    game.addGO(new Collidable(ID.ID_SHELL, DrawLib.TEX_SHELL, 300, 800));
-    game.addGO(new Collidable(ID.ID_ARMOR, DrawLib.TEX_ARMOR, 5660, 198));
-    game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point.Double(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
-    game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
-    game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Double(5,0)));
-    game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Double(10,10)));
-    game.addGO(new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11100, 189));
-    game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 11100, 189));
-    
     SoundEffect.init(); // uncommment once all wav's in enum SoundEffect have been added to dir /res/sound
     SoundEffect.THEME.playLoop();
+  
+    // initial hero settings
+    hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
+    game.addGO(hero);
   }
   
   private void resetVisibles(int level) {
-    game.clearVisibles();
-    game.addVisible(ID.ID_HERO); // all levels need the hero!
-    Hero h = (Hero)game.getVisible(ID.ID_HERO);
-    Enemy e;
-    // **NOTE: any changes made to a game object in one level must be reset in all other levels!
+    game.clearGOs(); // will not clear the hero
+    Hero h = (Hero)game.getGO(ID.ID_HERO);
     switch(level) {
     case 1:// only add level 1 visible objects to this map
       currLevel = 1; // no need to adjust level number on any further cases
-      scene.resetAll(); // again, do not change scene in other cases
+      scene.resetAll(); // do not change scene in other cases
       h.setDefaultPosition(300, 400);
       h.resetAll();
-      //h.setLives(1);
-      //h.setHealth(1);
-      game.addVisible(ID.ID_JETPACK);
-      game.addVisible(ID.ID_SHELL);
-      game.addVisible(ID.ID_ENEMY_1);
-      e = (Enemy)game.getVisible(ID.ID_ENEMY_1);
-      e.setDefaultPosition(2000, 800);
-      e.setDefaultSpeed(new Point.Double(5, 0));
-      game.addVisible(ID.ID_ENEMY_2);
-      game.addVisible(ID.ID_ENEMY_3);
-      game.addVisible(ID.ID_ARMOR);
-      game.addVisible(ID.ID_CALAMITY);
-      game.addVisible(ID.ID_DOOR);
-      if(game.getGO(ID.ID_DOOR_POWERED) != null) game.removeVisible(ID.ID_DOOR_POWERED);
+      game.addGO(new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
+      game.addGO(new Collidable(ID.ID_SHELL, DrawLib.TEX_SHELL, 300, 800));
+      game.addGO(new Collidable(ID.ID_ARMOR, DrawLib.TEX_ARMOR, 5660, 198));
+      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point.Double(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
+      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
+      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Double(5,0)));
+      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Double(10,10)));
+      game.addGO(new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11100, 189));
       break;
-    case 2:// setup level 2, only add level 2 visible objects to this map
-      game.addVisible(ID.ID_ENEMY_1);
-      e = (Enemy)game.getVisible(ID.ID_ENEMY_1);
-      e.setDefaultPosition(10000, 500);
-      e.setDefaultSpeed(new Point.Double(5, 0));
-      game.addVisible(ID.ID_ENEMY_2);
-      game.addVisible(ID.ID_ENEMY_3);
-      game.addVisible(ID.ID_DOOR_POWERED);
-      game.getVisible(ID.ID_DOOR_POWERED).setPosition(300, 189);
-      game.addVisible(ID.ID_WARP, new Collidable(300, 200));
+    case 2:// setup level 2, only add level 2 game objects to this map
+      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 500, new Point.Double(5,0)));
+      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
+      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Double(5,0)));
+      game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, 300, 189));
+      game.addGO(new Collidable(ID.ID_WARP, DrawLib.TEX_NONE, 300, 200));
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;
     }
-    
-    // reset all living things, except hero
-    game.getVisibles().stream().forEach((c) -> {
-      if(new Living().getClass().isInstance(c)){
-        if(!new Hero().getClass().isInstance(c)) {
-          Living l = (Living)c;
-          l.resetAll();
-        }
-      }
-    });
   }
   
   public void jumpToLevel(int num) {
@@ -241,7 +203,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
     level.stream().forEach((r) -> {
       int id = ID.getNewId();
-      game.addVisible(id, new Collidable(id, DrawLib.TEX_LEVEL,
+      game.addTO(id, new Collidable(id, DrawLib.TEX_LEVEL,
               r.x(), r.y(), r.w(), r.h()));
     });
   }
@@ -848,7 +810,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
       // enemy movement and collision detection
       for(int i = ID.ID_ENEMY_1; i <= ID.ID_ENEMY_3; i++) {
-        Enemy enemy = (Enemy)(game.getVisible(i));
+        Enemy enemy = (Enemy)(game.getGO(i));
         if(enemy != null) {
           List<Collidable> enemyCollisions = enemy.processCollisions(visibleObjects); // return valid collisions
           enemyCollisions.stream().forEach((c) -> {
@@ -864,7 +826,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       }
       
       // boss movement and collision detection
-      Boss boss = (Boss)(game.getVisible(ID.ID_CALAMITY));
+      Boss boss = (Boss)(game.getGO(ID.ID_CALAMITY));
       if(boss != null) {
         if(!boss.didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true));
         List<Collidable> bossCollisions = boss.processCollisions(visibleObjects);
@@ -873,7 +835,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             toRemove.add(c.getObjectId());
             if(boss.getHealth() <= 0) { // enemy died
               toRemove.add(boss.getObjectId());
-              game.addVisible(ID.getNewId(), new Collidable(ID.getLastId(), DrawLib.TEX_HEALTH_ORB, boss.getX(), boss.getY()));
+              game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), DrawLib.TEX_HEALTH_ORB, boss.getX(), boss.getY()));
               hero.addScore(boss.getPointsWorth());
               createWarp(11175, 200, 11100, 189); // set warp point, and show powered door
             }
@@ -901,6 +863,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           toRemove.add(objId); // remove the armor image from the screen
           break;
         case ID.ID_WARP:
+          removeWarp();
           if(++currLevel <= TOTAL_LEVELS){
             hero.setSpeedX(0);
             warping = true;
@@ -928,7 +891,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       }
       
       // remove all ids tagged for removal
-      toRemove.stream().forEach((id) -> { game.removeVisible(id); });
+      toRemove.stream().forEach((id) -> { game.removeAny(id); });
       break;
     default: break;
     }
@@ -941,10 +904,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param y 
    */
   private void createWarp(int warpX, int warpY, int doorX, int doorY) {
-    game.addVisible(ID.ID_DOOR_POWERED); // add door after calamity is defeated!
-    (game.getGO(ID.ID_DOOR_POWERED)).setPosition(doorX, doorY);
-    game.removeVisible(ID.ID_DOOR);
-    game.addVisible(ID.ID_WARP, new Collidable(warpX, warpY));
+    game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, doorX, doorY));
+    game.addGO(new Collidable(ID.ID_WARP, DrawLib.TEX_NONE, warpX, warpY));
+  }
+  
+  private void removeWarp() {
+    game.removeAny(ID.ID_DOOR_POWERED);
+    game.removeAny(ID.ID_WARP);
   }
 
   public void startAnimation() {
@@ -1128,7 +1094,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           else
             fired = hero.fireSecondaryWeapon(wc);
         } else {
-          Collidable c = game.getVisible(ID.ID_CALAMITY);
+          Collidable c = game.getGO(ID.ID_CALAMITY);
           if(c != null) {
             Boss b = (Boss)c;
             fired = b.firePrimaryWeapon(np.worldCoord);
@@ -1137,7 +1103,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           }
         }
 
-        if(fired != null) game.addVisible(fired.getObjectId(), fired);
+        if(fired != null) game.addTO(fired.getObjectId(), fired);
         else System.out.println("Attempted to fire null projectile.");
       } catch (InterruptedException ex) {
         Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);

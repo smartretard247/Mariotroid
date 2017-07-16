@@ -229,15 +229,15 @@ public class LevelBuilder {
   }
   
   private  String getFileChecksum(MessageDigest digest, String fileName) throws IOException {
-    String pathToExportedFile = fileName;
-    try {
+    //String pathToExportedFile = fileName;
+    /*try {
       pathToExportedFile = ExportResource(fileName);
     } catch (Exception ex) {
       System.out.println(ex.getMessage() + ", using local.");
-    }
+    }*/
     
     try {
-      BufferedInputStream fis = (BufferedInputStream)getClass().getClassLoader().getResourceAsStream(pathToExportedFile); // get file input stream for reading the file content
+      BufferedInputStream fis = (BufferedInputStream)getClass().getClassLoader().getResourceAsStream(fileName); // get file input stream for reading the file content
       byte[] byteArray = new byte[1024];
       int bytesCount = 0;
       
@@ -258,7 +258,7 @@ public class LevelBuilder {
     return sb.toString(); // return complete hash
   }
   
-  private static String ExportResource(String resourceName) throws Exception {
+  /*private static String ExportResource(String resourceName) throws Exception {
     InputStream stream = null;
     OutputStream resStreamOut = null;
     String jarFolder;
@@ -283,5 +283,5 @@ public class LevelBuilder {
     }
 
     return jarFolder + resourceName;
-  }
+  }*/
 }

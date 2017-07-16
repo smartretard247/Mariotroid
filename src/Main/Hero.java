@@ -247,7 +247,7 @@ public class Hero extends Living {
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
   
   public Projectile firePrimaryWeapon(Point.Double direction) {
-    if(Engine.isSoundEnabled()) SoundEffect.GUN.play();
+    if(Engine.isSoundEnabled()) SoundEffect.LASER.play();
     Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
     flipY = (zRot.x < 0);
     double xOffset = 20; // so projectile doesn't come from the hero's chest
@@ -256,7 +256,7 @@ public class Hero extends Living {
             getY(), 1); //fire primary, 1 damage
   }
   public Projectile fireSecondaryWeapon(Point.Double direction) {
-    if(Engine.isSoundEnabled() && hasSecondaryWeapon) SoundEffect.LASER.play();
+    if(Engine.isSoundEnabled() && hasSecondaryWeapon) SoundEffect.GUN.play();
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
       Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
       flipY = (zRot.x < 0);
