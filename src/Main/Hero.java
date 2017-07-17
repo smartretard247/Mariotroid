@@ -18,7 +18,7 @@ import Test.TestDisplay;
 public class Hero extends Living {
   private static final int MAX_SECONDARY_AMMO = 5;
   private static final int JUMP_SPEED = 60;
-  public int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
+  private int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
   private long score;
   private boolean jumped;
   private boolean hasDoubleJump;
@@ -222,24 +222,31 @@ public class Hero extends Living {
   public boolean canJump() { return !jumped; }
   public void doJump() {
     if(Engine.isSoundEnabled()) SoundEffect.JUMP.play();
+    ++fallCount;
     jumped = true;
     setSpeedY(JUMP_SPEED);
   }
   public boolean canDoubleJump() { return !doubleJumped && jumped && hasDoubleJump; }
   public void doDoubleJump() {
     if(Engine.isSoundEnabled()) SoundEffect.JETPACK.play();
+    ++fallCount;
     doubleJumped = true;
     setSpeedY(JUMP_SPEED);
     setTextureId(DrawLib.TEX_HERO_BACKPACK1); // TODO: move all setTextureId() calls to draw() method
   }
+  
+  /*
   public boolean didLand() {
-    //if(Engine.isSoundEnabled()) SoundEffect.LAND.play();
-    return !jumped && !doubleJumped;
+    if(fallCount <= 2) return !jumped && !doubleJumped;
+    else return true;
   }
+*/
+  
   public void doLand() {
+    //if(Engine.isSoundEnabled()) SoundEffect.LAND.play();
     jumped = false;
     doubleJumped = false;
-    fallCount = 0; // reset fall count, see fallCount in Engine for definition
+    fallCount = 0; // reset fall count
     isClimbing = false;
   }
   

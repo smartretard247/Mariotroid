@@ -148,7 +148,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     messageTimer.setRepeats(false);
     SoundEffect.init(); // uncommment once all wav's in enum SoundEffect have been added to dir /res/sound
-    SoundEffect.THEME.playLoop();
   
     // initial hero settings
     hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
@@ -448,6 +447,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void doStartMenuSelection() {
     switch(this.startMenuSelection) {
       case START_GAME: gameMode = GAME_MODE.RUNNING;
+        SoundEffect.THEME.playLoop();
         won = false;
         jumpToLevel(1);
         break;
@@ -742,7 +742,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case KeyEvent.VK_SPACE: // stop jump, start fall
         //++hero.fallCount;
         //if(!hero.didLand() && hero.fallCount <= 2) hero.setSpeedY(-PhysicsEngine.GRAVITY);
-        if(!hero.didLand()) hero.setSpeedY(-PhysicsEngine.GRAVITY);
+        //if(!hero.didLand()) hero.setSpeedY(-PhysicsEngine.GRAVITY);
         break;
       default: break;
     }
@@ -777,7 +777,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case DYING: if(!hero.wasRecentlyDamaged()) { gameMode = GAME_MODE.GAME_OVER; }
     case RUNNING:
       if(won) {
-        if(Engine.isSoundEnabled()) SoundEffect.WIN.play(Math.max(SoundEffect.getGain(), 3f));
+        if(Engine.isSoundEnabled()) {
+          SoundEffect.THEME.stop();
+          SoundEffect.WIN.play(Math.max(SoundEffect.getGain(), 6f));
+        }
         gameMode = GAME_MODE.WIN;
         return;
       } // check for winning conditions
