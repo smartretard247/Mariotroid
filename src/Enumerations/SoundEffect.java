@@ -92,7 +92,7 @@ public enum SoundEffect {
     values(); // calls the constructor for all the elements
   }
   
-  public Float getGain() {
+  public static Float getGain() {
     switch(volume) {
     case LOW: return 0f;
     case MEDIUM: return 3f;

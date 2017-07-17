@@ -75,10 +75,11 @@ public class Hero extends Living {
     setTextureId(DrawLib.TEX_HERO);
     resetScore();
     resetAmmo();
+    resetArmor();
     dropSecondaryWeapon();
     dropJetpack();
     doLand();
-    armor = 1;
+    
   }
   
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects)  {
@@ -273,6 +274,8 @@ public class Hero extends Living {
   public void resetAmmo() {
     secondaryAmmoCount = MAX_SECONDARY_AMMO;
   }
+  
+  public void resetArmor() { armor = 1; }
   
   public void pickupJetpack() { hasDoubleJump = true; };
   public void dropJetpack() { hasDoubleJump = false; };

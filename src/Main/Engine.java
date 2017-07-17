@@ -777,7 +777,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case DYING: if(!hero.wasRecentlyDamaged()) { gameMode = GAME_MODE.GAME_OVER; }
     case RUNNING:
       if(won) {
-        if(Engine.isSoundEnabled()) SoundEffect.WIN.play(6f);
+        if(Engine.isSoundEnabled()) SoundEffect.WIN.play(Math.max(SoundEffect.getGain(), 3f));
         gameMode = GAME_MODE.WIN;
         return;
       } // check for winning conditions
