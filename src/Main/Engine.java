@@ -69,6 +69,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final int TOTAL_LEVELS = 2;
   private int currLevel = 1;
   private static boolean debugging = false;
+  private boolean jumpedLastFrame = false;
   private Hero hero;
   
   ///// START METHODS
@@ -154,7 +155,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     game.addGO(hero);
   }
   
-  private void resetVisibles(int level) {
+  private void setupVisibles(int level) {
     game.clearGOs(); // will not clear the hero
     Hero h = (Hero)game.getGO(ID.ID_HERO);
     switch(level) {
@@ -185,8 +186,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   
   public void jumpToLevel(int num) {
     switch(num) {
-      case 1: loadLevel(1, "res/layer_collision_1.png"); break;
-      case 2: loadLevel(2, "res/layer_collision_2.png"); break;
+      case 1: loadLevel(1, "/res/layer_collision_1.png"); break;
+      case 2: loadLevel(2, "/res/layer_collision_2.png"); break;
       default: System.out.println("Unknown level number while jumping to level."); break;
     }
   }
@@ -198,7 +199,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param fileName 
    */
   private void loadLevel(int levelNum, String fileName) {
-    resetVisibles(levelNum);
+    setupVisibles(levelNum);
     LevelBuilder levelBuilder = new LevelBuilder(fileName);
     ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
     level.stream().forEach((r) -> {
@@ -256,6 +257,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawNormalGamePlay(GL2 gl) {
+    if(jumpedLastFrame) {
+      //drawLib.loadTexture(DrawLib.TEX_LEVEL_DECOR_1, "/res/layer_decor_1.png");// load next level (3+) for background
+      jumpedLastFrame = false;
+    }
+    
     drawBackground(gl);
     gl.glPushMatrix(); // save initial transform
     gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
@@ -366,8 +372,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPushMatrix();
     adjustScene(gl, true);
     if(currLevel < TOTAL_LEVELS)
-      DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1+currLevel-1);
-    else DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1); // use DECOR_1 as default background when no more levels
+      DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1+(currLevel%2)); // draw the background level
+    //else DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1); // use DECOR_1 as default background when no more levels
     gl.glPopMatrix();
     game.getVisibles().forEach((c) -> { c.draw(); }); // draw game objects
   }
@@ -389,7 +395,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPushMatrix();
     gl.glTranslated(DrawLib.getTexture(DrawLib.TEX_LEVEL_DECOR_1).getWidth()/2, DrawLib.getTexture(DrawLib.TEX_LEVEL_DECOR_1).getHeight()/2, 0); // levels MUST be same size as DECOR_1
     if(showDecor) {
-      if(currLevel <= TOTAL_LEVELS) DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1+currLevel-1);
+      if(currLevel <= TOTAL_LEVELS) DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1+Math.abs(currLevel%2-1));
     }
     gl.glPopMatrix();
   }
@@ -771,7 +777,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case DYING: if(!hero.wasRecentlyDamaged()) { gameMode = GAME_MODE.GAME_OVER; }
     case RUNNING:
       if(won) {
-        if(Engine.isSoundEnabled()) SoundEffect.WIN.play();
+        if(Engine.isSoundEnabled()) SoundEffect.WIN.play(6f);
         gameMode = GAME_MODE.WIN;
         return;
       } // check for winning conditions
@@ -835,21 +841,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         }
       });
       
-      /*// Check projectiles for collisions with LEVEL and remove them
-      projectiles.stream().forEach((proj) -> {
-        List<Collidable> projectileCollisions = proj.processCollisions(visibleObjects);
-        projectileCollisions.stream().forEach((c) -> {
-          toRemove.add(proj.getObjectId());
-        });
-      });*/
-    
-      /*// enemy collision detection
-      for(int i = ID.ID_ENEMY_1; i <= ID.ID_ENEMY_3; i++) {
-        
-      }*/
-      
-      // boss movement and collision detection
-      
       // hero collision detection
       List<Collidable> heroCollisions = hero.processCollisions(visibleObjects);
       for(Collidable c : heroCollisions){
@@ -876,7 +867,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             warping = true;
             gameMode = GAME_MODE.WARPING;
             hero.doJump();
-            jumpToLevel(currLevel); // "jump" to next level
+            jumpToLevel(currLevel);
+            jumpedLastFrame = true;
           }else{
             setStatusMessage("YOU WIN!!");
             won = true;

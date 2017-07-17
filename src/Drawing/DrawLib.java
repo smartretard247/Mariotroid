@@ -77,8 +77,8 @@ public class DrawLib {
     textureIdMap.put(TEX_ENEMY_WEAPON_2, "/res/projectile_green.png");
     textureIdMap.put(TEX_JETPACK, "/res/jetpack.png");
     textureIdMap.put(TEX_ENEMY_BASIC, "/res/enemy_basic.png");
-    textureIdMap.put(TEX_LEVEL_DECOR_1, "/res/layer_decor_1.png");
-    textureIdMap.put(TEX_LEVEL_DECOR_2, "/res/layer_decor_2.png");
+    textureIdMap.put(TEX_LEVEL_DECOR_1, "/res/layer_decor_1.png"); // only load the first two levels
+    textureIdMap.put(TEX_LEVEL_DECOR_2, "/res/layer_decor_2.png"); // the rest will alternate btw these id's
     textureIdMap.put(TEX_CALAMITY, "/res/calamity.png");
     textureIdMap.put(TEX_DOOR, "/res/door.png");
     textureIdMap.put(TEX_DOOR_POWERED, "/res/door_powered.png");
@@ -106,24 +106,33 @@ public class DrawLib {
    * @param gl 
    */
   private void loadTextures() {
-    textureIdMap.keySet().forEach((i) -> {
-      try {
-        URL textureURL = getClass().getResource(textureIdMap.get(i));
-        if (textureURL != null) {
-          BufferedImage img = ImageIO.read(textureURL);
-          ImageUtil.flipImageVertically(img);
-          Texture temp = AWTTextureIO.newTexture(GLProfile.getDefault(), img, true);
-          temp.setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
-          temp.setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
-          textures.put(i, temp);
-        } else {
-          System.out.println("Invalid textureURL in DrawLib.loadTextures: " + textureIdMap.get(i));
-        }
-      } catch (IOException | GLException e) {
-        System.out.println("Could not create a texture, see loadTextures().");
+    textureIdMap.keySet().forEach((i) -> { loadTexture(i, textureIdMap.get(i)); });
+  }
+  
+  /**
+   * Loads a single texture with index as ID and resource as a path to the image.  Will remove any
+   * texture that already exists with the same ID.
+   * @param index
+   * @param resource 
+   */
+  public void loadTexture(int index, String resource) {
+    try {
+      URL textureURL = getClass().getResource(resource);
+      if (textureURL != null) {
+        BufferedImage img = ImageIO.read(textureURL);
+        ImageUtil.flipImageVertically(img);
+        Texture temp = AWTTextureIO.newTexture(GLProfile.getDefault(), img, true);
+        temp.setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
+        temp.setTexParameteri(gl, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
+        if(textures.containsKey(index)) textures.remove(index);
+        textures.put(index, temp);
+      } else {
+        System.out.println("Invalid textureURL in DrawLib.loadTexture: " + resource);
       }
-    });
-    //textures.get(0).enable(gl);
+    } catch (IOException | GLException e) {
+      System.out.println("Could not create a texture, see loadTexture().");
+      e.printStackTrace();
+    }
   }
   
   public static void drawLine(double fromX, double fromY, double toX, double toY) {

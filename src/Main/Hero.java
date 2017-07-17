@@ -311,10 +311,17 @@ public class Hero extends Living {
     int animationLengthInFrames = (isSprinting()) ? 8 : 16;
     // set texture id then call standard draw function
     if(getLives() > 0) {
-      if(standingStill()) setTextureId(DrawLib.TEX_HERO);
-      else if(movingLeft() || movingRight()) {
-        if(Engine.getFrameNumber() % animationLengthInFrames < animationLengthInFrames/2) setTextureId(DrawLib.TEX_HERO_RUN1);
-        else setTextureId(DrawLib.TEX_HERO_RUN2);
+      if(!wasRecentlyDamaged()) {
+        if(standingStill()) setTextureId(DrawLib.TEX_HERO);
+        else if(movingLeft() || movingRight()) {
+          if(Engine.getFrameNumber() % animationLengthInFrames < animationLengthInFrames/2) setTextureId(DrawLib.TEX_HERO_RUN1);
+          else setTextureId(DrawLib.TEX_HERO_RUN2);
+        }
+      } else {
+        if(Engine.getFrameNumber() % animationLengthInFrames < animationLengthInFrames/2) setTextureId(DrawLib.TEX_TRANSPARENT);
+        else {
+          setTextureId(DrawLib.TEX_HERO);
+        }
       }
     }
     

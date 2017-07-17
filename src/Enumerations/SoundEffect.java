@@ -44,6 +44,17 @@ public enum SoundEffect {
     }
   }
   
+  public void play(float atGain) {
+    if (volume != Volume.MUTE) {
+      if (clip.isRunning())
+        clip.stop();   // stop the player if it is still running
+      clip.setFramePosition(0); // rewind to the beginning
+      FloatControl gain = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+      gain.setValue(atGain);
+      clip.start();     // start playing
+    }
+  }
+  
   public void play() {
     if (volume != Volume.MUTE) {
       if (clip.isRunning())
@@ -51,6 +62,15 @@ public enum SoundEffect {
       clip.setFramePosition(0); // rewind to the beginning
       FloatControl gain = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
       gain.setValue(getGain());
+      clip.start();     // start playing
+    }
+  }
+  
+  public void playLoop(float atGain) {
+    if (volume != Volume.MUTE) {
+      clip.loop(Clip.LOOP_CONTINUOUSLY);
+      FloatControl gain = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+      gain.setValue(atGain);
       clip.start();     // start playing
     }
   }

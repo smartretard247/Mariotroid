@@ -53,6 +53,7 @@ public class GameObject extends Collidable {
   public void resetAll() {
     this.resetPosition();
     this.setSpeed(defSpeed);
+    if(isSprinting) toggleSprint();
   }
   
   public String getName() { return name; }

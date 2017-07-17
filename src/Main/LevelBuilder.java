@@ -33,6 +33,7 @@ public class LevelBuilder {
   private String pngChecksum = "123456789";
   
   public LevelBuilder(String fileName) {
+    if(fileName.indexOf("/") == 0) fileName = fileName.substring(1, fileName.length()); // remove leading "/" if exist
     imageFileName = fileName;
     dataFileName = imageFileName.substring(imageFileName.lastIndexOf("/")+1, imageFileName.length()-4) + ".txt";
     
