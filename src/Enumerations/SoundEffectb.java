@@ -9,7 +9,7 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
    
-public enum SoundEffect {
+public enum SoundEffectb {
   GUN("/res/sound/gun.wav"),
   JETPACK("/res/sound/jetpack.wav"),
   JUMP("/res/sound/jump.wav"),
@@ -33,7 +33,7 @@ public enum SoundEffect {
   public static Volume volume = Volume.LOW;
   private Clip clip;
    
-  SoundEffect(String soundFileName) {
+  SoundEffectb(String soundFileName) {
     try {
       URL url = getClass().getResource(soundFileName);
       AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);

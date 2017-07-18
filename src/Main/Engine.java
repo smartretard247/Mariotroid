@@ -5,7 +5,7 @@ import Drawing.DrawLib;
 import Enumerations.START_MENU_OPTION;
 import Enumerations.GAME_MODE;
 import Enumerations.ID;
-import Enumerations.SoundEffect;
+import Enumerations.SoundEffectb;
 import Test.TestDisplay;
 import java.awt.event.*;
 import javax.swing.*;
@@ -147,7 +147,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     messageTimer.setRepeats(false);
-    SoundEffect.init(); // uncommment once all wav's in enum SoundEffect have been added to dir /res/sound
+    SoundEffectb.init(); // uncommment once all wav's in enum SoundEffectb have been added to dir /res/sound
   
     // initial hero settings
     hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
@@ -447,7 +447,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void doStartMenuSelection() {
     switch(this.startMenuSelection) {
       case START_GAME: gameMode = GAME_MODE.RUNNING;
-        SoundEffect.THEME.playLoop();
+        SoundEffectb.THEME.playLoop();
         won = false;
         jumpToLevel(1);
         break;
@@ -609,13 +609,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case KeyEvent.VK_F9:
         cycleVolume();
         String message = "VOLUME: ";
-        switch(SoundEffect.volume) {
+        switch(SoundEffectb.volume) {
         case MUTE:
           message += "MUTED";
           soundEnabled = false;
           break;
         default:
-          message += SoundEffect.volume.toString();
+          message += SoundEffectb.volume.toString();
           soundEnabled = true;
           break;
         }
@@ -778,8 +778,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case RUNNING:
       if(won) {
         if(Engine.isSoundEnabled()) {
-          SoundEffect.THEME.stop();
-          SoundEffect.WIN.play(Math.max(SoundEffect.getGain(), 6f));
+          SoundEffectb.THEME.stop();
+          SoundEffectb.WIN.play(Math.max(SoundEffectb.getGain(), 6f));
         }
         gameMode = GAME_MODE.WIN;
         return;
@@ -1126,8 +1126,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public static boolean isDebugging() { return debugging; }
   
   public static void cycleVolume() {
-    SoundEffect.volume = SoundEffect.volume.up();
-    if(SoundEffect.volume == SoundEffect.Volume.MUTE) SoundEffect.THEME.stop();
-    else { SoundEffect.THEME.playLoop(); }
+    SoundEffectb.volume = SoundEffectb.volume.up();
+    if(SoundEffectb.volume == SoundEffectb.Volume.MUTE) SoundEffectb.THEME.stop();
+    else { SoundEffectb.THEME.playLoop(); }
   }
 }

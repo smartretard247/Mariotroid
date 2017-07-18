@@ -3,7 +3,7 @@ package Main;
 import Drawing.DrawLib;
 import Enumerations.GAME_MODE;
 import Enumerations.ID;
-import Enumerations.SoundEffect;
+import Enumerations.SoundEffectb;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -221,14 +221,14 @@ public class Hero extends Living {
   
   public boolean canJump() { return !jumped; }
   public void doJump() {
-    if(Engine.isSoundEnabled()) SoundEffect.JUMP.play();
+    if(Engine.isSoundEnabled()) SoundEffectb.JUMP.play();
     ++fallCount;
     jumped = true;
     setSpeedY(JUMP_SPEED);
   }
   public boolean canDoubleJump() { return !doubleJumped && jumped && hasDoubleJump; }
   public void doDoubleJump() {
-    if(Engine.isSoundEnabled()) SoundEffect.JETPACK.play();
+    if(Engine.isSoundEnabled()) SoundEffectb.JETPACK.play();
     ++fallCount;
     doubleJumped = true;
     setSpeedY(JUMP_SPEED);
@@ -243,7 +243,7 @@ public class Hero extends Living {
 */
   
   public void doLand() {
-    //if(Engine.isSoundEnabled()) SoundEffect.LAND.play();
+    //if(Engine.isSoundEnabled()) SoundEffectb.LAND.play();
     jumped = false;
     doubleJumped = false;
     fallCount = 0; // reset fall count
@@ -255,7 +255,7 @@ public class Hero extends Living {
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
   
   public Projectile firePrimaryWeapon(Point.Double direction) {
-    if(Engine.isSoundEnabled()) SoundEffect.LASER.play();
+    if(Engine.isSoundEnabled()) SoundEffectb.LASER.play();
     Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
     flipY = (zRot.x < 0);
     double xOffset = 20; // so projectile doesn't come from the hero's chest
@@ -264,7 +264,7 @@ public class Hero extends Living {
             getY(), 1); //fire primary, 1 damage
   }
   public Projectile fireSecondaryWeapon(Point.Double direction) {
-    if(Engine.isSoundEnabled() && hasSecondaryWeapon) SoundEffect.GUN.play();
+    if(Engine.isSoundEnabled() && hasSecondaryWeapon) SoundEffectb.GUN.play();
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
       Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
       flipY = (zRot.x < 0);
