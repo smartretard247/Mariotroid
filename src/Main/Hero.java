@@ -83,12 +83,12 @@ public class Hero extends Living {
   }
   
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects)  {
-    if(!isClimbing) setSpeedY(speedY - PhysicsEngine.GRAVITY);
+    if(!isClimbing) setSpeedY(speedY - PhysicsEngine.getGravity());
     
     //move();
     List<Collidable> collisions = getCollisions(nearObjects);
     List<Collidable> invalidCollisions = new LinkedList<>();
-    if(this.getY() < -3000) { //fell off map
+    if(Math.abs(this.getY()) > 3000) { //fell off map
       try {
         loseHealth(10);
       } catch (GameOverException ex) {
@@ -328,13 +328,14 @@ public class Hero extends Living {
           else setTextureId(DrawLib.TEX_HERO_RUN2);
         }
       } else {
-        if(Engine.getFrameNumber() % animationLengthInFrames < animationLengthInFrames/2) setTextureId(DrawLib.TEX_TRANSPARENT);
+        if(Engine.getFrameNumber() % animationLengthInFrames < animationLengthInFrames/2) setTextureId(DrawLib.TEX_HERO_TRANSPARENT);
         else {
           setTextureId(DrawLib.TEX_HERO);
         }
       }
     }
     
+    setFlipX(PhysicsEngine.gravityIsInverted());
     super.draw();
   }
   

@@ -16,7 +16,7 @@ public class Drawable {
   protected double width, height; // for building the collision rect
   private double defX;
   private double defY;
-  protected boolean flipY;
+  protected boolean flipX, flipY;
   public final double color[]; // rgb color for non-sprites
   
   public Drawable(int texId, double x, double y, double w, double h) {
@@ -27,6 +27,7 @@ public class Drawable {
     defY = y;
     width = w;
     height = h;
+    flipX = false;
     flipY = false;
     color = new double[] { 0.0, 0.0, 0.0 };
   }
@@ -77,6 +78,12 @@ public class Drawable {
    */
   public void setFlipY(boolean to) { flipY = to; }
   
+  /**
+   * Call this to make images flip along the x-axis, making them seem to flip upside down.
+   * @param to
+   */
+  public void setFlipX(boolean to) { flipX = to; }
+  
   public void setColor(double r, double g, double b) {
     color[0] = r;
     color[1] = g;
@@ -93,6 +100,8 @@ public class Drawable {
     if(textureId >= 0) {
       if(flipY)
         GL.glRotated(180, 0, 1, 0);
+      if(flipX)
+        GL.glRotated(180, 1, 0, 0);
       DrawLib.drawTexturedRectangle(textureId, width, height);
     } else {
       GL.glColor3d(color[0], color[1], color[2]);
@@ -102,4 +111,5 @@ public class Drawable {
   }
   
   public boolean isFlippedOnY() { return flipY; }
+  public boolean isFlippedOnX() { return flipX; }
 }

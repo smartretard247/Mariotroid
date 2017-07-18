@@ -155,6 +155,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   private void setupVisibles(int level) {
+    PhysicsEngine.resetGravity();
     game.clearGOs(); // will not clear the hero
     Hero h = (Hero)game.getGO(ID.ID_HERO);
     switch(level) {
@@ -174,10 +175,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11100, 189));
       break;
     case 2:// setup level 2, only add level 2 game objects to this map
-      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 500, new Point.Double(5,0)));
-      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
-      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Double(5,0)));
-      createWarp(new Warp(300, 200, 300, 189)); // create warp for the "last" level, instead of boss spawning it
+      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 950, new Point.Double(5,0)));
+      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 950, new Point.Double(5,0)));
+      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 950, new Point.Double(5,0)));
+      game.addGO(new Collidable(ID.ID_SWITCH, DrawLib.TEX_SWITCH, 300, 132));
+      createWarp(new Warp(600, 1047, 600, 967), true); // create warp for the "last" level, instead of boss spawning it
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;
     }
@@ -822,7 +824,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
                   toRemove.add(boss.getObjectId());
                   game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), DrawLib.TEX_HEALTH_ORB, boss.getX(), boss.getY()));
                   hero.addScore(boss.getPointsWorth());
-                  createWarp(boss.getWarp()); // set warp point, and show powered door
+                  createWarp(boss.getWarp(), false); // set warp point, and show powered door
                 }
               }
             });
@@ -850,6 +852,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         int objId = c.getObjectId();
         int texId = c.getTextureId();
         switch(objId) {
+        case ID.ID_SWITCH:
+          PhysicsEngine.inverseGravity();
+          toRemove.add(objId);
+          break;
         case ID.ID_JETPACK:
           hero.addScore(250);
           toRemove.add(objId); // remove the jetpack image from the screen
@@ -905,8 +911,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param x
    * @param y 
    */
-  private void createWarp(Warp warp) {
-    game.addGO(new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, warp.doorX, warp.doorY));
+  private void createWarp(Warp warp, boolean flipDoorOnX) {
+    Collidable door = new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, warp.doorX, warp.doorY);
+    door.setFlipX(flipDoorOnX);
+    game.addGO(door);
     game.addGO(new Collidable(ID.ID_WARP, DrawLib.TEX_NONE, warp.warpX, warp.warpY));
   }
   
@@ -1090,7 +1098,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         Projectile fired;
         if(!np.isFromEnemy) {
           Point.Double wc = DrawLib.screenToWorld(np.screenCoord);
-          //setStatusMessage("(" + wc.x + ", " + wc.y + ")"); // comment to remove coordinate display
+          if(debugging) setStatusMessage("(" + wc.x + ", " + wc.y + ")");
           if(np.isFromPrimaryWeapon)
             fired = hero.firePrimaryWeapon(wc);
           else

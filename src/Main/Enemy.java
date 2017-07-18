@@ -23,7 +23,7 @@ public class Enemy extends Living {
   }
   
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
-    setSpeedY(speedY - PhysicsEngine.GRAVITY);
+    setSpeedY(speedY - PhysicsEngine.getGravity());
     
     List<Collidable> collisions = getCollisions(nearObjects);
     List<Collidable> invalidCollisions = new LinkedList<>();

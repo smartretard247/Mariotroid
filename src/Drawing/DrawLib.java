@@ -37,26 +37,28 @@ public class DrawLib {
   public static final int TEX_HERO_RUN1 = 2;
   public static final int TEX_HERO_RUN2 = 3;
   public static final int TEX_HERO_BACKPACK1 = 4;
-  public static final int TEX_LOGO = 5;
-  public static final int TEX_HEALTH = 6;
-  public static final int TEX_HUD = 7;
-  public static final int TEX_SHELL = 8;
-  public static final int TEX_PRI_WEAPON = 9;
-  public static final int TEX_ALT_WEAPON = 10;
-  public static final int TEX_ENEMY_WEAPON_1 = 11;
-  public static final int TEX_ENEMY_WEAPON_2 = 12;
-  public static final int TEX_JETPACK = 13;
-  public static final int TEX_ENEMY_BASIC = 14;
-  public static final int TEX_CALAMITY = 15;
-  public static final int TEX_DOOR = 16;
-  public static final int TEX_DOOR_POWERED = 17;
-  public static final int TEX_ARMOR = 18;
-  public static final int TEX_BACKGROUND_1 = 19;
-  public static final int TEX_BACKGROUND_2 = 20;
-  public static final int TEX_LEVEL_DECOR_1 = 21;
-  public static final int TEX_LEVEL_DECOR_2 = 22;
-  public static final int TEX_HEALTH_ORB = 23;
-  public static final int TEX_TRANSPARENT = 24;
+  public static final int TEX_HERO_TRANSPARENT = 5;
+  public static final int TEX_LOGO = 6;
+  public static final int TEX_HEALTH = 7;
+  public static final int TEX_HUD = 8;
+  public static final int TEX_SHELL = 9;
+  public static final int TEX_PRI_WEAPON = 10;
+  public static final int TEX_ALT_WEAPON = 11;
+  public static final int TEX_ENEMY_WEAPON_1 = 12;
+  public static final int TEX_ENEMY_WEAPON_2 = 13;
+  public static final int TEX_JETPACK = 14;
+  public static final int TEX_ENEMY_BASIC = 15;
+  public static final int TEX_CALAMITY = 16;
+  public static final int TEX_DOOR = 17;
+  public static final int TEX_DOOR_POWERED = 18;
+  public static final int TEX_ARMOR = 19;
+  public static final int TEX_BACKGROUND_1 = 20;
+  public static final int TEX_BACKGROUND_2 = 21;
+  public static final int TEX_LEVEL_DECOR_1 = 22;
+  public static final int TEX_LEVEL_DECOR_2 = 23;
+  public static final int TEX_HEALTH_ORB = 24;
+  public static final int TEX_TRANSPARENT = 25;
+  public static final int TEX_SWITCH = 26;
 
   public DrawLib(GL2 context) {
     gl = context;
@@ -67,6 +69,7 @@ public class DrawLib {
     textureIdMap.put(TEX_HERO_RUN1, "/res/hero_run_step_1.png");
     textureIdMap.put(TEX_HERO_RUN2, "/res/hero_run_step_2.png");
     textureIdMap.put(TEX_HERO_BACKPACK1, "/res/hero_backpack_run_step_1.png");
+    textureIdMap.put(TEX_HERO_TRANSPARENT, "/res/hero_transparent.png");
     textureIdMap.put(TEX_LOGO, "/res/logo.png");
     textureIdMap.put(TEX_HEALTH, "/res/hud_health.png");
     textureIdMap.put(TEX_HUD, "/res/layer_hud.png");
@@ -87,6 +90,7 @@ public class DrawLib {
     textureIdMap.put(TEX_BACKGROUND_2, "/res/background_2.jpg");
     textureIdMap.put(TEX_HEALTH_ORB, "/res/health_orb.png");
     textureIdMap.put(TEX_TRANSPARENT, "/res/transparent.png");
+    textureIdMap.put(TEX_SWITCH, "/res/switch.png");
     
     // load custom font
     String fontName = "/res/spac3.ttf";
