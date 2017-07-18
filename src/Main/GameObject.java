@@ -9,8 +9,8 @@ import java.awt.Point;
  */
 public class GameObject extends Collidable {
   private static final double SPRINT_MULTIPLIER = 1.5;
-  public static double MAX_SPEED_X = PhysicsEngine.TERMINAL_SPRINT;
-  public static double MAX_SPEED_Y = PhysicsEngine.TERMINAL_VELOCITY;
+  public static double MAX_SPEED_X = PhysicsEngine.getTerminalX();
+  public static double MAX_SPEED_Y = PhysicsEngine.getTerminalY();
   protected String name = "Default";
   protected double speedX; // movement increment x
   protected double speedY; // movement increment y

@@ -232,15 +232,7 @@ public class Hero extends Living {
     ++fallCount;
     doubleJumped = true;
     setSpeedY(JUMP_SPEED);
-    setTextureId(DrawLib.TEX_HERO_BACKPACK1); // TODO: move all setTextureId() calls to draw() method
   }
-  
-  /*
-  public boolean didLand() {
-    if(fallCount <= 2) return !jumped && !doubleJumped;
-    else return true;
-  }
-*/
   
   public void doLand() {
     //if(Engine.isSoundEnabled()) SOUND_EFFECT.LAND.play();
@@ -319,23 +311,23 @@ public class Hero extends Living {
   @Override
   public void draw() {
     int animationLengthInFrames = (isSprinting()) ? 8 : 16;
+    boolean firstSequence = Engine.getFrameNumber() % animationLengthInFrames < animationLengthInFrames/2;
+    
     // set texture id then call standard draw function
     if(getLives() > 0) {
-      if(!wasRecentlyDamaged()) {
-        if(standingStill()) setTextureId(DrawLib.TEX_HERO);
+      if(firstSequence && wasRecentlyDamaged()) {
+        setTextureId(DrawLib.TEX_HERO_TRANSPARENT);
+      } else { // second animation sequence
+        if(doubleJumped) setTextureId(DrawLib.TEX_HERO_BACKPACK1);
+        else if(standingStill()) setTextureId(DrawLib.TEX_HERO);
         else if(movingLeft() || movingRight()) {
-          if(Engine.getFrameNumber() % animationLengthInFrames < animationLengthInFrames/2) setTextureId(DrawLib.TEX_HERO_RUN1);
+          if(firstSequence) setTextureId(DrawLib.TEX_HERO_RUN1);
           else setTextureId(DrawLib.TEX_HERO_RUN2);
-        }
-      } else {
-        if(Engine.getFrameNumber() % animationLengthInFrames < animationLengthInFrames/2) setTextureId(DrawLib.TEX_HERO_TRANSPARENT);
-        else {
-          setTextureId(DrawLib.TEX_HERO);
         }
       }
     }
     
-    setFlipX(PhysicsEngine.gravityIsInverted());
+    setFlipX(PhysicsEngine.getGravity() < 0);
     super.draw();
   }
   

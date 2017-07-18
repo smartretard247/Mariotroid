@@ -58,7 +58,8 @@ public class DrawLib {
   public static final int TEX_LEVEL_DECOR_2 = 23;
   public static final int TEX_HEALTH_ORB = 24;
   public static final int TEX_TRANSPARENT = 25;
-  public static final int TEX_SWITCH = 26;
+  public static final int TEX_SWITCH_ON = 26;
+  public static final int TEX_SWITCH_OFF = 27;
 
   public DrawLib(GL2 context) {
     gl = context;
@@ -90,7 +91,8 @@ public class DrawLib {
     textureIdMap.put(TEX_BACKGROUND_2, "/res/background_2.jpg");
     textureIdMap.put(TEX_HEALTH_ORB, "/res/health_orb.png");
     textureIdMap.put(TEX_TRANSPARENT, "/res/transparent.png");
-    textureIdMap.put(TEX_SWITCH, "/res/switch.png");
+    textureIdMap.put(TEX_SWITCH_ON, "/res/switch_on.png");
+    textureIdMap.put(TEX_SWITCH_OFF, "/res/switch_off.png");
     
     // load custom font
     String fontName = "/res/spac3.ttf";

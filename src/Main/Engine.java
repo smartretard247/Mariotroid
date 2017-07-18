@@ -178,8 +178,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 950, new Point.Double(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 950, new Point.Double(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 950, new Point.Double(5,0)));
-      game.addGO(new Collidable(ID.ID_SWITCH, DrawLib.TEX_SWITCH, 300, 132));
-      createWarp(new Warp(600, 1047, 600, 967), true); // create warp for the "last" level, instead of boss spawning it
+      game.addGO(new LevelBoss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 300, 500, new Point.Double(10,10), 750));
+      ((LevelBoss)game.getGO(ID.ID_CALAMITY)).setWarp(new Warp(300, 1047, 300, 967));
+      
+      game.addGO(new Collidable(ID.ID_SWITCH, DrawLib.TEX_SWITCH_ON, 1000, 132));
+      
+      //createWarp(new Warp(600, 1047, 600, 967), true); // create warp for the "last" level, instead of boss spawning it
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;
     }
@@ -852,10 +856,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         int objId = c.getObjectId();
         int texId = c.getTextureId();
         switch(objId) {
-        case ID.ID_SWITCH:
-          PhysicsEngine.inverseGravity();
-          toRemove.add(objId);
-          break;
         case ID.ID_JETPACK:
           hero.addScore(250);
           toRemove.add(objId); // remove the jetpack image from the screen
@@ -885,6 +885,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           break;
         default: 
           switch(texId) {
+            case DrawLib.TEX_SWITCH_ON:
+              PhysicsEngine.inverseGravity();
+              c.setTextureId(DrawLib.TEX_SWITCH_OFF);
+              break;
             case DrawLib.TEX_ENEMY_WEAPON_1:
             case DrawLib.TEX_ENEMY_WEAPON_2:
               toRemove.add(objId);
