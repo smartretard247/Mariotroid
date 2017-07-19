@@ -17,7 +17,7 @@ import Test.TestDisplay;
  */
 public class Hero extends Living {
   private static final int MAX_SECONDARY_AMMO = 5;
-  private static final int JUMP_SPEED = 60;
+  private static final int JUMP_SPEED = 12;
   private int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
   private long score;
   private boolean jumped;
@@ -224,14 +224,14 @@ public class Hero extends Living {
     if(Engine.isSoundEnabled()) SOUND_EFFECT.JUMP.play();
     ++fallCount;
     jumped = true;
-    setSpeedY(JUMP_SPEED);
+    setSpeedY(JUMP_SPEED*PhysicsEngine.getGravity());
   }
   public boolean canDoubleJump() { return !doubleJumped && jumped && hasDoubleJump; }
   public void doDoubleJump() {
     if(Engine.isSoundEnabled()) SOUND_EFFECT.JETPACK.play();
     ++fallCount;
     doubleJumped = true;
-    setSpeedY(JUMP_SPEED);
+    setSpeedY(JUMP_SPEED*PhysicsEngine.getGravity());
   }
   
   public void doLand() {

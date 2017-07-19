@@ -58,6 +58,23 @@ public class Enemy extends Living {
         } else if(movingRight()) { // moving right
           adjustToLeftOf(c);
           speedX = -speedX; // reverse direction
+        } else if(movingUpAndLeft()) { // flying upward and to the left
+          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
+            adjustToRightOf(c);
+          } else {
+            adjustToBottomOf(c);
+            speedY = 0;
+          }
+        } else if(movingUpAndRight()) { // flying upward and to the right
+          if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
+            adjustToLeftOf(c);
+          } else {
+            adjustToBottomOf(c);
+            speedY = 0;
+          }
+        } else if(movingUp()) { // flying straight upward
+          adjustToBottomOf(c);
+          speedY = 0;
         }
         break;
       default:

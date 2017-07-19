@@ -162,7 +162,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case 1:// only add level 1 visible objects to this map
       currLevel = 1; // no need to adjust level number on any further cases
       scene.resetAll(); // do not change scene in other cases
-      h.setDefaultPosition(300, 400);
+      h.setDefaultPosition(10300, 400);
       h.resetAll();
       game.addGO(new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
       game.addGO(new Collidable(ID.ID_SHELL, DrawLib.TEX_SHELL, 300, 800));
@@ -178,10 +178,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 950, new Point.Double(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 950, new Point.Double(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 950, new Point.Double(5,0)));
-      game.addGO(new LevelBoss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 300, 500, new Point.Double(10,10), 750));
-      ((LevelBoss)game.getGO(ID.ID_CALAMITY)).setWarp(new Warp(300, 1047, 300, 967));
+      game.addGO(new LevelBoss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 300, 575, new Point.Double(10,10), 750));
+      LevelBoss l = (LevelBoss)game.getGO(ID.ID_CALAMITY);
+      l.setMinX(0);
+      l.setMaxX(3000); // test this number
+      l.setWarp(new Warp(300, 1047, 300, 967));
       
-      game.addGO(new Collidable(ID.ID_SWITCH, DrawLib.TEX_SWITCH_ON, 1000, 132));
+      game.addGO(new Collidable(ID.ID_SWITCH, DrawLib.TEX_SWITCH_ON, 5366, 708));
       
       //createWarp(new Warp(600, 1047, 600, 967), true); // create warp for the "last" level, instead of boss spawning it
       break;

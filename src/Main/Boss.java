@@ -15,7 +15,7 @@ import javax.swing.Timer;
  */
 public class Boss extends Enemy {
   private int minXLocation = 9000; // to keep from entering the rest of the level
-  //private int maxXLocation = 12000;
+  private int maxXLocation = 12000;
   private final Timer fireTimer = new Timer(5000, null);
   
   public Boss(int objId, int startLives, int startHealth, int texId, double x, double y, Point.Double speed, int points) {
@@ -30,7 +30,7 @@ public class Boss extends Enemy {
   
   public void move() {
     super.move();
-    if(x < minXLocation) speedX = -speedX;
+    if(x < minXLocation || x > maxXLocation) speedX = -speedX;
   }
   
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
@@ -105,6 +105,8 @@ public class Boss extends Enemy {
   
   public int getMinX() { return minXLocation; }
   public void setMinX(int to) { minXLocation = to; }
+  public int getMaxX() { return maxXLocation; }
+  public void setMaxX(int to) { maxXLocation = to; }
   
   public Projectile firePrimaryWeapon(Point.Double direction) {
     fireTimer.start();
