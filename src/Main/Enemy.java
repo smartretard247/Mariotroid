@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class Enemy extends Living {
   protected int pointsWorth = 100;
+  protected static final int BASE_DAMAGE = 2; // damage dealt by contact, not projectiles
   
   public Enemy(int objId, int startLives, int startHealth, int texId, double x, double y, Point.Double speed) {
     super(objId, startLives, startHealth, texId, x, y, speed);
@@ -83,4 +84,6 @@ public class Enemy extends Living {
   
   public int getPointsWorth() { return pointsWorth; }
   public void setPointsWorth(int to) { pointsWorth = to; }
+  
+  public static int getBaseDamage() { return BASE_DAMAGE; }
 }

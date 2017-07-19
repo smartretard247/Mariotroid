@@ -171,7 +171,7 @@ public class Hero extends Living {
               if(Engine.isDebugging()) TestDisplay.addTestData("Hero hit by enemy");
               recentDamageTimer.start();
               try {
-                loseHealth((int)(2*armor));
+                loseHealth((int)(Enemy.getBaseDamage()*armor));
               } catch (GameOverException ex) {
               }
             }
