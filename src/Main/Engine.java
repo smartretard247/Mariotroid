@@ -170,23 +170,19 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point.Double(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
       game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Double(5,0)));
-      game.addGO(new LevelBoss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Double(10,10), 500));
-      ((LevelBoss)game.getGO(ID.ID_CALAMITY)).setWarp(new Warp(11175, 200, 11100, 189));
-      game.addGO(new Collidable(ID.ID_DOOR, DrawLib.TEX_DOOR, 11100, 189));
+      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Double(10,10), 500));
+      game.addGO(new Door(ID.ID_DOOR, 11100, 189, 175, 0));
       break;
     case 2:// setup level 2, only add level 2 game objects to this map
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 950, new Point.Double(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 950, new Point.Double(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 950, new Point.Double(5,0)));
-      game.addGO(new LevelBoss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 300, 575, new Point.Double(10,10), 750));
-      LevelBoss l = (LevelBoss)game.getGO(ID.ID_CALAMITY);
-      l.setMinX(0);
-      l.setMaxX(3000); // test this number
-      l.setWarp(new Warp(300, 1047, 300, 967));
-      
+      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 300, 575, new Point.Double(10,10), 750));
+      Boss b = (Boss)game.getGO(ID.ID_CALAMITY);
+      b.setMinX(0);
+      b.setMaxX(3000); // test this number
+      game.addGO(new Door(ID.ID_DOOR, 300, 967, 0, 80, true));
       game.addGO(new Collidable(ID.ID_SWITCH, DrawLib.TEX_SWITCH_ON, 5366, 708));
-      
-      //createWarp(new Warp(600, 1047, 600, 967), true); // create warp for the "last" level, instead of boss spawning it
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;
     }
@@ -819,8 +815,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           projectileCollisions.stream().forEach((c1) -> {
             toRemove.add(p.getObjectId());
           });
-        } else if((new LevelBoss()).getClass().isInstance(c)) {
-          LevelBoss boss = (LevelBoss)c;
+        } else if((new Boss()).getClass().isInstance(c)) {
+          Boss boss = (Boss)c;
           if(boss != null) {
             if(!boss.didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true));
             List<Collidable> bossCollisions = boss.processCollisions(visibleObjects);
@@ -831,7 +827,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
                   toRemove.add(boss.getObjectId());
                   game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), DrawLib.TEX_HEALTH_ORB, boss.getX(), boss.getY()));
                   hero.addScore(boss.getPointsWorth());
-                  createWarp(boss.getWarp(), false); // set warp point, and show powered door
+                  activateDoor(); // set warp point, and show powered door
                 }
               }
             });
@@ -873,7 +869,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           toRemove.add(objId); // remove the armor image from the screen
           break;
         case ID.ID_WARP:
-          removeWarp();
+          //removeWarp();
           if(++currLevel <= TOTAL_LEVELS){
             hero.setSpeedX(0);
             warping = true;
@@ -918,17 +914,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param x
    * @param y 
    */
-  private void createWarp(Warp warp, boolean flipDoorOnX) {
-    Collidable door = new Collidable(ID.ID_DOOR_POWERED, DrawLib.TEX_DOOR_POWERED, warp.doorX, warp.doorY);
-    door.setFlipX(flipDoorOnX);
-    game.addGO(door);
-    game.addGO(new Collidable(ID.ID_WARP, DrawLib.TEX_NONE, warp.warpX, warp.warpY));
+  private void activateDoor() {
+    Door door = (Door)game.getGO(ID.ID_DOOR);
+    door.activate();
+    game.addGO(door.getWarp());
   }
   
-  private void removeWarp() {
+  /*
+  private void removeDoor() {
     game.removeAny(ID.ID_DOOR_POWERED);
     game.removeAny(ID.ID_WARP);
-  }
+  }*/
 
   public void startAnimation() {
     if (!animating ) {
