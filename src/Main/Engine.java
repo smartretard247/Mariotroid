@@ -804,7 +804,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       
       ArrayList<Collidable> visibleObjects = game.getVisibles();
       ArrayList<Integer> toRemove = new ArrayList<>(); // keep track of ids to remove at end of frame
-      ArrayList<Projectile> projectiles = new ArrayList<>();
       
       // for all objects
       visibleObjects.stream().forEach((c) -> {
