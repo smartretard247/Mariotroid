@@ -99,6 +99,12 @@ public class Enemy extends Living {
     return collisions;
   }
   
+  @Override
+  public void draw() {
+    flipY = PhysicsEngine.gravityIsInverted();
+    super.draw();
+  }
+  
   public int getPointsWorth() { return pointsWorth; }
   public void setPointsWorth(int to) { pointsWorth = to; }
   

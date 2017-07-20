@@ -145,6 +145,7 @@ public class Hero extends Living {
           } else {
             adjustToBottomOf(c);
             speedY = 0;
+            if(PhysicsEngine.gravityIsInverted()) doLand();
           }
         } else if(movingUpAndRight()) { // flying upward and to the right
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
@@ -153,10 +154,12 @@ public class Hero extends Living {
           } else {
             adjustToBottomOf(c);
             speedY = 0;
+            if(PhysicsEngine.gravityIsInverted()) doLand();
           }
         } else if(movingUp()) { // flying straight upward
           adjustToBottomOf(c);
           speedY = 0;
+          if(PhysicsEngine.gravityIsInverted()) doLand();
         } else if(standingStill()) { // not moving, must be a different object
           if(Engine.isDebugging()) System.out.println("Hero not moving, source must be a different object");
         }
@@ -315,7 +318,7 @@ public class Hero extends Living {
     
     // set texture id then call standard draw function
     if(getLives() > 0) {
-      if(firstSequence && wasRecentlyDamaged()) {
+      if(firstSequence && wasRecentlyDamaged() && !godMode) {
         setTextureId(DrawLib.TEX_HERO_TRANSPARENT);
       } else { // second animation sequence
         if(doubleJumped) setTextureId(DrawLib.TEX_HERO_BACKPACK1);

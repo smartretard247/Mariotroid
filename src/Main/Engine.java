@@ -171,7 +171,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Double(5,0)));
       game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Double(10,10), 500));
-      game.addGO(new Door(ID.ID_DOOR, 11100, 189, 175, 0));
+      game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
       break;
     case 2:// setup level 2, only add level 2 game objects to this map
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 950, new Point.Double(5,0)));
@@ -180,8 +180,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 300, 575, new Point.Double(10,10), 750));
       Boss b = (Boss)game.getGO(ID.ID_CALAMITY);
       b.setMinX(0);
-      b.setMaxX(3000); // test this number
-      game.addGO(new Door(ID.ID_DOOR, 300, 967, 0, 80, true));
+      b.setMaxX(2570);
+      game.addGO(new Door(ID.ID_DOOR, 300, 967, 0, -75, true));
       game.addGO(new Collidable(ID.ID_SWITCH, DrawLib.TEX_SWITCH_ON, 5366, 708));
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;
@@ -594,6 +594,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     int key = e.getKeyCode();  // Tells which key was pressed.
     
     switch (key) {
+    case KeyEvent.VK_F4:
+      if(debugging) {
+        hero.toggleGodMode();
+        setStatusMessage((hero.getGodMode()) ? "--GOD MODE ON--" : "--GOD MODE OFF--");
+      }
+      break;
     case KeyEvent.VK_F5: debugging = !debugging;
       setStatusMessage((debugging) ? "--DEBUGGING ON--" : "--DEBUGGING OFF--");
       if(!debugging) hero.setGodMode(false);
@@ -968,12 +974,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       switch(key) {
       case MouseEvent.BUTTON1: // left click
         qProjectiles.offer(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
-        break;
-      case MouseEvent.BUTTON2: // middle click
-        if(debugging) {
-          hero.toggleGodMode();
-          setStatusMessage((hero.getGodMode()) ? "--GOD MODE ON--" : "--GOD MODE OFF--");
-        }
         break;
       case MouseEvent.BUTTON3: // right click
         qProjectiles.offer(new NextProjectile(sc, false)); // add the projectile to the queue, to be fired during next update

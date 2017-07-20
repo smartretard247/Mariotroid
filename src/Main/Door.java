@@ -17,15 +17,16 @@ public class Door extends Collidable {
    * @param y Y Position
    * @param wx
    * @param wy
+   * @param fY
    */
-  public Door(int id, int x, int y, int wx, int wy) {
+  public Door(int id, int x, int y, int wx, int wy, boolean fY) {
     super(id, DrawLib.TEX_DOOR, x, y);
-    warp = new Collidable(ID.ID_WARP, DrawLib.TEX_TRANSPARENT, getX()+wx, getY()+wy);
+    warp = new Collidable(ID.ID_WARP, DrawLib.TEX_TRANSPARENT, this.x+wx, this.y+wy);
+    this.flipY = fY;
   }
   
-  public Door(int id, int x, int y, int warpOffsetX, int warpOffsetY, boolean flipY) {
-    this(id, x, y, warpOffsetX, warpOffsetY);
-    setFlipY(flipY);
+  public Door(int id, int x, int y, int wx, int wy) {
+    this(id, x, y, wx, wy, false);
   }
   
   public Door() {
