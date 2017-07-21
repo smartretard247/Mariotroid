@@ -23,13 +23,6 @@ public class ObjectContainer {
     return v;
   }
   
-  /*public ArrayList<Integer> getVisibleIds() {
-    ArrayList<Integer> v = new ArrayList<>();
-    v.addAll(visibleObjects);
-    v.addAll(tempObjects.keySet());
-    return v;
-  }*/
-  
   public void addGO(Collidable c) {
     gameObjects.put(c.getObjectId(), c);
   }

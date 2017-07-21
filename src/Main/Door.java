@@ -17,12 +17,12 @@ public class Door extends Collidable {
    * @param y Y Position
    * @param wx Warp's x location
    * @param wy Warp's y location
-   * @param fY Upside down?
+   * @param fX Upside down?
    */
-  public Door(int id, int x, int y, int wx, int wy, boolean fY) {
+  public Door(int id, int x, int y, int wx, int wy, boolean fX) {
     super(id, DrawLib.TEX_DOOR, x, y);
     warp = new Collidable(ID.ID_WARP, DrawLib.TEX_TRANSPARENT, this.x+wx, this.y+wy);
-    flipY = fY;
+    flipX = fX;
   }
   
   public Door(int id, int x, int y, int wx, int wy) {

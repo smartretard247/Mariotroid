@@ -182,7 +182,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       Boss b = (Boss)game.getGO(ID.ID_CALAMITY);
       b.setMinX(0);
       b.setMaxX(2570);
-      game.addGO(new Door(ID.ID_DOOR, 300, 967, 0, -75, true));
+      game.addGO(new Door(ID.ID_DOOR, 300, 987, 0, -75, true));
       game.addGO(new Collidable(ID.ID_SWITCH, DrawLib.TEX_SWITCH_ON, 5366, 708));
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;

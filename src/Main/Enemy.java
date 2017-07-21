@@ -61,6 +61,7 @@ public class Enemy extends Living {
         } else if(movingUpAndLeft()) { // flying upward and to the left
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
             adjustToRightOf(c);
+            speedX = -speedX; // reverse direction
           } else {
             adjustToBottomOf(c);
             speedY = 0;
@@ -68,6 +69,7 @@ public class Enemy extends Living {
         } else if(movingUpAndRight()) { // flying upward and to the right
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
             adjustToLeftOf(c);
+            speedX = -speedX; // reverse direction
           } else {
             adjustToBottomOf(c);
             speedY = 0;
@@ -101,7 +103,7 @@ public class Enemy extends Living {
   
   @Override
   public void draw() {
-    flipY = PhysicsEngine.gravityIsInverted();
+    flipX = PhysicsEngine.gravityIsInverted();
     super.draw();
   }
   
