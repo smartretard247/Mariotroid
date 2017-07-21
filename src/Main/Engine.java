@@ -71,6 +71,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private static boolean debugging = false;
   private boolean jumpedLastFrame = false;
   private Hero hero;
+  private boolean leftPressed = false;
+  private boolean rightPressed = false;
   
   ///// START METHODS
 
@@ -672,18 +674,28 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           }
           break;
         case KeyEvent.VK_A: // move left
-          hero.increaseSpeed(-GameObject.MAX_SPEED_X, 0);
+          if(rightPressed){
+            hero.setSpeedX(0);
+          }else{
+            hero.increaseSpeed(-GameObject.MAX_SPEED_X, 0);
+          }
           if(hero.isClimbing()) {
             hero.setClimbing(false);
             hero.setSpeedY(-1);
           }
+          leftPressed = true;
           break;
         case KeyEvent.VK_D: // move right
-          hero.increaseSpeed(GameObject.MAX_SPEED_X, 0);
+          if(leftPressed){
+            hero.setSpeedX(0);
+          }else{
+            hero.increaseSpeed(GameObject.MAX_SPEED_X, 0);
+          }
           if(hero.isClimbing()) {
             hero.setClimbing(false);
             hero.setSpeedY(-1);
           }
+          rightPressed = true;
           break;
         case KeyEvent.VK_SPACE: // jump
           if(hero.canJump()) {
@@ -759,10 +771,20 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         hero.setSpeedY(0);
         break;
       case KeyEvent.VK_A: // stop moving left
-        hero.setSpeedX(0);
+          if(rightPressed){
+            hero.increaseSpeed(GameObject.MAX_SPEED_X, 0);
+          }else{
+            hero.setSpeedX(0);
+          }
+        leftPressed = false;
         break;
       case KeyEvent.VK_D: // stop moving right
-        hero.setSpeedX(0);
+          if(leftPressed){
+            hero.increaseSpeed(-GameObject.MAX_SPEED_X, 0);
+          }else{
+            hero.setSpeedX(0);
+          }
+        rightPressed = false;
         break;
       case KeyEvent.VK_SPACE: // stop jump, start fall
         //++hero.fallCount;
