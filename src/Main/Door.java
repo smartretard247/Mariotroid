@@ -22,7 +22,7 @@ public class Door extends Collidable {
   public Door(int id, int x, int y, int wx, int wy, boolean fY) {
     super(id, DrawLib.TEX_DOOR, x, y);
     warp = new Collidable(ID.ID_WARP, DrawLib.TEX_TRANSPARENT, this.x+wx, this.y+wy);
-    this.flipY = fY;
+    flipY = fY;
   }
   
   public Door(int id, int x, int y, int wx, int wy) {

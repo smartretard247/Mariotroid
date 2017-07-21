@@ -162,7 +162,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case 1:// only add level 1 visible objects to this map
       currLevel = 1; // no need to adjust level number on any further cases
       scene.resetAll(); // do not change scene in other cases
-      h.setDefaultPosition(10300, 400);
+      h.setDefaultPosition(300, 400);
       h.resetAll();
       game.addGO(new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
       game.addGO(new Collidable(ID.ID_SHELL, DrawLib.TEX_SHELL, 300, 800));
@@ -188,29 +188,37 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
   }
   
-  public void jumpToLevel(int num) {
+  public void loadLevel(int num) {
+    String fileName = "";
     switch(num) {
-      case 1: loadLevel(1, "/res/layer_collision_1.png"); break;
-      case 2: loadLevel(2, "/res/layer_collision_2.png"); break;
-      default: System.out.println("Unknown level number while jumping to level."); break;
+      case 1: fileName = "/res/layer_collision_1.png"; break;
+      case 2: fileName = "/res/layer_collision_2.png"; break;
+      default: System.out.println("Unknown level number while loading level collisions."); break;
+    }
+    
+    if(!fileName.equals("")) {
+      setupVisibles(num);
+      LevelBuilder levelBuilder = new LevelBuilder(fileName);
+      ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
+      level.stream().forEach((r) -> {
+        int id = ID.getNewId();
+        game.addTO(id, new Collidable(id, DrawLib.TEX_LEVEL, r.x(), r.y(), r.w(), r.h()));
+      });
     }
   }
   
-  /**
-   * Loads all black rectangles in the supplied PNG as collision boundaries for the level.  Will
-   * remove all collision boundaries from previous level if found.
-   * @param levelNum
-   * @param fileName 
-   */
-  private void loadLevel(int levelNum, String fileName) {
-    setupVisibles(levelNum);
-    LevelBuilder levelBuilder = new LevelBuilder(fileName);
-    ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
-    level.stream().forEach((r) -> {
-      int id = ID.getNewId();
-      game.addTO(id, new Collidable(id, DrawLib.TEX_LEVEL,
-              r.x(), r.y(), r.w(), r.h()));
-    });
+  public void jumpToNextLevel() {
+    if(++currLevel <= TOTAL_LEVELS){
+      hero.setSpeedX(0);
+      warping = true;
+      gameMode = GAME_MODE.WARPING;
+      hero.doJump();
+      loadLevel(currLevel);
+      jumpedLastFrame = true;
+    }else{
+      setStatusMessage("YOU WIN!!");
+      won = true;
+    }
   }
   
   /* 
@@ -305,7 +313,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawControls(GL2 gl) {
       double yOffset = 10;
       String[] keyboardControls = { "Keyboard:", "A - Move left", "D - Move right", "W - Climb wall", "S - Descend wall", "SHIFT - Toggle run", "SPACE - Jump/Double jump", "P - Pause" };
-      String[] mouseControls = { "Mouse:", "Left click - Fire primary weapon", "Right click - Fire alternate weapon", (debugging) ? "Middle click - God mode" : "" };
+      String[] mouseControls = { "Mouse:", "Left click - Fire primary weapon", "Right click - Fire alternate weapon" };
       gl.glPushMatrix();
       gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+yOffset, 0);
       gl.glPushMatrix();
@@ -454,7 +462,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case START_GAME: gameMode = GAME_MODE.RUNNING;
         SOUND_EFFECT.THEME.playLoop();
         won = false;
-        jumpToLevel(1);
+        loadLevel(1);
         break;
       case EXIT: System.exit(0);
         break;
@@ -594,6 +602,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     int key = e.getKeyCode();  // Tells which key was pressed.
     
     switch (key) {
+    case KeyEvent.VK_UP:
+      if(debugging) {
+        jumpToNextLevel();
+        setStatusMessage("--LEVEL SKIPPED--");
+      }
+      break;
     case KeyEvent.VK_F4:
       if(debugging) {
         hero.toggleGodMode();
@@ -873,19 +887,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           hero.addScore(275);
           toRemove.add(objId); // remove the armor image from the screen
           break;
-        case ID.ID_WARP:
-          //removeWarp();
-          if(++currLevel <= TOTAL_LEVELS){
-            hero.setSpeedX(0);
-            warping = true;
-            gameMode = GAME_MODE.WARPING;
-            hero.doJump();
-            jumpToLevel(currLevel);
-            jumpedLastFrame = true;
-          }else{
-            setStatusMessage("YOU WIN!!");
-            won = true;
-          }
+        case ID.ID_WARP: jumpToNextLevel();
           break;
         default: 
           switch(texId) {
@@ -916,20 +918,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   /**
    * Removes the "closed" door and adds a "powered" door.  Also creates a collidable point at which
    * contact will change game mode to WARPING.
-   * @param x
-   * @param y 
    */
   private void activateDoor() {
     Door door = (Door)game.getGO(ID.ID_DOOR);
     door.activate();
     game.addGO(door.getWarp());
   }
-  
-  /*
-  private void removeDoor() {
-    game.removeAny(ID.ID_DOOR_POWERED);
-    game.removeAny(ID.ID_WARP);
-  }*/
 
   public void startAnimation() {
     if (!animating ) {
