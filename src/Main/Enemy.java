@@ -102,6 +102,12 @@ public class Enemy extends Living {
   }
   
   @Override
+  public void move() {
+    if(PhysicsEngine.gravityIsInverted()) this.setSpeedY(10);
+    super.move();
+  }
+  
+  @Override
   public void draw() {
     flipX = PhysicsEngine.gravityIsInverted();
     super.draw();
