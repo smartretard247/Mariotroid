@@ -69,7 +69,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final int TOTAL_LEVELS = 2;
   private int currLevel = 1;
   private static boolean debugging = false;
-  private boolean jumpedLastFrame = false;
   private Hero hero;
   private boolean leftPressed = false;
   private boolean rightPressed = false;
@@ -112,7 +111,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     display.addMouseMotionListener(this);
 
     // start the animation
-    startAnimation(); // also control pause function (and remove keyboard response)
+    startAnimation(); // also controls pause function (and remove keyboard response)
     
     introTimer = new Timer(INTROLENGTHMS, (evt)-> {
       gameMode = GAME_MODE.START_MENU;
@@ -216,7 +215,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       gameMode = GAME_MODE.WARPING;
       hero.doJump();
       loadLevel(currLevel);
-      jumpedLastFrame = true;
     }else{
       setStatusMessage("YOU WIN!!");
       won = true;
@@ -271,11 +269,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawNormalGamePlay(GL2 gl) {
-    if(jumpedLastFrame) {
-      //drawLib.loadTexture(DrawLib.TEX_LEVEL_DECOR_1, "/res/layer_decor_1.png");// load next level (3+) for background
-      jumpedLastFrame = false;
-    }
-    
     drawBackground(gl);
     gl.glPushMatrix(); // save initial transform
     gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
