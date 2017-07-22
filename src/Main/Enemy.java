@@ -103,7 +103,7 @@ public class Enemy extends Living {
   
   @Override
   public void move() {
-    if(PhysicsEngine.gravityIsInverted()) this.setSpeedY(10);
+    if(PhysicsEngine.gravityIsInverted()) this.setSpeedY(20);
     super.move();
   }
   

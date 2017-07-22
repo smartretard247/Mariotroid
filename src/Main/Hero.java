@@ -17,7 +17,7 @@ import Test.TestDisplay;
  */
 public class Hero extends Living {
   private static final int MAX_SECONDARY_AMMO = 5;
-  private static final int JUMP_SPEED = 12;
+  private static final int JUMP_SPEED = 11;
   private int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
   private long score;
   private boolean jumped;
@@ -161,6 +161,7 @@ public class Hero extends Living {
           speedY = 0;
           if(PhysicsEngine.gravityIsInverted()) doLand();
         } else if(standingStill()) { // not moving, must be a different object
+          adjustToBottomOf(c);
           if(Engine.isDebugging()) System.out.println("Hero not moving, source must be a different object");
         }
         break;

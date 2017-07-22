@@ -155,16 +155,20 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     game.addGO(hero);
   }
   
+  /**
+   * Wipe all game objects and add all level objects to given level number.
+   * @param level 
+   */
   private void setupVisibles(int level) {
     PhysicsEngine.resetGravity();
     game.clearGOs(); // will not clear the hero
     Hero h = (Hero)game.getGO(ID.ID_HERO);
     switch(level) {
     case 1:// only add level 1 visible objects to this map
-      currLevel = 1; // no need to adjust level number on any further cases
-      scene.resetAll(); // do not change scene in other cases
+      loadDefaults();
       h.setDefaultPosition(300, 400);
       h.resetAll();
+      hero.setGodMode(false);
       game.addGO(new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
       game.addGO(new Collidable(ID.ID_SHELL, DrawLib.TEX_SHELL, 300, 800));
       game.addGO(new Collidable(ID.ID_ARMOR, DrawLib.TEX_ARMOR, 5660, 198));
@@ -182,7 +186,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       Boss b = (Boss)game.getGO(ID.ID_CALAMITY);
       b.setMinX(0);
       b.setMaxX(2570);
-      game.addGO(new Door(ID.ID_DOOR, 300, 987, 0, -75, true));
+      game.addGO(new Door(ID.ID_DOOR, 300, 987, -60, 70, true));
       game.addGO(new Collidable(ID.ID_SWITCH, DrawLib.TEX_SWITCH_ON, 5366, 708));
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;
@@ -190,6 +194,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   public void loadLevel(int num) {
+    leftPressed = false;
+    rightPressed = false;
+    
     String fileName = "";
     switch(num) {
       case 1: fileName = "/res/layer_collision_1.png"; break;
@@ -208,6 +215,21 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
   }
   
+  /**
+   * Load defaults for the first level only.
+   */
+  public void loadDefaults() {
+    currLevel = 1; // no need to adjust level number on any further cases
+    debugging = false;
+    swapBackground = false;
+    showDecor = true;
+    scene.resetAll(); // do not change scene in other cases
+  }
+  
+  /**
+   * Increases the current level, sets game mode to WARPING, and calls loadLevel.  If out of levels
+   * will set won to true.
+   */
   public void jumpToNextLevel() {
     if(++currLevel <= TOTAL_LEVELS){
       hero.setSpeedX(0);
@@ -221,8 +243,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
   }
   
-  /* 
+  /**
    * Draws the scene, for each given game mode.
+* @param gl 
   */
   private void draw(GL2 gl) {
     gl.glPushMatrix(); // save initial transform
@@ -243,10 +266,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   /**
-   * Adjusts the scene with the hero's movement.  Will adjust a background scene when forBackground
-   * is set to true.
+   * Adjusts the scene with the hero's movement.
    * @param gl 
-   * @param forBackgroundScene 
+   * @param forBackgroundScene adjust for the background scene?
    */
   public void adjustScene(GL2 gl, boolean forBackgroundScene) {
     if(!forBackgroundScene) {
@@ -284,9 +306,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawStatus(gl); // will only draw status' of new messages, for x seconds
   }
   
+  /**
+   * Draws status messages across the top of the scene while the message timer is running.
+   * @param gl the drawing context
+   */
   private void drawStatus(GL2 gl) {
-    // check if we need to display a message
-    if(messageTimer.isRunning()) {
+    if(messageTimer.isRunning()) { // check if we need to display a message
       gl.glPushMatrix();
       gl.glColor3dv(new double[] { 1.0, 1.0, 0.0 }, 0);
       gl.glTranslated(0, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2-60, 0);
@@ -297,6 +322,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
   }
   
+  /**
+   * Draws "GAME OVER" as scrolling text.
+   * @param gl 
+   */
   private void drawGameOver(GL2 gl) {
     gl.glPushMatrix();
     gl.glColor3dv(new double[] { 1.0, 0.0, 0.0 }, 0);
@@ -305,24 +334,38 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
   }
   
+  /**
+   * Draws the control guide across the bottom of the scene.
+   * @param gl 
+   */
   private void drawControls(GL2 gl) {
-      double yOffset = 10;
+      double yOffset = 10, vSpace = 20;
+      double[] textColor = new double[] { 1.0, 0.5, 0.0 };
+      String[] debugControls = { "Debugging:", "F4 - Toggle debug", "F5 - Toggle god mode", "F6 - Toggle backgrounds", "F7 - Toggle level decor", "F8 - Jump to next level" };
       String[] keyboardControls = { "Keyboard:", "A - Move left", "D - Move right", "W - Climb wall", "S - Descend wall", "SHIFT - Toggle run", "SPACE - Jump/Double jump", "P - Pause" };
-      String[] mouseControls = { "Mouse:", "Left click - Fire primary weapon", "Right click - Fire alternate weapon" };
+      String[] mouseControls = { "             Right click - Fire alternate weapon", "Mouse: Left click - Fire primary weapon", "F10 - Control display on/off", "F9 - Adjust volume" };
       gl.glPushMatrix();
+      gl.glColor3dv(textColor, 0);
       gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+yOffset, 0);
+      if(debugging) {
+        gl.glPushMatrix();
+        for(String s : debugControls) {
+          DrawLib.drawText(s, 0, 0);
+          gl.glTranslated(s.length()*11,0,0);
+        }
+        gl.glPopMatrix();
+        gl.glTranslated(0,vSpace,0);
+      }
       gl.glPushMatrix();
-      gl.glColor3dv(new double[] { 1.0, 1.0, 1.0 }, 0);
       for(String s : keyboardControls) {
         DrawLib.drawText(s, 0, 0);
         gl.glTranslated(s.length()*11,0,0);
       }
       gl.glPopMatrix();
-      gl.glColor3dv(new double[] { 1.0, 1.0, 1.0 }, 0);
-      gl.glTranslated(0,20,0);
+      gl.glTranslated(0,vSpace,0);
       for(String s : mouseControls) {
         DrawLib.drawText(s, 0, 0);
-        gl.glTranslated(s.length()*14,0,0);
+        gl.glTranslated(0,vSpace,0);
       }
       gl.glPopMatrix();
   }
@@ -380,7 +423,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     adjustScene(gl, true);
     if(currLevel < TOTAL_LEVELS)
       DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1+(currLevel%2)); // draw the background level
-    //else DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1); // use DECOR_1 as default background when no more levels
     gl.glPopMatrix();
     game.getVisibles().forEach((c) -> { c.draw(); }); // draw game objects
   }
@@ -597,49 +639,49 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     int key = e.getKeyCode();  // Tells which key was pressed.
     
     switch (key) {
-    case KeyEvent.VK_UP:
-      if(debugging) {
-        jumpToNextLevel();
-        setStatusMessage("--LEVEL SKIPPED--");
-      }
+    case KeyEvent.VK_F4: debugging = !debugging;
+      setStatusMessage((debugging) ? "--DEBUGGING ON--" : "--DEBUGGING OFF--");
+      if(!debugging) hero.setGodMode(false);
       break;
-    case KeyEvent.VK_F4:
+    case KeyEvent.VK_F5:
       if(debugging) {
         hero.toggleGodMode();
         setStatusMessage((hero.getGodMode()) ? "--GOD MODE ON--" : "--GOD MODE OFF--");
       }
       break;
-    case KeyEvent.VK_F5: debugging = !debugging;
-      setStatusMessage((debugging) ? "--DEBUGGING ON--" : "--DEBUGGING OFF--");
-      if(!debugging) hero.setGodMode(false);
-      break;
-    case KeyEvent.VK_F6: showControls = !showControls;
-      setStatusMessage((showControls) ? "--CONTROLS ON--" : "--CONTROLS OFF--");
-      break;
-    case KeyEvent.VK_F7: if(debugging) {
+    case KeyEvent.VK_F6: if(debugging) {
         swapBackground = !swapBackground;
         setStatusMessage((!swapBackground) ? "--BACKGROUND 1--" : "--BACKGROUND 2--");
       }
       break;
-    case KeyEvent.VK_F8: if(debugging) { 
+    case KeyEvent.VK_F7: if(debugging) { 
         showDecor = !showDecor;
         setStatusMessage((showDecor) ? "--DECOR ON--" : "--DECOR OFF--");
       }
       break;
+    case KeyEvent.VK_F8:
+      if(debugging) {
+        jumpToNextLevel();
+        setStatusMessage("--LEVEL SKIPPED--");
+      }
+      break;
     case KeyEvent.VK_F9:
-        cycleVolume();
-        String message = "VOLUME: ";
-        switch(SOUND_EFFECT.volume) {
-        case MUTE:
-          message += "MUTED";
-          soundEnabled = false;
-          break;
-        default:
-          message += SOUND_EFFECT.volume.toString();
-          soundEnabled = true;
-          break;
-        }
-        setStatusMessage(message);
+      cycleVolume();
+      String message = "VOLUME: ";
+      switch(SOUND_EFFECT.volume) {
+      case MUTE:
+        message += "MUTED";
+        soundEnabled = false;
+        break;
+      default:
+        message += SOUND_EFFECT.volume.toString();
+        soundEnabled = true;
+        break;
+      }
+      setStatusMessage(message);
+      break;
+    case KeyEvent.VK_F10: showControls = !showControls;
+      setStatusMessage((showControls) ? "--CONTROLS ON--" : "--CONTROLS OFF--");
       break;
     }
     
