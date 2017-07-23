@@ -102,16 +102,22 @@ public class ObjectContainer {
    * @return the selected interactive object
    */
   public Interactive getInteractive(Point.Double at) {
-    Interactive io = null;
     Rectangle point = new Rectangle(at.x, at.y, 1, 1);
-    for(int i = 0; i < interactiveObjects.size(); i++) {
-      Interactive inner = interactiveObjects.get(i);
-      if(inner.collidesWith(point)) {
-        io = inner;
-        io.select();
-        break;
+    for(Interactive i : interactiveObjects.values()) {
+      if(i.collidesWith(point)) {
+        i.select();
+        return i;
       }
     }
-    return io;
+    return null;
+  }
+  
+  /**
+   * Deselects all interactive objects, called when a selected object becomes null.
+   */
+  public void deselectAllIO() {
+    for(Interactive i : interactiveObjects.values()) {
+      i.deselect();
+    }
   }
 }

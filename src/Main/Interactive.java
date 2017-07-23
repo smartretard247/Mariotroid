@@ -32,12 +32,23 @@ public class Interactive extends Collidable {
   public boolean isSelected() { return selected; }
   
   public void select() {
-    selected = true;
-    this.setTextureId(selectedTexId);
+    if(!selected) {
+      this.setTextureId(selectedTexId);
+      selected = true;
+    }
   }
   
   public void deselect() {
-    selected = false;
-    this.setTextureId(deselectedTexId);
+    if(selected) {
+      this.setTextureId(deselectedTexId);
+      selected = false;
+    }
+  }
+  
+  public void doAction() {
+    if(selected) {
+      deselect();
+      // perform some action
+    }
   }
 }

@@ -30,7 +30,7 @@ public enum SOUND_EFFECT {
     }
   }
   
-  public static Volume volume = Volume.LOW;
+  public static Volume volume = Volume.MUTE;
   private Clip clip;
    
   SOUND_EFFECT(String soundFileName) {

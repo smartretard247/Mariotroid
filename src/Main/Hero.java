@@ -55,6 +55,7 @@ public class Hero extends Living {
   public void resetScore() { score = 0; }
   public void addScore(int points) { score += points; }
   
+  @Override
   public boolean loseHealth(int amount) throws GameOverException {
     if(!godMode) {
       if(Engine.isDebugging()) TestDisplay.addTestData("Hero HP: " + getHealth());

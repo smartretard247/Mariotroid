@@ -72,6 +72,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private Hero hero;
   private boolean leftPressed = false;
   private boolean rightPressed = false;
+  private Point.Double currentMousePosInWc;
+  private Interactive interactiveObject;
   
   // getters / setters
   public static void setGameMode(GAME_MODE mode) { gameMode = mode; }
@@ -154,6 +156,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     messageTimer.setRepeats(false);
     SOUND_EFFECT.init(); // uncommment once all wav's in enum SOUND_EFFECT have been added to dir /res/sound
+    currentMousePosInWc = new Point.Double();
   
     // initial hero settings
     hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
@@ -182,6 +185,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Double(5,0)));
       game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Double(10,10), 500));
       game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
+      
+      game.addIO(new Interactive(ID.ID_INT_BOX, DrawLib.TEX_HEALTH_ORB, DrawLib.TEX_TRANSPARENT, 500, 900, 50, 50));
       break;
     case 2:// setup level 2, only add level 2 game objects to this map
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 950, new Point.Double(5,0)));
@@ -746,6 +751,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case RUNNING:
       if(hero.getLives() > 0) {
         switch (key) {
+        case KeyEvent.VK_F:
+          interactiveObject = game.getInteractive(currentMousePosInWc);
+          if(interactiveObject != null) {
+            interactiveObject.doAction();
+            setStatusMessage(" Picked an interactive object"); // do something
+          } else {
+            setStatusMessage("Nothing around...");
+          }
+          break;
         case KeyEvent.VK_SHIFT:
           hero.toggleSprint();
           break;
@@ -1085,12 +1099,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     Point sc = evt.getPoint(); // clicked location, to convert to world coords
     Point.Double wc = DrawLib.screenToWorld(evt.getPoint());
           
-    if (dragging) {
-      return;  // don't start a new drag while one is already in progress
-    }
+    if (dragging) { return; }
     int x = evt.getX();  // mouse location in pixel coordinates.
     int y = evt.getY();
-    // TODO: respond to mouse click at (x,y)
     dragging = true;  // might not always be correct!
     prevX = startX = x;
     prevY = startY = y;
@@ -1100,13 +1111,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case RUNNING:
       switch(key) {
       case MouseEvent.BUTTON1: // left click
-        if(!dragging) qProjectiles.offer(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
-        else {
-          Interactive i = game.getInteractive(wc);
-          if(i != null) {
-            setStatusMessage(" Clicked an interactive object"); // do something
-          }
-        }
+        qProjectiles.offer(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
         break;
       case MouseEvent.BUTTON3: // right click
         qProjectiles.offer(new NextProjectile(sc, false)); // add the projectile to the queue, to be fired during next update
@@ -1153,12 +1158,20 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   // Other methods required for MouseListener, MouseMotionListener.
   @Override
   public void mouseMoved(MouseEvent evt) {
-    Point.Double wc = DrawLib.screenToWorld(evt.getPoint());
+    currentMousePosInWc = DrawLib.screenToWorld(evt.getPoint());
     
     switch(gameMode) {
     case START_MENU:
       if(evt.getY() > display.getHeight()/2) this.startMenuSelection = START_MENU_OPTION.EXIT;
       else this.startMenuSelection = START_MENU_OPTION.START_GAME;
+      break;
+    case RUNNING:
+      interactiveObject = game.getInteractive(currentMousePosInWc);
+      if(interactiveObject != null) {
+        interactiveObject.select();
+      } else {
+        game.deselectAllIO();
+      }
       break;
     default: break;
     }
