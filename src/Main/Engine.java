@@ -1159,6 +1159,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   @Override
   public void mouseMoved(MouseEvent evt) {
     currentMousePosInWc = DrawLib.screenToWorld(evt.getPoint());
+    System.out.println("Mouse moved: (" + currentMousePosInWc.x + ", " + currentMousePosInWc.y);
     
     switch(gameMode) {
     case START_MENU:
