@@ -17,8 +17,8 @@ public class Interactive extends Collidable {
     selectedTexId = selTexId;
   }
   
-  public Interactive(int objId, int texId, double x, double y) {
-    this(objId, texId, texId, x, y, (texId >= 0) ? DrawLib.getTexture(texId).getWidth() : 1, (texId >= 0) ? DrawLib.getTexture(texId).getHeight() : 1);
+  public Interactive(int objId, int texId, int selTexId, double x, double y) {
+    this(objId, texId, selTexId, x, y, (texId >= 0) ? DrawLib.getTexture(texId).getWidth() : 1, (texId >= 0) ? DrawLib.getTexture(texId).getHeight() : 1);
   }
   
   public Interactive(int x, int y) {
@@ -45,10 +45,13 @@ public class Interactive extends Collidable {
     }
   }
   
+  /**
+   * Performs some action.  Derivations of this class should override doAction and call
+   * super.doAction() on first line.
+   */
   public void doAction() {
     if(selected) {
       deselect();
-      // perform some action
     }
   }
 }

@@ -116,8 +116,6 @@ public class ObjectContainer {
    * Deselects all interactive objects, called when a selected object becomes null.
    */
   public void deselectAllIO() {
-    for(Interactive i : interactiveObjects.values()) {
-      i.deselect();
-    }
+    interactiveObjects.values().forEach((i) -> { i.deselect(); });
   }
 }
