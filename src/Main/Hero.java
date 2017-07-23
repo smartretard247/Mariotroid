@@ -22,25 +22,25 @@ public class Hero extends Living {
   private long score;
   private boolean jumped;
   private boolean hasDoubleJump;
-  private boolean doubleJumped;
+  private boolean floatJumped;
   private boolean hasSecondaryWeapon;
   private int secondaryAmmoCount;
   private boolean isClimbing;
   private Collidable lastWallCollision;
   private final Timer recentDamageTimer = new Timer(3000, null);
-  private double armor; // armor is a MULTIPLIER, do reduce damage set to a value less than 1
+  private float armor; // armor is a MULTIPLIER, do reduce damage set to a value less than 1
   private boolean hasArmor;
   private boolean godMode = false;
   
-  public Hero(int objId, int startLives, int startHealth, long startScore, int texId, double x, double y) {
-    super(objId, startLives, startHealth, texId, x, y, new Point.Double(0, 0));
+  public Hero(int objId, int startLives, int startHealth, long startScore, int texId, float x, float y) {
+    super(objId, startLives, startHealth, texId, x, y, new Point.Float(0, 0));
     score = startScore;
     fallCount = 0;
     hasSecondaryWeapon = false;
     secondaryAmmoCount = MAX_SECONDARY_AMMO;
     jumped = false;
     hasDoubleJump = false;
-    doubleJumped = false;
+    floatJumped = false;
     isClimbing = false;
     recentDamageTimer.setRepeats(false);
     armor = 1;
@@ -231,18 +231,18 @@ public class Hero extends Living {
     jumped = true;
     setSpeedY(JUMP_SPEED*PhysicsEngine.getGravity());
   }
-  public boolean canDoubleJump() { return !doubleJumped && jumped && hasDoubleJump; }
+  public boolean canDoubleJump() { return !floatJumped && jumped && hasDoubleJump; }
   public void doDoubleJump() {
     if(Engine.isSoundEnabled()) SOUND_EFFECT.JETPACK.play();
     ++fallCount;
-    doubleJumped = true;
+    floatJumped = true;
     setSpeedY(JUMP_SPEED*PhysicsEngine.getGravity());
   }
   
   public void doLand() {
     //if(Engine.isSoundEnabled()) SOUND_EFFECT.LAND.play();
     jumped = false;
-    doubleJumped = false;
+    floatJumped = false;
     fallCount = 0; // reset fall count
     isClimbing = false;
   }
@@ -251,21 +251,21 @@ public class Hero extends Living {
   public void pickupSecondaryWeapon() { hasSecondaryWeapon = true; }
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
   
-  public Projectile firePrimaryWeapon(Point.Double direction) {
+  public Projectile firePrimaryWeapon(Point.Float direction) {
     if(Engine.isSoundEnabled()) SOUND_EFFECT.LASER.play();
-    Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
+    Point.Float zRot = Projectile.calcRotation(new Point.Float(x, y), direction);
     flipY = (zRot.x < 0);
-    double xOffset = 20; // so projectile doesn't come from the hero's chest
+    float xOffset = 20; // so projectile doesn't come from the hero's chest
     return new Projectile(ID.getNewId(), DrawLib.TEX_PRI_WEAPON, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
             getY(), 1); //fire primary, 1 damage
   }
-  public Projectile fireSecondaryWeapon(Point.Double direction) {
+  public Projectile fireSecondaryWeapon(Point.Float direction) {
     if(Engine.isSoundEnabled() && hasSecondaryWeapon) SOUND_EFFECT.GUN.play();
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
-      Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
+      Point.Float zRot = Projectile.calcRotation(new Point.Float(x, y), direction);
       flipY = (zRot.x < 0);
-      double xOffset = 20; // so projectile doesn't come from the hero's chest
+      float xOffset = 20; // so projectile doesn't come from the hero's chest
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
       return new Projectile(ID.getNewId(), DrawLib.TEX_ALT_WEAPON, zRot,
               (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
@@ -310,7 +310,7 @@ public class Hero extends Living {
   
   public boolean wasRecentlyDamaged() { return recentDamageTimer.isRunning(); }
   
-  public void pickupArmor() { armor = 0.5; hasArmor = true; } // 50% reduction in damage
+  public void pickupArmor() { armor = 0.5f; hasArmor = true; } // 50% reduction in damage
   public boolean hasArmor() { return hasArmor; }
   
   @Override
@@ -323,7 +323,7 @@ public class Hero extends Living {
       if(firstSequence && wasRecentlyDamaged() && !godMode) {
         setTextureId(DrawLib.TEX_HERO_TRANSPARENT);
       } else { // second animation sequence
-        if(doubleJumped) setTextureId(DrawLib.TEX_HERO_BACKPACK1);
+        if(floatJumped) setTextureId(DrawLib.TEX_HERO_BACKPACK1);
         else if(standingStill()) setTextureId(DrawLib.TEX_HERO);
         else if(movingLeft() || movingRight()) {
           if(firstSequence) setTextureId(DrawLib.TEX_HERO_RUN1);

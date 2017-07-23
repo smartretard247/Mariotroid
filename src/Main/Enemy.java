@@ -15,12 +15,12 @@ public class Enemy extends Living {
   protected int pointsWorth = 100;
   protected static final int BASE_DAMAGE = 2; // damage dealt by contact, not projectiles
   
-  public Enemy(int objId, int startLives, int startHealth, int texId, double x, double y, Point.Double speed) {
+  public Enemy(int objId, int startLives, int startHealth, int texId, float x, float y, Point.Float speed) {
     super(objId, startLives, startHealth, texId, x, y, speed);
   }
   
   public Enemy() {
-    this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0, new Point.Double(0, 0));
+    this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0, new Point.Float(0, 0));
   }
   
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {

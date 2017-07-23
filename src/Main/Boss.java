@@ -18,14 +18,14 @@ public class Boss extends Enemy {
   private int maxXLocation = 12000;
   private final Timer fireTimer = new Timer(5000, null);
   
-  public Boss(int objId, int startLives, int startHealth, int texId, double x, double y, Point.Double speed, int points) {
+  public Boss(int objId, int startLives, int startHealth, int texId, float x, float y, Point.Float speed, int points) {
     super(objId, startLives, startHealth, texId, x, y, speed);
     pointsWorth = points;
     fireTimer.setRepeats(false);
   }
   
   public Boss() {
-    this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0, new Point.Double(0, 0), 0);
+    this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0, new Point.Float(0, 0), 0);
   }
   
   public void move() {
@@ -108,9 +108,9 @@ public class Boss extends Enemy {
   public int getMaxX() { return maxXLocation; }
   public void setMaxX(int to) { maxXLocation = to; }
   
-  public Projectile firePrimaryWeapon(Point.Double direction) {
+  public Projectile firePrimaryWeapon(Point.Float direction) {
     fireTimer.start();
-    Point.Double zRot = Projectile.calcRotation(new Point.Double(x, y), direction);
+    Point.Float zRot = Projectile.calcRotation(new Point.Float(x, y), direction);
     flipY = (zRot.x < 0);
     if(Engine.isDebugging()) TestDisplay.addTestData("Boss fire to: (" + getX() + ", " + getY() + ")");
     return new Projectile(ID.getNewId(), DrawLib.TEX_ENEMY_WEAPON_1, zRot, getX(), getY(), 5); // fire primary, 5 damage

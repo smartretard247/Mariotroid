@@ -101,7 +101,7 @@ public class ObjectContainer {
    * @param at world coordinates
    * @return the selected interactive object
    */
-  public Interactive getInteractive(Point.Double at) {
+  public Interactive getInteractive(Point.Float at) {
     Rectangle point = new Rectangle(at.x, at.y, 1, 1);
     for(Interactive i : interactiveObjects.values()) {
       if(i.collidesWith(point)) {

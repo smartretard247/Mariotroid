@@ -14,7 +14,7 @@ public class Living extends Movable {
   private int lives;
   private final int defLives;
   
-  public Living(int objId, int startLives, int startHealth, int texId, double x, double y, Point.Double speed) {
+  public Living(int objId, int startLives, int startHealth, int texId, float x, float y, Point.Float speed) {
     super(objId, texId, x, y, (texId >= 0) ? DrawLib.getTexture(texId).getWidth() : 0, (texId >= 0) ? DrawLib.getTexture(texId).getHeight() : 0, speed);
     lives = startLives;
     defLives = startLives;
@@ -23,7 +23,7 @@ public class Living extends Movable {
   }
   
   public Living() {
-    this(1, 1, 1, DrawLib.TEX_NONE, 0, 0, new Point.Double(0, 0));
+    this(1, 1, 1, DrawLib.TEX_NONE, 0, 0, new Point.Float(0, 0));
   }
   
   @Override

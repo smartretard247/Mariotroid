@@ -11,13 +11,13 @@ public class Interactive extends Collidable {
   private final int selectedTexId;
   private final int deselectedTexId;
   
-  public Interactive(int objId, int texId, int selTexId, double x, double y, double w, double h) {
+  public Interactive(int objId, int texId, int selTexId, float x, float y, float w, float h) {
     super(objId, texId, x, y, w, h);
     deselectedTexId = texId;
     selectedTexId = selTexId;
   }
   
-  public Interactive(int objId, int texId, int selTexId, double x, double y) {
+  public Interactive(int objId, int texId, int selTexId, float x, float y) {
     this(objId, texId, selTexId, x, y, (texId >= 0) ? DrawLib.getTexture(texId).getWidth() : 1, (texId >= 0) ? DrawLib.getTexture(texId).getHeight() : 1);
   }
   

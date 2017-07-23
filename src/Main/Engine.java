@@ -60,7 +60,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private boolean swapBackground = false;
   private static boolean soundEnabled = true;
   private final TestDisplay testDisplay = new TestDisplay();
-  private final Scene scene = new Scene(-600, -600, 0, 0.5, 0.5, 1.0);; // trans x & y & z, scale x & y & z
+  private final Scene scene = new Scene(-600, -600, 0, 0.5f, 0.5f, 1.0f);; // trans x & y & z, scale x & y & z
   private final PhysicsEngine phy = new PhysicsEngine();
   private final ObjectContainer game = new ObjectContainer();
   private static String statusMessage = "";
@@ -72,7 +72,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private Hero hero;
   private boolean leftPressed = false;
   private boolean rightPressed = false;
-  private Point.Double currentMousePosInWc;
+  private Point.Float currentMousePosInWc;
   private Interactive interactiveObject;
   
   // getters / setters
@@ -156,7 +156,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     messageTimer.setRepeats(false);
     SOUND_EFFECT.init(); // uncommment once all wav's in enum SOUND_EFFECT have been added to dir /res/sound
-    currentMousePosInWc = new Point.Double();
+    currentMousePosInWc = new Point.Float();
   
     // initial hero settings
     hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
@@ -180,19 +180,19 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
       game.addGO(new Collidable(ID.ID_SHELL, DrawLib.TEX_SHELL, 300, 800));
       game.addGO(new Collidable(ID.ID_ARMOR, DrawLib.TEX_ARMOR, 5660, 198));
-      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point.Double(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
-      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Double(5,0)));
-      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Double(5,0)));
-      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Double(10,10), 500));
+      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
+      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Float(5,0)));
+      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Float(5,0)));
+      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Float(10,10), 500));
       game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
       
       game.addIO(new Interactive(ID.ID_INT_BOX, DrawLib.TEX_HEALTH_ORB, DrawLib.TEX_TRANSPARENT, 1000, 900));
       break;
     case 2:// setup level 2, only add level 2 game objects to this map
-      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 950, new Point.Double(5,0)));
-      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 950, new Point.Double(5,0)));
-      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 950, new Point.Double(5,0)));
-      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 300, 575, new Point.Double(10,10), 750));
+      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
+      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 950, new Point.Float(5,0)));
+      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 950, new Point.Float(5,0)));
+      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 300, 575, new Point.Float(10,10), 750));
       Boss b = (Boss)game.getGO(ID.ID_CALAMITY);
       b.setMinX(0);
       b.setMaxX(2570);
@@ -327,7 +327,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawStatus(GL2 gl) {
     if(messageTimer.isRunning()) { // check if we need to display a message
       gl.glPushMatrix();
-      gl.glColor3dv(new double[] { 1.0, 1.0, 0.0 }, 0);
+      gl.glColor3fv(new float[] { 1.0f, 1.0f, 0.0f }, 0);
       gl.glTranslated(0, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2-60, 0);
       DrawLib.drawText(statusMessage, -60, 0);
       gl.glPopMatrix();
@@ -342,7 +342,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawGameOver(GL2 gl) {
     gl.glPushMatrix();
-    gl.glColor3dv(new double[] { 1.0, 0.0, 0.0 }, 0);
+    gl.glColor3fv(new float[] { 1.0f, 0.0f, 0.0f }, 0);
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
     DrawLib.drawText("GAME OVER", 100+(frameNumber%500*2), 0);
     gl.glPopMatrix();
@@ -353,13 +353,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawControls(GL2 gl) {
-      double yOffset = 10, vSpace = 20;
-      double[] textColor = new double[] { 1.0, 0.5, 0.0 };
+      float yOffset = 10, vSpace = 20;
+      float[] textColor = new float[] { 1.0f, 0.5f, 0.0f };
       String[] debugControls = { "Debugging:", "F4 - Toggle debug", "F5 - Toggle god mode", "F6 - Toggle backgrounds", "F7 - Toggle level decor", "F8 - Jump to next level" };
       String[] keyboardControls = { "Keyboard:", "A - Move left", "D - Move right", "W - Climb wall", "S - Descend wall", "SHIFT - Toggle run", "SPACE - Jump/Double jump", "P - Pause" };
       String[] mouseControls = { "             Right click - Fire alternate weapon", "Mouse: Left click - Fire primary weapon", "F10 - Control display on/off", "F9 - Adjust volume" };
       gl.glPushMatrix();
-      gl.glColor3dv(textColor, 0);
+      gl.glColor3fv(textColor, 0);
       gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+yOffset, 0);
       if(debugging) {
         gl.glPushMatrix();
@@ -407,7 +407,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     credits.add("");
     credits.add("William Malone - Developer");
 
-    gl.glColor3dv( new double[] { 0.0, 1.0, 0.0 }, 0);
+    gl.glColor3fv( new float[] { 0.0f, 1.0f, 0.0f }, 0);
     for(int i = 0; i < credits.size(); i++)
       DrawLib.drawText(credits.get(i), windowDim.width/2-60, -windowDim.height/2+(frameNumber%500*2)-(i*20));
     gl.glPopMatrix();
@@ -419,7 +419,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawWin(GL2 gl) {
     gl.glPushMatrix();
-    gl.glColor3dv( new double[] { Math.random(), Math.random(), Math.random() }, 0);
+    gl.glColor3fv( new float[] { (float)Math.random(), (float)Math.random(), (float)Math.random() }, 0);
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
     DrawLib.drawText("YOU WIN!", 100+(frameNumber%500*2), 0);
     gl.glPopMatrix();
@@ -493,17 +493,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawStartMenu(GL2 gl) {
     int screenWidth = DrawLib.getTexture(DrawLib.TEX_HUD).getWidth();
     int screenHeight = DrawLib.getTexture(DrawLib.TEX_HUD).getHeight();
-    double[] selectedTextColor = new double[] { 1.0, 0.0, 0.0 };
-    double[] textColor = new double[] { 0.0, 0.0, 0.0 };
+    float[] selectedTextColor = new float[] { 1.0f, 0.0f, 0.0f };
+    float[] textColor = new float[] { 0.0f, 0.0f, 0.0f };
     switch(this.startMenuSelection) {
       case START_GAME:
         gl.glPushMatrix();
         gl.glTranslated(0, 50, 0);
-        gl.glColor3dv( selectedTextColor, 0);
+        gl.glColor3fv( selectedTextColor, 0);
         DrawLib.drawText("START GAME", -50, 0);
         //DrawLib.drawCustomText("START GAME");
         gl.glTranslated(0, -100, 0);
-        gl.glColor3dv( textColor, 0);
+        gl.glColor3fv( textColor, 0);
         DrawLib.drawText("EXIT", -20, 0);
         //DrawLib.drawCustomText("EXIT");
         gl.glPopMatrix();
@@ -511,10 +511,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case EXIT:
         gl.glPushMatrix();
         gl.glTranslated(0, 50, 0);
-        gl.glColor3dv( textColor, 0);
+        gl.glColor3fv( textColor, 0);
         DrawLib.drawText("START GAME", -50, 0);
         gl.glTranslated(0, -100, 0);
-        gl.glColor3dv( selectedTextColor, 0);
+        gl.glColor3fv( selectedTextColor, 0);
         DrawLib.drawText("EXIT", -20, 0);
         gl.glPopMatrix();
         break;
@@ -527,8 +527,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawPauseMenu(GL2 gl) {
-    double[] textColor = new double[] { 1.0, 1.0, 0.0 };
-    gl.glColor3dv( textColor, 0);
+    float[] textColor = new float[] { 1.0f, 1.0f, 0.0f };
+    gl.glColor3fv( textColor, 0);
     DrawLib.drawText("GAME PAUSED", -60, 0);
   }
   
@@ -569,17 +569,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawAmmoCount(GL2 gl) {
     if(hero.hasSecondaryWeapon()) {
-      double xDiff = 10;
-      double yDiff = -35;
-      double[] textColor = new double[] { 1.0, 1.0, 1.0 };
-      double hudWidth = DrawLib.getTexture(DrawLib.TEX_HUD).getWidth();
-      double hudHeight = DrawLib.getTexture(DrawLib.TEX_HUD).getHeight();
-      double healthHeight = DrawLib.getTexture(DrawLib.TEX_HEALTH).getHeight();
-      double shellWidth = DrawLib.getTexture(DrawLib.TEX_SHELL).getWidth()*2;
-      double shellHeight = DrawLib.getTexture(DrawLib.TEX_SHELL).getHeight()*2;
+      float xDiff = 10;
+      float yDiff = -35;
+      float[] textColor = new float[] { 1.0f, 1.0f, 1.0f };
+      float hudWidth = DrawLib.getTexture(DrawLib.TEX_HUD).getWidth();
+      float hudHeight = DrawLib.getTexture(DrawLib.TEX_HUD).getHeight();
+      float healthHeight = DrawLib.getTexture(DrawLib.TEX_HEALTH).getHeight();
+      float shellWidth = DrawLib.getTexture(DrawLib.TEX_SHELL).getWidth()*2;
+      float shellHeight = DrawLib.getTexture(DrawLib.TEX_SHELL).getHeight()*2;
       
       gl.glPushMatrix();
-      gl.glColor3dv( textColor, 0);
+      gl.glColor3fv( textColor, 0);
       gl.glTranslated(-hudWidth/2+shellWidth/2+xDiff, hudHeight/2 - healthHeight - shellHeight + yDiff, 0);
       DrawLib.drawTexturedRectangle(DrawLib.TEX_SHELL, shellWidth, shellHeight);
       DrawLib.drawText(Integer.toString(hero.getAmmoCount()), 25, -6);
@@ -592,7 +592,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawHealth(GL2 gl) { // draw health in top left corner
-    double xDiff = 10;
+    float xDiff = 10;
     gl.glPushMatrix();
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2+DrawLib.getTexture(DrawLib.TEX_HEALTH).getWidth()+xDiff,
             DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2-DrawLib.getTexture(DrawLib.TEX_HEALTH).getHeight(), 0);
@@ -608,7 +608,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawLives(GL2 gl) {
-    double[] textColor = new double[] { 1.0, 1.0, 1.0 };
+    float[] textColor = new float[] { 1.0f, 1.0f, 1.0f };
     gl.glColor3d(textColor[0], textColor[1], textColor[2]);
     gl.glPushMatrix();
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2,
@@ -622,8 +622,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawScore(GL2 gl) { // draw score in top right corner
-    double diffX = 30;
-    double[] textColor = new double[] { 1.0, 1.0, 1.0 };
+    float diffX = 30;
+    float[] textColor = new float[] { 1.0f, 1.0f, 1.0f };
     gl.glColor3d(textColor[0], textColor[1], textColor[2]);
     gl.glPushMatrix();
     gl.glTranslated(DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2-diffX,
@@ -1097,7 +1097,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void mousePressed(MouseEvent evt) {
     int key = evt.getButton();
     Point sc = evt.getPoint(); // clicked location, to convert to world coords
-    Point.Double wc = DrawLib.screenToWorld(evt.getPoint());
+    Point.Float wc = DrawLib.screenToWorld(evt.getPoint());
           
     if (dragging) { return; }
     int x = evt.getX();  // mouse location in pixel coordinates.
@@ -1159,7 +1159,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   @Override
   public void mouseMoved(MouseEvent evt) {
     currentMousePosInWc = DrawLib.screenToWorld(evt.getPoint());
-    System.out.println("Mouse moved: (" + currentMousePosInWc.x + ", " + currentMousePosInWc.y);
+    System.out.println("Mouse moved: (" + currentMousePosInWc.x + ", " + currentMousePosInWc.y + ")");
     
     switch(gameMode) {
     case START_MENU:
@@ -1241,7 +1241,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       
         Projectile fired;
         if(!np.isFromEnemy) {
-          Point.Double wc = DrawLib.screenToWorld(np.screenCoord);
+          Point.Float wc = DrawLib.screenToWorld(np.screenCoord);
           if(debugging) setStatusMessage("(" + wc.x + ", " + wc.y + ")");
           if(np.isFromPrimaryWeapon)
             fired = hero.firePrimaryWeapon(wc);

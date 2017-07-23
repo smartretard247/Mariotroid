@@ -16,10 +16,10 @@ import com.jogamp.opengl.GL2;
 public class TestDisplay {
     
     private static final LinkedList<TestData> DISP_DATA = new LinkedList<>();;
-    private static final double[] COLOR = {1.0, 0.5, 0.0};
-    private static final double SPACE = 30;
-    private static final double X_POS = 450;
-    private static final double Y_POS = 600;
+    private static final float[] COLOR = { 1.0f, 0.5f, 0.0f };
+    private static final float SPACE = 30;
+    private static final float X_POS = 450;
+    private static final float Y_POS = 600;
     private static String logText;
     
     private static File f;
@@ -58,8 +58,8 @@ public class TestDisplay {
    * @param gl
    * @param screenWidth
      */
-    public static void writeToScreen(GL2 gl, double screenWidth){
-      double yPos = Y_POS;
+    public static void writeToScreen(GL2 gl, float screenWidth){
+      float yPos = Y_POS;
       boolean go = true;
       while(go && DISP_DATA.size() > 0){
         if(DISP_DATA.peek().isExpired() || DISP_DATA.size() > 7){
@@ -69,7 +69,7 @@ public class TestDisplay {
         }
       }
       gl.glPushMatrix();
-      gl.glColor3dv( COLOR, 0);
+      gl.glColor3fv( COLOR, 0);
       gl.glTranslated(0, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
       for(TestData td : DISP_DATA){
         DrawLib.drawText(td.getTestData(), -screenWidth/2, yPos);

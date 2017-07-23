@@ -12,12 +12,12 @@ import java.util.List;
 public class Collidable extends Drawable {
   private final int objectId;
   
-  public Collidable(int objId, int texId, double x, double y, double w, double h) {
+  public Collidable(int objId, int texId, float x, float y, float w, float h) {
     super(texId, x, y, w, h);
     objectId = objId;
   }
   
-  public Collidable(int objId, int texId, double x, double y) {
+  public Collidable(int objId, int texId, float x, float y) {
     this(objId, texId, x, y, (texId >= 0) ? DrawLib.getTexture(texId).getWidth() : 1, (texId >= 0) ? DrawLib.getTexture(texId).getHeight() : 1);
   }
   

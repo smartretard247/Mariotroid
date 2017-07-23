@@ -9,24 +9,24 @@ import java.awt.Point;
  */
 public class Movable extends GameObject {
  
-  public Movable(int objId, int texId, double x, double y, double w, double h, Point.Double speed) {
+  public Movable(int objId, int texId, float x, float y, float w, float h, Point.Float speed) {
     super(objId, texId, x, y, w, h, speed);
   }
   
-  public Movable(int objId, int texId, double x, double y, double w, double h) {
-    super(objId, texId, x, y, w, h, new Point.Double(0, 0));
+  public Movable(int objId, int texId, float x, float y, float w, float h) {
+    super(objId, texId, x, y, w, h, new Point.Float(0, 0));
   }
   
-  public Movable(int objId, int texId, double x, double y) {
-    this(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight(), new Point.Double(0, 0));
+  public Movable(int objId, int texId, float x, float y) {
+    this(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight(), new Point.Float(0, 0));
   }
   
   public Movable(int objId, int texId) {
-    this(objId, texId, 0, 0, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight(), new Point.Double(0, 0));
+    this(objId, texId, 0, 0, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight(), new Point.Float(0, 0));
   }
   
   public Movable() {
-    this(-1, -1, 0, 0, 0, 0, new Point.Double(0, 0));
+    this(-1, -1, 0, 0, 0, 0, new Point.Float(0, 0));
   }
   
   /**

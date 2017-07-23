@@ -8,7 +8,7 @@ import java.awt.Point;
  */
 public class NextProjectile {
   public Point screenCoord = new Point();
-  public Point.Double worldCoord = new Point.Double();
+  public Point.Float worldCoord = new Point.Float();
   public boolean isFromPrimaryWeapon = true;
   public boolean isFromEnemy = false;
   
@@ -19,7 +19,7 @@ public class NextProjectile {
     isFromEnemy = false;
   }
   
-  public NextProjectile(Point.Double wc, boolean fromEnemy) {
+  public NextProjectile(Point.Float wc, boolean fromEnemy) {
     screenCoord = null;
     worldCoord = wc;
     isFromPrimaryWeapon = false;

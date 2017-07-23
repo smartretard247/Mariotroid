@@ -18,9 +18,9 @@ public class Projectile extends Movable {
   
   private int zRot;
   
-  public Projectile(int objId, int texId, Point.Double zrot, double x, double y, int d) {
+  public Projectile(int objId, int texId, Point.Float zrot, float x, float y, int d) {
     super(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
-    Point.Double speed = calcSpeed(zrot);
+    Point.Float speed = calcSpeed(zrot);
     speedX = speed.x;
     speedY = speed.y;
     zRot = (int)Math.toDegrees(Math.atan2(zrot.y, zrot.x));
@@ -50,27 +50,27 @@ public class Projectile extends Movable {
     GL.glPopMatrix();
   }
   
-  public static Point.Double calcRotation(Point.Double center, Point.Double direction) {
-    double dx, dy, x, y, mag;
+  public static Point.Float calcRotation(Point.Float center, Point.Float direction) {
+    float dx, dy, x, y, mag;
     dx = direction.x - center.x;
     dy = direction.y - center.y;
-    if(dx == 0 && dy == 0){
+    if(dx == 0 && dy == 0) {
       x = 0;
       y = 0;
-    } else if(dx == 0){
+    } else if(dx == 0) {
       mag = dy;
       x = 0;
       y = dy / mag;
-    } else if(dy == 0){
+    } else if(dy == 0) {
       mag = dx;
       x = dx / mag;
       y = 0;
-    } else{
-      mag = Math.abs(Math.sqrt((dx*dx) + (dy*dy)));
+    } else {
+      mag = (float)Math.abs(Math.sqrt((dx*dx) + (dy*dy)));
       x = dx / mag;
       y = dy / mag;
     }
-    return new Point.Double(x, y);
+    return new Point.Float(x, y);
    }
   
   /**
@@ -78,8 +78,8 @@ public class Projectile extends Movable {
    * @param rotation
    * @return 
    */
-  private static Point.Double calcSpeed(Point.Double rotation) {
-    return new Point.Double((SPEED * rotation.x), (SPEED * rotation.y));
+  private static Point.Float calcSpeed(Point.Float rotation) {
+    return new Point.Float((SPEED * rotation.x), (SPEED * rotation.y));
   }
   
   public int getDamage() { return damage; }

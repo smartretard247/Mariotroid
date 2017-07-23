@@ -142,7 +142,7 @@ public class DrawLib {
     }
   }
   
-  public static void drawLine(double fromX, double fromY, double toX, double toY) {
+  public static void drawLine(float fromX, float fromY, float toX, float toY) {
     gl.glBegin (GL2.GL_LINES);
     gl.glVertex3d(fromX, fromY, 0);
     gl.glVertex3d(toX, toY, 0);
@@ -156,7 +156,7 @@ public class DrawLib {
    * @param rasterPosX
    * @param rasterPosY 
    */
-  public static void drawText(String text, double rasterPosX, double rasterPosY) {
+  public static void drawText(String text, float rasterPosX, float rasterPosY) {
     gl.glRasterPos2d(rasterPosX, rasterPosY);
     glut.glutBitmapString(GLUT.BITMAP_HELVETICA_18, text);
   }
@@ -183,7 +183,7 @@ public class DrawLib {
    * @param width
    * @param height
   */
-  public static void drawRectangle(double width, double height) {
+  public static void drawRectangle(float width, float height) {
     gl.glPushMatrix();
     gl.glScaled(width, height, 1);
     gl.glBegin(GL.GL_TRIANGLE_FAN);
@@ -201,7 +201,7 @@ public class DrawLib {
    * @param width
    * @param height
    */
-  public static void drawTexturedRectangle(int textureId, double width, double height) {
+  public static void drawTexturedRectangle(int textureId, float width, float height) {
     gl.glColor3f(1.0f, 1.0f, 1.0f); // remove color before applying texture 
     textures.get(textureId).enable(gl);
     textures.get(textureId).bind(gl);  // set texture to use
@@ -217,8 +217,8 @@ public class DrawLib {
    * @param textureId 
    */
   public static void drawTexturedRectangle(int textureId) {
-    double width = textures.get(textureId).getWidth();
-    double height = textures.get(textureId).getHeight();
+    float width = textures.get(textureId).getWidth();
+    float height = textures.get(textureId).getHeight();
     drawTexturedRectangle(textureId, width, height);
   }
   
@@ -227,7 +227,7 @@ public class DrawLib {
    * @param p
    * @return 
    */
-  public static Point.Double screenToWorld(Point p) {
+  public static Point.Float screenToWorld(Point p) {
     int[] viewport = new int[4]; //var to hold the viewport info
     double[] modelview = new double[16]; //var to hold the modelview info
     double[] projection = new double[16]; //var to hold the projection matrix info
@@ -239,11 +239,11 @@ public class DrawLib {
  
     //get the world coordinates from the screen coordinates
     int realy = viewport[3] - (int) p.y - 1;
-    DrawLib.glu.gluUnProject((double) p.x, (double) realy, 0.0,
+    DrawLib.glu.gluUnProject((float) p.x, (float) realy, 0.0,
               modelview, 0,
               projection, 0, 
               viewport, 0, 
               wcoord, 0);
-    return new Point.Double(wcoord[0], wcoord[1]);
+    return new Point.Float((float)wcoord[0], (float)wcoord[1]);
   }
 }

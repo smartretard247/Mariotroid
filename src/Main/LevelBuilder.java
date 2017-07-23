@@ -120,12 +120,12 @@ public class LevelBuilder {
         if(st.contains("Rectangle")) {
           // st == Rectangle@( 773.0, 1103.5 ), width: 1524.0, height: 97.0
           Scanner sc = new Scanner(st);
-          ArrayList<Double> var = new ArrayList<>();
+          ArrayList<Float> var = new ArrayList<>();
           while (var.size() < 4) { // untill we have all four variables for the rectangle
             if(sc.hasNextDouble())
-              var.add(var.size(), sc.nextDouble()); // use the double
+              var.add(var.size(), sc.nextFloat()); // use the float
             else
-              sc.next(); // else no double found so skip ahead
+              sc.next(); // else no float found so skip ahead
           }
           Rectangle r = new Rectangle(var.get(0), var.get(1), var.get(2), var.get(3));
           found.add(r); // add to found rectangles

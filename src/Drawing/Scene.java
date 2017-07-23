@@ -6,24 +6,24 @@ package Drawing;
  */
 public class Scene {
   // variables to translate the scene
-  public double transX;
-  public double transY;
-  public double transZ;
-  public double scaleX;
-  public double scaleY;
-  public double scaleZ;
-  public double globalZ;
+  public float transX;
+  public float transY;
+  public float transZ;
+  public float scaleX;
+  public float scaleY;
+  public float scaleZ;
+  public float globalZ;
   public final int LEVEL_DEPTH = 40;
   
-  private double defTransX;
-  private double defTransY;
-  private double defTransZ;
-  private double defScaleX;
-  private double defScaleY;
-  private double defScaleZ;
-  private double defGlobalZ;
+  private float defTransX;
+  private float defTransY;
+  private float defTransZ;
+  private float defScaleX;
+  private float defScaleY;
+  private float defScaleZ;
+  private float defGlobalZ;
   
-  public Scene(double tX, double tY, double tZ, double sX, double sY, double sZ) {
+  public Scene(float tX, float tY, float tZ, float sX, float sY, float sZ) {
     transX = tX;
     transY = tY;
     transZ = tZ;
@@ -44,13 +44,13 @@ public class Scene {
     this(0, 0, 0, 1, 1, 1);
   }
   
-  public void setTranslation(double tX, double tY, double tZ) {
+  public void setTranslation(float tX, float tY, float tZ) {
     transX = tX;
     transY = tY;
     transZ = tZ;
   }
   
-  public void setScale(double sX, double sY, double sZ) {
+  public void setScale(float sX, float sY, float sZ) {
     transX = sX;
     transY = sY;
     transZ = sZ;

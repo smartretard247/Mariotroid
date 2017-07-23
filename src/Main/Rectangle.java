@@ -10,7 +10,7 @@ package Main;
  * @author Jeezy
  */
 public class Rectangle {
-  private double x, y, w, h;
+  private float x, y, w, h;
   
   public Rectangle() {
     x = 0;
@@ -19,22 +19,22 @@ public class Rectangle {
     h = 0;
   }
   
-  public Rectangle(double X, double Y, double W, double H) {
+  public Rectangle(float X, float Y, float W, float H) {
     x = X;
     y = Y;
     w = W;
     h = H;
   }
   
-  public double x() { return x; }
-  public double y() { return y; }
-  public double w() { return w; }
-  public double h() { return h; }
+  public float x() { return x; }
+  public float y() { return y; }
+  public float w() { return w; }
+  public float h() { return h; }
   
-  public void setX(double to) { x = to; }
-  public void setY(double to) { y = to; }
-  public void setW(double to) { w = to; }
-  public void setH(double to) { h = to; }
+  public void setX(float to) { x = to; }
+  public void setY(float to) { y = to; }
+  public void setW(float to) { w = to; }
+  public void setH(float to) { h = to; }
   
   @Override
   public String toString() {
