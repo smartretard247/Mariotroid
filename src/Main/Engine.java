@@ -72,8 +72,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private Hero hero;
   private boolean leftPressed = false;
   private boolean rightPressed = false;
-  private Point.Float currentMousePosInWc;
+  private Point currentMousePos;
   private Interactive interactiveObject;
+  private boolean pendingInteraction = false;
   
   // getters / setters
   public static void setGameMode(GAME_MODE mode) { gameMode = mode; }
@@ -156,7 +157,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawLib = new DrawLib(gl); // initialize the drawing library before dealing with any textures!!
     messageTimer.setRepeats(false);
     SOUND_EFFECT.init(); // uncommment once all wav's in enum SOUND_EFFECT have been added to dir /res/sound
-    currentMousePosInWc = new Point.Float();
+    currentMousePos = new Point();
   
     // initial hero settings
     hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
@@ -310,6 +311,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
     gl.glTranslated(0, 0, scene.globalZ); // global z should decrease by 40 after each zoom
     adjustScene(gl, false);
+    detectInteractiveObject();
+    if(pendingInteraction) interact();
     drawLevel(gl);
     drawHero(gl);
     fireProjectiles(); // fire projectile from the queue
@@ -752,13 +755,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       if(hero.getLives() > 0) {
         switch (key) {
         case KeyEvent.VK_F:
-          interactiveObject = game.getInteractive(currentMousePosInWc);
-          if(interactiveObject != null) {
-            interactiveObject.doAction();
-            setStatusMessage(" Picked an interactive object"); // do something
-          } else {
-            setStatusMessage("Nothing around...");
-          }
+          pendingInteraction = true;
           break;
         case KeyEvent.VK_SHIFT:
           hero.toggleSprint();
@@ -1158,25 +1155,49 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   // Other methods required for MouseListener, MouseMotionListener.
   @Override
   public void mouseMoved(MouseEvent evt) {
-    currentMousePosInWc = DrawLib.screenToWorld(evt.getPoint());
-    System.out.println("Mouse moved: (" + currentMousePosInWc.x + ", " + currentMousePosInWc.y + ")");
-    
     switch(gameMode) {
     case START_MENU:
       if(evt.getY() > display.getHeight()/2) this.startMenuSelection = START_MENU_OPTION.EXIT;
       else this.startMenuSelection = START_MENU_OPTION.START_GAME;
       break;
     case RUNNING:
-      interactiveObject = game.getInteractive(currentMousePosInWc);
-      if(interactiveObject != null) {
-        interactiveObject.select();
-      } else {
-        game.deselectAllIO();
-      }
+      currentMousePos = evt.getPoint();
+      System.out.println("Mouse moved: (" + currentMousePos.x + ", " + currentMousePos.y + ")");
       break;
     default: break;
     }
-  }    
+  }
+
+  /**
+   * Detects whether the current mouse position is on top of an interactive object.  If so, will
+   * update interactiveObject to point to it.  If none found, will deselect all interactive objects.
+   */
+  public void detectInteractiveObject() {
+    interactiveObject = game.getInteractive(currentMousePos);
+    if(interactiveObject != null) {
+      interactiveObject.select();
+    } else {
+      game.deselectAllIO();
+    }
+  }
+  
+  /**
+   * Performs whatever action is associated to the currently selected object.  If no valid object
+   * is selected, will simply update status message to say so.
+   */
+  public void interact() {
+    if(interactiveObject != null) {
+      interactiveObject.doAction();
+      pendingInteraction = false;
+      setStatusMessage(" Picked an interactive object"); // do something
+    } else {
+      setStatusMessage("Nothing around...");
+    }
+  }
+  
+  public void activateInteractiveObject() {
+    
+  }
   
   @Override
   public void mouseClicked(MouseEvent evt) {

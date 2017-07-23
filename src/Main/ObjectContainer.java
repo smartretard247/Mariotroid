@@ -1,5 +1,6 @@
 package Main;
 
+import Drawing.DrawLib;
 import Enumerations.ID;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -97,12 +98,13 @@ public class ObjectContainer {
   }
   
   /**
-   * Locates an interactive object at the given world coordinates.
-   * @param at world coordinates
+   * Locates an interactive object at the given screen coordinates.
+   * @param at screen coordinates
    * @return the selected interactive object
    */
-  public Interactive getInteractive(Point.Float at) {
-    Rectangle point = new Rectangle(at.x, at.y, 1, 1);
+  public Interactive getInteractive(Point at) {
+    Point.Float wc = DrawLib.screenToWorld(at);
+    Rectangle point = new Rectangle(wc.x, wc.y, 1, 1);
     for(Interactive i : interactiveObjects.values()) {
       if(i.collidesWith(point)) {
         i.select();
