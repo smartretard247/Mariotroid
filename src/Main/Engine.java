@@ -73,8 +73,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private boolean leftPressed = false;
   private boolean rightPressed = false;
   
+  // getters / setters
+  public static void setGameMode(GAME_MODE mode) { gameMode = mode; }
+  public static int getFrameNumber() { return frameNumber; }
+  public static boolean isSoundEnabled() { return soundEnabled; }
+  public static boolean isDebugging() { return debugging; }
+  
   ///// START METHODS
-
   public static void main(String[] args) {
     JFrame window = new JFrame("Mariotroid");
     Engine panel = new Engine();
@@ -193,6 +198,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
   }
   
+  /**
+   * Scans PNG image for black rectangles, adding each as a Collidable object on supplied level number.
+   * @param num 
+   */
   public void loadLevel(int num) {
     leftPressed = false;
     rightPressed = false;
@@ -370,6 +379,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       gl.glPopMatrix();
   }
   
+  /**
+   * Draws scrolling credits.
+   * @param gl 
+   */
   private void drawCredits(GL2 gl) {
     gl.glPushMatrix();
     gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
@@ -395,6 +408,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
   }
   
+  /**
+   * Draws scrolling "YOU WIN!"
+   * @param gl 
+   */
   private void drawWin(GL2 gl) {
     gl.glPushMatrix();
     gl.glColor3dv( new double[] { Math.random(), Math.random(), Math.random() }, 0);
@@ -418,6 +435,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
   }
   
+  /**
+   * Draws background level decor and all visible objects for current level.
+   * @param gl 
+   */
   private void drawLevel(GL2 gl) {
     gl.glPushMatrix();
     adjustScene(gl, true);
@@ -449,6 +470,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
   }
   
+  /**
+   * Draws the logo.
+   * @param gl 
+   */
   private void drawIntro(GL2 gl) {
     gl.glPushMatrix();
     gl.glTranslated(0, 0, 0);
@@ -456,6 +481,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
   }
 
+  /**
+   * Draws the start menu.
+   * @param gl 
+   */
   private void drawStartMenu(GL2 gl) {
     int screenWidth = DrawLib.getTexture(DrawLib.TEX_HUD).getWidth();
     int screenHeight = DrawLib.getTexture(DrawLib.TEX_HUD).getHeight();
@@ -488,12 +517,19 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
   }
 
+  /**
+   * Draws the pause screen.
+   * @param gl 
+   */
   private void drawPauseMenu(GL2 gl) {
     double[] textColor = new double[] { 1.0, 1.0, 0.0 };
     gl.glColor3dv( textColor, 0);
     DrawLib.drawText("GAME PAUSED", -60, 0);
   }
-
+  
+  /**
+   * Performs the selected start menu action.
+   */
   private void doStartMenuSelection() {
     switch(this.startMenuSelection) {
       case START_GAME: gameMode = GAME_MODE.RUNNING;
@@ -507,6 +543,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
   }
 
+  /**
+   * Draws the hud, then health, lives, score and ammo count.
+   * @param gl 
+   */
   private void drawHud(GL2 gl) {
     gl.glPushMatrix();
     gl.glTranslated(0, 0, 0);
@@ -518,6 +558,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     drawAmmoCount(gl);
   }
   
+  /**
+   * Draws secondary ammo count.
+   * @param gl 
+   */
   private void drawAmmoCount(GL2 gl) {
     if(hero.hasSecondaryWeapon()) {
       double xDiff = 10;
@@ -538,6 +582,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
   }
 
+  /**
+   * Draws a health bar per health, max ten.
+   * @param gl 
+   */
   private void drawHealth(GL2 gl) { // draw health in top left corner
     double xDiff = 10;
     gl.glPushMatrix();
@@ -550,6 +598,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
   }
   
+  /**
+   * Draws number of lives.
+   * @param gl 
+   */
   private void drawLives(GL2 gl) {
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
     gl.glColor3d(textColor[0], textColor[1], textColor[2]);
@@ -560,6 +612,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
   }
 
+  /**
+   * Draws current score.
+   * @param gl 
+   */
   private void drawScore(GL2 gl) { // draw score in top right corner
     double diffX = 30;
     double[] textColor = new double[] { 1.0, 1.0, 1.0 };
@@ -842,6 +898,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private boolean animating;  // True if animation is running.  Do not set directly.
                               // This is set by startAnimation() and pauseAnimation().
 
+  /**
+   * Performs all per frame updates, to include collision detection and moving objects.
+   */
   private void updateFrame() {
     frameNumber++;
     
@@ -982,6 +1041,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     game.addGO(door.getWarp());
   }
 
+  /**
+   * Initiates a 30 millisecond timer for tracking frames.
+   */
   public void startAnimation() {
     if (!animating ) {
       if (animationTimer == null) {
@@ -992,6 +1054,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
   }
 
+  /**
+   * Stops frame timer.
+   */
   public void pauseAnimation() {
     if (animating) {
       animationTimer.stop();
@@ -1142,6 +1207,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     messageTimer.start();
   }
   
+  /**
+   * Process a projectile than has been added to the queue.
+   */
   public void fireProjectiles() {
     if(!qProjectiles.isEmpty()) {
       NextProjectile np;
@@ -1174,18 +1242,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
   }
   
+  /**
+   * Draws the scrolling debug text to the top left corner of the scene.
+   * @param gl 
+   */
   private void drawDebug(GL2 gl) {
     TestDisplay.writeToScreen(gl, DrawLib.getTexture(DrawLib.TEX_HUD).getWidth());
   }
   
-  public static void setGameMode(GAME_MODE mode) { gameMode = mode; }
-  
-  public static int getFrameNumber() { return frameNumber; }
-  
-  public static boolean isSoundEnabled() { return soundEnabled; }
-  
-  public static boolean isDebugging() { return debugging; }
-  
+  /**
+   * Cycles through low, medium, high, and mute volume.
+   */
   public static void cycleVolume() {
     SOUND_EFFECT.volume = SOUND_EFFECT.volume.up();
     if(SOUND_EFFECT.volume == SOUND_EFFECT.Volume.MUTE) SOUND_EFFECT.THEME.stop();
