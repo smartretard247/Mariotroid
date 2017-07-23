@@ -506,7 +506,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         gl.glPushMatrix();
         gl.glTranslated(0, 50, 0);
         gl.glColor3fv( selectedTextColor, 0);
-        DrawLib.drawText("--" + firstOption + "--", firstOptionXOffset-20, 0);
+        DrawLib.drawText("-->" + firstOption + "<--", firstOptionXOffset-30, 0);
         gl.glTranslated(0, -100, 0);
         gl.glColor3fv( textColor, 0);
         DrawLib.drawText(secondOption, secondOptionXOffset, 0);
@@ -519,7 +519,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         DrawLib.drawText(firstOption, firstOptionXOffset, 0);
         gl.glTranslated(0, -100, 0);
         gl.glColor3fv( selectedTextColor, 0);
-        DrawLib.drawText("--" + secondOption + "--", secondOptionXOffset-20, 0);
+        DrawLib.drawText("-->" + secondOption + "<--", secondOptionXOffset-30, 0);
         gl.glPopMatrix();
         break;
       default: break;
