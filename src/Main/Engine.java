@@ -52,7 +52,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private DrawLib drawLib;
   private static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
-  private final int INTROLENGTHMS = 6000;
+  private final int INTROLENGTHMS = 3000;
   private boolean won = false;
   private boolean warping = false;
   private boolean showControls = true;
@@ -100,7 +100,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         System.exit(0);
       }
     });
-    introTimer.start();
   }
 
   @SuppressWarnings("LeakingThisInConstructor")
@@ -118,13 +117,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     display.addMouseListener(this);
     display.addMouseMotionListener(this);
 
-    // start the animation
-    startAnimation(); // also controls pause function (and remove keyboard response)
     
-    introTimer = new Timer(INTROLENGTHMS, (evt)-> {
-      gameMode = GAME_MODE.START_MENU;
-    });
-    introTimer.setRepeats(false);
   }
 
   /**
@@ -158,6 +151,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     messageTimer.setRepeats(false);
     SOUND_EFFECT.init(); // uncommment once all wav's in enum SOUND_EFFECT have been added to dir /res/sound
     currentMousePos = new Point();
+    startAnimation(); // start the animation, also controls pause function (and remove keyboard response)
+    introTimer = new Timer(INTROLENGTHMS, (evt)-> { gameMode = GAME_MODE.START_MENU; });
+    introTimer.setRepeats(false);
+    introTimer.start();
   
     // initial hero settings
     hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
@@ -187,7 +184,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Float(10,10), 500));
       game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
       
-      game.addIO(new Interactive(ID.ID_INT_BOX, DrawLib.TEX_HEALTH_ORB, DrawLib.TEX_TRANSPARENT, 1000, 900));
+      game.addIO(new Interactive(ID.ID_INT_BOX, DrawLib.TEX_HEALTH_ORB, DrawLib.TEX_ENEMY_BASIC, 1000, 900));
       break;
     case 2:// setup level 2, only add level 2 game objects to this map
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
@@ -209,9 +206,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param num 
    */
   public void loadLevel(int num) {
-    leftPressed = false;
-    rightPressed = false;
-    
     String fileName = "";
     switch(num) {
       case 1: fileName = "/res/layer_collision_1.png"; break;
@@ -238,7 +232,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     debugging = false;
     swapBackground = false;
     showDecor = true;
+    leftPressed = false;
+    rightPressed = false;
+    won = false;
     scene.resetAll(); // do not change scene in other cases
+    SOUND_EFFECT.THEME.playLoop();
   }
   
   /**
@@ -267,7 +265,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glTranslated(0, 0, -10); // push everything away by 10
     switch(gameMode) {
       case INTRO: drawIntro(gl); break; // END INTRO
-      case START_MENU: drawStartMenu(gl); break; // END START MENU
+      case START_MENU: drawStartMenu(gl, false); break; // END START MENU
       case DYING:
       case RUNNING: drawNormalGamePlay(gl); break; // END RUNNING
       case PAUSED: drawPauseMenu(gl); break; // END PAUSED
@@ -492,33 +490,36 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   /**
    * Draws the start menu.
    * @param gl 
+   * @param isPauseMenu is this the pause menu (only changes text that is displayed)
    */
-  private void drawStartMenu(GL2 gl) {
+  private void drawStartMenu(GL2 gl, boolean isPauseMenu) {
     int screenWidth = DrawLib.getTexture(DrawLib.TEX_HUD).getWidth();
     int screenHeight = DrawLib.getTexture(DrawLib.TEX_HUD).getHeight();
     float[] selectedTextColor = new float[] { 1.0f, 0.0f, 0.0f };
     float[] textColor = new float[] { 0.0f, 0.0f, 0.0f };
+    String firstOption = (!isPauseMenu) ? "START GAME" : "RESTART";
+    String secondOption = (!isPauseMenu) ? "EXIT" : "CONTINUE";
+    int firstOptionXOffset = (!isPauseMenu) ? -50 : -40;
+    int secondOptionXOffset = (!isPauseMenu) ? -20 : -46;
     switch(this.startMenuSelection) {
       case START_GAME:
         gl.glPushMatrix();
         gl.glTranslated(0, 50, 0);
         gl.glColor3fv( selectedTextColor, 0);
-        DrawLib.drawText("START GAME", -50, 0);
-        //DrawLib.drawCustomText("START GAME");
+        DrawLib.drawText("--" + firstOption + "--", firstOptionXOffset-20, 0);
         gl.glTranslated(0, -100, 0);
         gl.glColor3fv( textColor, 0);
-        DrawLib.drawText("EXIT", -20, 0);
-        //DrawLib.drawCustomText("EXIT");
+        DrawLib.drawText(secondOption, secondOptionXOffset, 0);
         gl.glPopMatrix();
         break;
       case EXIT:
         gl.glPushMatrix();
         gl.glTranslated(0, 50, 0);
         gl.glColor3fv( textColor, 0);
-        DrawLib.drawText("START GAME", -50, 0);
+        DrawLib.drawText(firstOption, firstOptionXOffset, 0);
         gl.glTranslated(0, -100, 0);
         gl.glColor3fv( selectedTextColor, 0);
-        DrawLib.drawText("EXIT", -20, 0);
+        DrawLib.drawText("--" + secondOption + "--", secondOptionXOffset-20, 0);
         gl.glPopMatrix();
         break;
       default: break;
@@ -531,21 +532,25 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawPauseMenu(GL2 gl) {
     float[] textColor = new float[] { 1.0f, 1.0f, 0.0f };
-    gl.glColor3fv( textColor, 0);
-    DrawLib.drawText("GAME PAUSED", -60, 0);
+    gl.glColor3fv(textColor, 0);
+    gl.glPushMatrix();
+    DrawLib.drawText("GAME PAUSED", -60, 300);
+    gl.glPopMatrix();
+    drawStartMenu(gl, true); // add the "RESTART" and "EXIT" options
   }
   
   /**
    * Performs the selected start menu action.
    */
-  private void doStartMenuSelection() {
+  private void doStartMenuSelection(boolean isPauseMenu) {
     switch(this.startMenuSelection) {
-      case START_GAME: gameMode = GAME_MODE.RUNNING;
-        SOUND_EFFECT.THEME.playLoop();
-        won = false;
+      case START_GAME:
+        gameMode = GAME_MODE.RUNNING;
         loadLevel(1);
         break;
-      case EXIT: System.exit(0);
+      case EXIT:
+        if(!isPauseMenu) System.exit(0);
+        else gameMode = GAME_MODE.RUNNING;
         break;
       default: break;
     }
@@ -762,6 +767,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           break;
         case KeyEvent.VK_P: // pause/unpause
           gameMode = GAME_MODE.PAUSED;
+          this.startMenuSelection = START_MENU_OPTION.EXIT;
           break;
         case KeyEvent.VK_W: // climb up
           if(hero.canClimb()) {
@@ -814,6 +820,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       break; // END RUNNING
     case PAUSED: // then we are paused, so change keyboard options
       switch (key) {
+      case KeyEvent.VK_W: this.startMenuSelection = startMenuSelection.prev(); // scroll upward through menu
+        break;
+      case KeyEvent.VK_S: this.startMenuSelection = startMenuSelection.next(); // scroll downward through menu
+        break;
+      case KeyEvent.VK_ENTER:
+        doStartMenuSelection(true);
+        break;
       case KeyEvent.VK_P: // pause/unpause
         gameMode = GAME_MODE.RUNNING;
         break;
@@ -826,7 +839,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         break;
       case KeyEvent.VK_S: this.startMenuSelection = startMenuSelection.next(); // scroll downward through menu
         break;
-      case KeyEvent.VK_ENTER: doStartMenuSelection();
+      case KeyEvent.VK_ENTER: doStartMenuSelection(false);
         break;
       default: break;
       }
@@ -1162,7 +1175,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       break;
     case RUNNING:
       currentMousePos = evt.getPoint();
-      System.out.println("Mouse moved: (" + currentMousePos.x + ", " + currentMousePos.y + ")");
       break;
     default: break;
     }
@@ -1206,7 +1218,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(gameMode) { // controls are based on the game mode
     case START_MENU:
       switch (key) {
-      case MouseEvent.BUTTON1: doStartMenuSelection(); // pick selection
+      case MouseEvent.BUTTON1: doStartMenuSelection(false); // pick selection
         break;
       case MouseEvent.BUTTON3: // right click to select next option
         this.startMenuSelection = startMenuSelection.next(); // scroll downward through menu
@@ -1214,14 +1226,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       default: break;
       }
       break; // END START_MENU
-    case PAUSED: // then we are paused
-      switch (key) {
-      case MouseEvent.BUTTON1:
-        gameMode = GAME_MODE.RUNNING;
-        break;
-      default: break;
-      }
-      break; // END PAUSED
     case WIN:
       if(key == MouseEvent.BUTTON1) gameMode = GAME_MODE.CREDITS;
       break;
