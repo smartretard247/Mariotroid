@@ -1,5 +1,6 @@
 package Drawing;
 
+import Main.Interactive;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLException;

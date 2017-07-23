@@ -1083,21 +1083,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void mousePressed(MouseEvent evt) {
     int key = evt.getButton();
     Point sc = evt.getPoint(); // clicked location, to convert to world coords
-    
-    switch(gameMode) { // controls are based on the game mode
-    case RUNNING:
-      switch(key) {
-      case MouseEvent.BUTTON1: // left click
-        qProjectiles.offer(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
-        break;
-      case MouseEvent.BUTTON3: // right click
-        qProjectiles.offer(new NextProjectile(sc, false)); // add the projectile to the queue, to be fired during next update
-        break;
-      default: break;
-      }
-      break;
-    default: break;
-    }
+    Point.Double wc = DrawLib.screenToWorld(evt.getPoint());
           
     if (dragging) {
       return;  // don't start a new drag while one is already in progress
@@ -1108,6 +1094,29 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     dragging = true;  // might not always be correct!
     prevX = startX = x;
     prevY = startY = y;
+    
+    // handle clicks subject to gameMode
+    switch(gameMode) { // controls are based on the game mode
+    case RUNNING:
+      switch(key) {
+      case MouseEvent.BUTTON1: // left click
+        if(!dragging) qProjectiles.offer(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
+        else {
+          Interactive i = game.getInteractive(wc);
+          if(i != null) {
+            setStatusMessage(" Clicked an interactive object"); // do something
+          }
+        }
+        break;
+      case MouseEvent.BUTTON3: // right click
+        qProjectiles.offer(new NextProjectile(sc, false)); // add the projectile to the queue, to be fired during next update
+        break;
+      default: break;
+      }
+      break;
+    default: break;
+    }
+    
     display.repaint();    //  only needed if display should change
   }
 
