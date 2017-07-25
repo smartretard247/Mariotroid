@@ -336,10 +336,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawConversation(GL2 gl) {
     String message = (!conversation.isEmpty()) ? conversation.peek() : null;
     if(MESSAGE_TIMER.isRunning() && message != null) { // check if we need to display a message
+      int calculatedOffset = -5 * message.length();
       gl.glPushMatrix();
       gl.glColor3fv(new float[] { 1.0f, 1.0f, 0 }, 0);
-      gl.glTranslated(0, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2-60, 0);
-      DrawLib.drawText(message, -60, 0);
+      gl.glTranslated(20, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2-60, 0);
+      DrawLib.drawText(message, calculatedOffset, 0);
       gl.glPopMatrix();
     } else if(!conversation.isEmpty()) {
       conversation.pop();
