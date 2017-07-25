@@ -34,7 +34,7 @@ public enum START_MENU_OPTION {
   public static ArrayList<String> getValuesArray() {
     ArrayList<String> values = new ArrayList<>();
     for(START_MENU_OPTION smo : values()) {
-      values.add(smo.toString());
+      values.add(smo.toString().replace("_", " "));
     }
     return values;
   }
