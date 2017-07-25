@@ -1,5 +1,7 @@
 package Enumerations;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Jeezy
@@ -27,5 +29,13 @@ public enum PAUSE_MENU_OPTION {
   
   public PAUSE_MENU_OPTION prev() {
     return values()[ordinal() - 1];
+  }
+  
+  public static ArrayList<String> getValuesArray() {
+    ArrayList<String> values = new ArrayList<>();
+    for(PAUSE_MENU_OPTION smo : values()) {
+      values.add(smo.toString());
+    }
+    return values;
   }
 }

@@ -503,37 +503,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param isPauseMenu is this the pause menu (only changes text that is displayed)
    */
   private void drawStartMenu(GL2 gl) {
-    int screenWidth = DrawLib.getTexture(DrawLib.TEX_HUD).getWidth();
-    int screenHeight = DrawLib.getTexture(DrawLib.TEX_HUD).getHeight();
-    float[] selectedTextColor = new float[] { 1.0f, 0.0f, 0.0f };
-    float[] textColor = new float[] { 0.0f, 0.0f, 0.0f };
-    String firstOption = "START GAME";
-    String secondOption = "EXIT";
-    int firstOptionXOffset = -50;
-    int secondOptionXOffset = -20;
-    switch(this.startMenuSelection) {
-      case START_GAME:
-        gl.glPushMatrix();
-        gl.glTranslated(0, 50, 0);
-        gl.glColor3fv( selectedTextColor, 0);
-        DrawLib.drawText("-->" + firstOption + "<--", firstOptionXOffset-30, 0);
-        gl.glTranslated(0, -100, 0);
-        gl.glColor3fv( textColor, 0);
-        DrawLib.drawText(secondOption, secondOptionXOffset, 0);
-        gl.glPopMatrix();
-        break;
-      case EXIT:
-        gl.glPushMatrix();
-        gl.glTranslated(0, 50, 0);
-        gl.glColor3fv( textColor, 0);
-        DrawLib.drawText(firstOption, firstOptionXOffset, 0);
-        gl.glTranslated(0, -100, 0);
-        gl.glColor3fv( selectedTextColor, 0);
-        DrawLib.drawText("-->" + secondOption + "<--", secondOptionXOffset-30, 0);
-        gl.glPopMatrix();
-        break;
-      default: break;
-    }
+    drawMenu(gl, START_MENU_OPTION.getValuesArray(), startMenuSelection.ordinal());
   }
 
   /**
@@ -546,35 +516,34 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     DrawLib.drawText("GAME PAUSED", -60, 300);
     gl.glPopMatrix();
     // handle the actual menu options
+    drawMenu(gl, PAUSE_MENU_OPTION.getValuesArray(), pauseMenuSelection.ordinal());
+  }
+  
+  /**
+   * Draws a menu with supplied string array, will highlight option at index provided.
+   * @param gl
+   * @param indexSelected the index to highlight
+   */
+  private void drawMenu(GL2 gl, ArrayList<String> options, int indexSelected) {
+    int top = 50, spacing = -100;
     float[] selectedTextColor = new float[] { 1.0f, 0.0f, 0.0f };
     float[] textColor = new float[] { 0.0f, 0.0f, 0.0f };
-    String firstOption = "CONTINUE";
-    String secondOption = "RESTART";
-    int firstOptionXOffset = -46;
-    int secondOptionXOffset = -40;
-    switch(this.pauseMenuSelection) {
-      case CONTINUE:
-        gl.glPushMatrix();
-        gl.glTranslated(0, 50, 0);
+    
+    gl.glPushMatrix();
+    gl.glTranslated(0, top, 0);
+    for(int i = 0; i < options.size(); i++) {
+      boolean selected = false;
+      if(i == indexSelected) {
+        selected = true;
         gl.glColor3fv( selectedTextColor, 0);
-        DrawLib.drawText("-->" + firstOption + "<--", firstOptionXOffset-30, 0);
-        gl.glTranslated(0, -100, 0);
+      } else {
         gl.glColor3fv( textColor, 0);
-        DrawLib.drawText(secondOption, secondOptionXOffset, 0);
-        gl.glPopMatrix();
-        break;
-      case RESTART:
-        gl.glPushMatrix();
-        gl.glTranslated(0, 50, 0);
-        gl.glColor3fv( textColor, 0);
-        DrawLib.drawText(firstOption, firstOptionXOffset, 0);
-        gl.glTranslated(0, -100, 0);
-        gl.glColor3fv( selectedTextColor, 0);
-        DrawLib.drawText("-->" + secondOption + "<--", secondOptionXOffset-30, 0);
-        gl.glPopMatrix();
-        break;
-      default: break;
+      }
+      int calculatedXOffset = -5 * options.get(i).length();
+      DrawLib.drawText(((selected) ? "-->" : "") + options.get(i) + ((selected) ? "<--" : ""), calculatedXOffset + ((selected) ? -30 : 0), 0);
+      gl.glTranslated(0, spacing, 0);
     }
+    gl.glPopMatrix();
   }
   
   /**
@@ -820,7 +789,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           break;
         case KeyEvent.VK_P: // pause/unpause
           gameMode = GAME_MODE.PAUSED;
-          this.startMenuSelection = START_MENU_OPTION.EXIT;
+          this.pauseMenuSelection = PAUSE_MENU_OPTION.CONTINUE;
           break;
         case KeyEvent.VK_W: // climb up
           if(hero.canClimb()) {
