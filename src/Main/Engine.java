@@ -226,6 +226,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         game.addTO(id, new Collidable(id, DrawLib.TEX_LEVEL, r.x(), r.y(), r.w(), r.h()));
       });
     }
+    
+    leftPressed = false;
+    rightPressed = false;
   }
   
   /**
@@ -236,8 +239,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     debugging = false;
     swapBackground = false;
     showDecor = true;
-    leftPressed = false;
-    rightPressed = false;
     won = false;
     scene.resetAll(); // do not change scene in other cases
     SOUND_EFFECT.THEME.playLoop();
@@ -255,7 +256,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       hero.doJump();
       loadLevel(currLevel);
     }else{
-      Engine.setStatusMessage("YOU WIN!!");
+      setConversation(new String[] { "YOU WIN!!" });
       won = true;
     }
   }
@@ -577,38 +578,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   /**
-   * Draws a menu with supplied settings.
-   * @param gl 
-   */
-  private void drawMenu(GL2 gl, float[] selectedTextColor, float[] textColor, int[] xOffsets) {
-    String firstOption = "CONTINUE";
-    String secondOption = "RESTART";
-    switch(this.pauseMenuSelection) {
-      case CONTINUE:
-        gl.glPushMatrix();
-        gl.glTranslated(0, 50, 0);
-        gl.glColor3fv( selectedTextColor, 0);
-        DrawLib.drawText("-->" + firstOption + "<--", xOffsets[0]-30, 0);
-        gl.glTranslated(0, -100, 0);
-        gl.glColor3fv( textColor, 0);
-        DrawLib.drawText(secondOption, xOffsets[1], 0);
-        gl.glPopMatrix();
-        break;
-      case RESTART:
-        gl.glPushMatrix();
-        gl.glTranslated(0, 50, 0);
-        gl.glColor3fv( textColor, 0);
-        DrawLib.drawText(firstOption, xOffsets[0], 0);
-        gl.glTranslated(0, -100, 0);
-        gl.glColor3fv( selectedTextColor, 0);
-        DrawLib.drawText("-->" + secondOption + "<--", xOffsets[1]-30, 0);
-        gl.glPopMatrix();
-        break;
-      default: break;
-    }
-  }
-  
-  /**
    * Performs the selected start menu action.
    */
   private void doStartMenuSelection() {
@@ -820,7 +789,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       break;
     case KeyEvent.VK_F9:
       cycleVolume();
-      String message = "VOLUME: ";
+      String message = "Volume changed to ";
       switch(SOUND_EFFECT.volume) {
       case MUTE:
         message += "MUTED";
@@ -1026,7 +995,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case DYING: if(!hero.wasRecentlyDamaged()) { gameMode = GAME_MODE.GAME_OVER; }
     case RUNNING:
       if(won) {
-        if(Engine.isSoundEnabled()) {
+        if(SOUND_EFFECT.volume != SOUND_EFFECT.Volume.MUTE) {
           SOUND_EFFECT.THEME.stop();
           SOUND_EFFECT.WIN.play(Math.max(SOUND_EFFECT.getGain(), 6f));
         }
@@ -1150,6 +1119,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     Door door = (Door)game.getGO(ID.ID_DOOR);
     door.activate();
     game.addGO(door.getWarp());
+    Engine.setStatusMessage("Warp activated.");
   }
 
   /**
@@ -1347,7 +1317,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         Projectile fired;
         if(!np.isFromEnemy) {
           Point.Float wc = DrawLib.screenToWorld(np.screenCoord);
-          if(debugging) Engine.setStatusMessage("(" + wc.x + ", " + wc.y + ")");
+          if(debugging) setConversation(new String[] { "(" + wc.x + ", " + wc.y + ")" });
           if(np.isFromPrimaryWeapon)
             fired = hero.firePrimaryWeapon(wc);
           else
