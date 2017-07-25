@@ -4,6 +4,7 @@ import Drawing.DrawLib;
 import Enumerations.GAME_MODE;
 import Enumerations.ID;
 import Enumerations.SOUND_EFFECT;
+import static Main.Engine.setStatusMessage;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -351,4 +352,18 @@ public class Hero extends Living {
   public boolean getGodMode() { return godMode; }
   public void setGodMode(boolean to) { godMode = to; }
   public void toggleGodMode() { godMode = !godMode; }
+  
+  /**
+   * Performs whatever action is associated to the currently selected object.  If no valid object
+   * is selected, will simply update status message to say so.
+   * @param i the object to interact with
+   */
+  public void interact(Interactive i) {
+    if(i != null) {
+      i.doAction();
+      Engine.setStatusMessage("Picked an interactive object"); // do something
+    } else {
+      Engine.setStatusMessage("Nothing around to interact with.");
+    }
+  }
 }

@@ -9,16 +9,15 @@ import java.time.Instant;
  * @author Nate
  */
 public class TestData {
-    
     private final Instant time;
-    private String testData;
+    private final String testData;
     private boolean isViewable;
-    private int timeLimit = 10;
+    private final int TIME_LIMIT = 10;
     
-    public TestData(String data){
-        time = Instant.now();
-        testData = data;
-        isViewable = true;
+    public TestData(String data) {
+      time = Instant.now();
+      testData = data;
+      isViewable = true;
     }
     
     /**
@@ -26,7 +25,7 @@ public class TestData {
      * @return String of test data
      */
     public String getTestData(){
-        return testData;
+      return testData;
     }
     
     /**
@@ -34,9 +33,9 @@ public class TestData {
      * @return true if data has passed its time limit
      */
     public boolean isExpired(){
-        if(Instant.now().getEpochSecond() - time.getEpochSecond() > timeLimit){
-            isViewable = false;
-        }
-        return !isViewable;
+      if(Instant.now().getEpochSecond() - time.getEpochSecond() > TIME_LIMIT) {
+        isViewable = false;
+      }
+      return !isViewable;
     }
 }
