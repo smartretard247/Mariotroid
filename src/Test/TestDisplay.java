@@ -17,7 +17,7 @@ public class TestDisplay {
     private static final LinkedList<TestData> DISP_DATA = new LinkedList<>();
     private static final float[] COLOR = { 1.0f, 0.5f, 0.0f };
     private static final float SPACE = 30;
-    private static final float X_POS = 450;
+    private static final float X_POS = 10;
     private static final float Y_POS = 600;
     private static String logText;
     private static File f;
@@ -68,7 +68,7 @@ public class TestDisplay {
       }
       gl.glPushMatrix();
       gl.glColor3fv( COLOR, 0);
-      gl.glTranslated(0, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
+      gl.glTranslated(X_POS, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
       for(TestData td : DISP_DATA) {
         DrawLib.drawText(td.getTestData(), -screenWidth/2, yPos);
         yPos -= SPACE;
