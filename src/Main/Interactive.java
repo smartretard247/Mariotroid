@@ -1,6 +1,7 @@
 package Main;
 
 import Drawing.DrawLib;
+import Enumerations.TEX;
 
 /**
  *
@@ -22,11 +23,11 @@ public class Interactive extends Collidable {
   }
   
   public Interactive(int x, int y) {
-    this(-1, DrawLib.TEX_NONE, DrawLib.TEX_NONE, x, y, 1, 1);
+    this(-1, TEX.TEX_NONE, TEX.TEX_NONE, x, y, 1, 1);
   }
   
   public Interactive() {
-    this(-1, DrawLib.TEX_NONE, DrawLib.TEX_NONE, 0, 0, 1, 1);
+    this(-1, TEX.TEX_NONE, TEX.TEX_NONE, 0, 0, 1, 1);
   }
   
   public boolean isSelected() { return selected; }

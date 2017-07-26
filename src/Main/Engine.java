@@ -7,6 +7,7 @@ import Enumerations.GAME_MODE;
 import Enumerations.ID;
 import Enumerations.PAUSE_MENU_OPTION;
 import Enumerations.SOUND_EFFECT;
+import Enumerations.TEX;
 import Test.TestDisplay;
 import java.awt.event.*;
 import javax.swing.*;
@@ -161,7 +162,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     introTimer.start();
   
     // initial hero settings
-    hero = new Hero(ID.ID_HERO, 3, 10, 0, DrawLib.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
+    hero = new Hero(ID.ID_HERO, 3, 10, 0, TEX.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
     game.addGO(hero);
   }
   
@@ -179,27 +180,27 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       h.setDefaultPosition(300, 400);
       h.resetAll();
       hero.setGodMode(false);
-      game.addGO(new Collidable(ID.ID_JETPACK, DrawLib.TEX_JETPACK, 1400, 350));
-      game.addGO(new Collidable(ID.ID_SHELL, DrawLib.TEX_SHELL, 300, 800));
-      game.addGO(new Collidable(ID.ID_ARMOR, DrawLib.TEX_ARMOR, 5660, 198));
-      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 2000, 800, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
-      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 800, new Point.Float(5,0)));
-      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 240, new Point.Float(5,0)));
-      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 11000, 500, new Point.Float(10,10), 500));
+      game.addGO(new Collidable(ID.ID_JETPACK, TEX.TEX_JETPACK, 1400, 350));
+      game.addGO(new Collidable(ID.ID_SHELL, TEX.TEX_SHELL, 300, 800));
+      game.addGO(new Collidable(ID.ID_ARMOR, TEX.TEX_ARMOR, 5660, 198));
+      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 2000, 800, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
+      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, TEX.TEX_ENEMY_BASIC, 4000, 800, new Point.Float(5,0)));
+      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, TEX.TEX_ENEMY_BASIC, 8075, 240, new Point.Float(5,0)));
+      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, TEX.TEX_CALAMITY, 11000, 500, new Point.Float(10,10), 500));
       game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
       
-      game.addIO(new Interactive(ID.ID_INT_BOX, DrawLib.TEX_HEALTH_ORB, DrawLib.TEX_ENEMY_BASIC, 1000, 900));
+      game.addIO(new Interactive(ID.ID_FALLING_BOX, TEX.TEX_FALLING_BOX, TEX.TEX_FALLING_BOX_S, 1000, 900));
       break;
     case 2:// setup level 2, only add level 2 game objects to this map
-      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
-      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, DrawLib.TEX_ENEMY_BASIC, 4000, 950, new Point.Float(5,0)));
-      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, DrawLib.TEX_ENEMY_BASIC, 8075, 950, new Point.Float(5,0)));
-      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, DrawLib.TEX_CALAMITY, 300, 575, new Point.Float(10,10), 750));
+      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
+      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, TEX.TEX_ENEMY_BASIC, 4000, 950, new Point.Float(5,0)));
+      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, TEX.TEX_ENEMY_BASIC, 8075, 950, new Point.Float(5,0)));
+      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, TEX.TEX_CALAMITY, 300, 575, new Point.Float(10,10), 750));
       Boss b = (Boss)game.getGO(ID.ID_CALAMITY);
       b.setMinX(0);
       b.setMaxX(2570);
       game.addGO(new Door(ID.ID_DOOR, 300, 987, -60, 70, true));
-      game.addGO(new Collidable(ID.ID_SWITCH, DrawLib.TEX_SWITCH_ON, 5366, 708));
+      game.addGO(new Collidable(ID.ID_SWITCH, TEX.TEX_SWITCH_ON, 5366, 708));
       break;
     default: System.out.println("Unknown level number while resetting visibles."); break;
     }
@@ -223,7 +224,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
       level.stream().forEach((r) -> {
         int id = ID.getNewId();
-        game.addTO(id, new Collidable(id, DrawLib.TEX_LEVEL, r.x(), r.y(), r.w(), r.h()));
+        game.addTO(id, new Collidable(id, TEX.TEX_LEVEL, r.x(), r.y(), r.w(), r.h()));
       });
     }
     
@@ -339,7 +340,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       int calculatedOffset = -5 * message.length();
       gl.glPushMatrix();
       gl.glColor3fv(new float[] { 1.0f, 1.0f, 0 }, 0);
-      gl.glTranslated(20, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2-60, 0);
+      gl.glTranslated(20, DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2-60, 0);
       DrawLib.drawText(message, calculatedOffset, 0);
       gl.glPopMatrix();
     } else if(!conversation.isEmpty()) {
@@ -355,7 +356,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawGameOver(GL2 gl) {
     gl.glPushMatrix();
     gl.glColor3fv(new float[] { 1.0f, 0.0f, 0.0f }, 0);
-    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
+    gl.glTranslated(-DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2, 0, 0);
     DrawLib.drawText("GAME OVER", 100+(frameNumber%500*2), 0);
     gl.glPopMatrix();
   }
@@ -372,7 +373,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       String[] mouseControls = { "             Right click - Fire alternate weapon", "Mouse: Left click - Fire primary weapon", "F10 - Control display on/off", "F9 - Adjust volume" };
       gl.glPushMatrix();
       gl.glColor3fv(textColor, 0);
-      gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2+yOffset, 0);
+      gl.glTranslated(-DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2, -DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2+yOffset, 0);
       if(debugging) {
         gl.glPushMatrix();
         for(String s : debugControls) {
@@ -402,7 +403,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawCredits(GL2 gl) {
     gl.glPushMatrix();
-    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
+    gl.glTranslated(-DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2, 0, 0);
     ArrayList<String> credits = new ArrayList<>();
     credits.add("TEAM MARIOTROID!");
     credits.add("----------------");
@@ -432,7 +433,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawWin(GL2 gl) {
     gl.glPushMatrix();
     gl.glColor3fv( new float[] { (float)Math.random(), (float)Math.random(), (float)Math.random() }, 0);
-    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2, 0, 0);
+    gl.glTranslated(-DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2, 0, 0);
     DrawLib.drawText("YOU WIN!", 100+(frameNumber%500*2), 0);
     gl.glPopMatrix();
   }
@@ -445,9 +446,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPushMatrix();
     gl.glScaled(1.1, 1.1, 1);
     if(!swapBackground) {
-      DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_1, DrawLib.getTexture(DrawLib.TEX_HUD).getWidth(), DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()); // background level
+      DrawLib.drawTexturedRectangle(TEX.TEX_BACKGROUND_1, DrawLib.getTexture(TEX.TEX_HUD).getWidth(), DrawLib.getTexture(TEX.TEX_HUD).getHeight()); // background level
     } else {
-      DrawLib.drawTexturedRectangle(DrawLib.TEX_BACKGROUND_2, DrawLib.getTexture(DrawLib.TEX_HUD).getWidth(), DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()); // secondary background level
+      DrawLib.drawTexturedRectangle(TEX.TEX_BACKGROUND_2, DrawLib.getTexture(TEX.TEX_HUD).getWidth(), DrawLib.getTexture(TEX.TEX_HUD).getHeight()); // secondary background level
     }
     gl.glPopMatrix();
   }
@@ -460,7 +461,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPushMatrix();
     adjustScene(gl, true);
     if(currLevel < TOTAL_LEVELS)
-      DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1+(currLevel%2)); // draw the background level
+      DrawLib.drawTexturedRectangle(TEX.TEX_LEVEL_DECOR_1+(currLevel%2)); // draw the background level
     gl.glPopMatrix();
     game.getVisibles().forEach((c) -> { c.draw(); }); // draw game objects
   }
@@ -480,9 +481,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawForeground(GL2 gl) {
     // draw foreground objects here
     gl.glPushMatrix();
-    gl.glTranslated(DrawLib.getTexture(DrawLib.TEX_LEVEL_DECOR_1).getWidth()/2, DrawLib.getTexture(DrawLib.TEX_LEVEL_DECOR_1).getHeight()/2, 0); // levels MUST be same size as DECOR_1
+    gl.glTranslated(DrawLib.getTexture(TEX.TEX_LEVEL_DECOR_1).getWidth()/2, DrawLib.getTexture(TEX.TEX_LEVEL_DECOR_1).getHeight()/2, 0); // levels MUST be same size as DECOR_1
     if(showDecor) {
-      if(currLevel <= TOTAL_LEVELS) DrawLib.drawTexturedRectangle(DrawLib.TEX_LEVEL_DECOR_1+Math.abs(currLevel%2-1));
+      if(currLevel <= TOTAL_LEVELS) DrawLib.drawTexturedRectangle(TEX.TEX_LEVEL_DECOR_1+Math.abs(currLevel%2-1));
     }
     gl.glPopMatrix();
   }
@@ -494,7 +495,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawIntro(GL2 gl) {
     gl.glPushMatrix();
     gl.glTranslated(0, 0, 0);
-    DrawLib.drawTexturedRectangle(DrawLib.TEX_LOGO);
+    DrawLib.drawTexturedRectangle(TEX.TEX_LOGO);
     gl.glPopMatrix();
   }
 
@@ -586,7 +587,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawHud(GL2 gl) {
     gl.glPushMatrix();
     gl.glTranslated(0, 0, 0);
-    DrawLib.drawTexturedRectangle(DrawLib.TEX_HUD);
+    DrawLib.drawTexturedRectangle(TEX.TEX_HUD);
     gl.glPopMatrix();
     drawHealth(gl);
     drawLives(gl);
@@ -603,16 +604,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       float xDiff = 10;
       float yDiff = -35;
       float[] textColor = new float[] { 1.0f, 1.0f, 1.0f };
-      float hudWidth = DrawLib.getTexture(DrawLib.TEX_HUD).getWidth();
-      float hudHeight = DrawLib.getTexture(DrawLib.TEX_HUD).getHeight();
-      float healthHeight = DrawLib.getTexture(DrawLib.TEX_HEALTH).getHeight();
-      float shellWidth = DrawLib.getTexture(DrawLib.TEX_SHELL).getWidth()*2;
-      float shellHeight = DrawLib.getTexture(DrawLib.TEX_SHELL).getHeight()*2;
+      float hudWidth = DrawLib.getTexture(TEX.TEX_HUD).getWidth();
+      float hudHeight = DrawLib.getTexture(TEX.TEX_HUD).getHeight();
+      float healthHeight = DrawLib.getTexture(TEX.TEX_HEALTH).getHeight();
+      float shellWidth = DrawLib.getTexture(TEX.TEX_SHELL).getWidth()*2;
+      float shellHeight = DrawLib.getTexture(TEX.TEX_SHELL).getHeight()*2;
       
       gl.glPushMatrix();
       gl.glColor3fv( textColor, 0);
       gl.glTranslated(-hudWidth/2+shellWidth/2+xDiff, hudHeight/2 - healthHeight - shellHeight + yDiff, 0);
-      DrawLib.drawTexturedRectangle(DrawLib.TEX_SHELL, shellWidth, shellHeight);
+      DrawLib.drawTexturedRectangle(TEX.TEX_SHELL, shellWidth, shellHeight);
       DrawLib.drawText(Integer.toString(hero.getAmmoCount()), 25, -6);
       gl.glPopMatrix();
     }
@@ -625,11 +626,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawHealth(GL2 gl) { // draw health in top left corner
     float xDiff = 10;
     gl.glPushMatrix();
-    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2+DrawLib.getTexture(DrawLib.TEX_HEALTH).getWidth()+xDiff,
-            DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2-DrawLib.getTexture(DrawLib.TEX_HEALTH).getHeight(), 0);
+    gl.glTranslated(-DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2+DrawLib.getTexture(TEX.TEX_HEALTH).getWidth()+xDiff,
+            DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2-DrawLib.getTexture(TEX.TEX_HEALTH).getHeight(), 0);
     for(int i = 0; i < hero.getHealth(); i++) {
-      DrawLib.drawTexturedRectangle(DrawLib.TEX_HEALTH);
-      gl.glTranslated(DrawLib.getTexture(DrawLib.TEX_HEALTH).getWidth(), 0, 0);
+      DrawLib.drawTexturedRectangle(TEX.TEX_HEALTH);
+      gl.glTranslated(DrawLib.getTexture(TEX.TEX_HEALTH).getWidth(), 0, 0);
     }
     gl.glPopMatrix();
   }
@@ -642,8 +643,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     float[] textColor = new float[] { 1.0f, 1.0f, 1.0f };
     gl.glColor3d(textColor[0], textColor[1], textColor[2]);
     gl.glPushMatrix();
-    gl.glTranslated(-DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2,
-            DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
+    gl.glTranslated(-DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2,
+            DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2, 0);
     DrawLib.drawText(Integer.toString(hero.getLives()), 40, -50);
     gl.glPopMatrix();
   }
@@ -657,10 +658,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     float[] textColor = new float[] { 1.0f, 1.0f, 1.0f };
     gl.glColor3d(textColor[0], textColor[1], textColor[2]);
     gl.glPushMatrix();
-    gl.glTranslated(DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()/2-diffX,
-            DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
+    gl.glTranslated(DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2-diffX,
+            DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2, 0);
     String text = "SCORE: " + Long.toString(hero.getScore());
-    //DrawLib.drawText(text, new Point(DrawLib.getTexture(DrawLib.TEX_HUD).getWidth()-120, DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()-20));
+    //DrawLib.drawText(text, new Point(DrawLib.getTexture(TEX.TEX_HUD).getWidth()-120, DrawLib.getTexture(TEX.TEX_HUD).getHeight()-20));
     DrawLib.drawText(text, -120, -20);
     gl.glPopMatrix();
   }
@@ -1007,7 +1008,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
                 toRemove.add(c1.getObjectId());
                 if(boss.getHealth() <= 0) { // enemy died
                   toRemove.add(boss.getObjectId());
-                  game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), DrawLib.TEX_HEALTH_ORB, boss.getX(), boss.getY()));
+                  game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_HEALTH_ORB, boss.getX(), boss.getY()));
                   hero.addScore(boss.getPointsWorth());
                   activateDoor(); // set warp point, and show powered door
                 }
@@ -1054,16 +1055,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           break;
         default: 
           switch(texId) {
-            case DrawLib.TEX_SWITCH_ON:
+            case TEX.TEX_SWITCH_ON:
               Engine.setStatusMessage("Gravity reversed!");
               PhysicsEngine.inverseGravity();
-              c.setTextureId(DrawLib.TEX_SWITCH_OFF);
+              c.setTextureId(TEX.TEX_SWITCH_OFF);
               break;
-            case DrawLib.TEX_ENEMY_WEAPON_1:
-            case DrawLib.TEX_ENEMY_WEAPON_2:
+            case TEX.TEX_ENEMY_WEAPON_1:
+            case TEX.TEX_ENEMY_WEAPON_2:
               toRemove.add(objId);
               break;
-            case DrawLib.TEX_HEALTH_ORB:
+            case TEX.TEX_HEALTH_ORB:
               Engine.setStatusMessage("Picked up a health orb.");
               setConversation(new String[] { "I said this.", "and then I said this." });
               toRemove.add(objId);
@@ -1315,7 +1316,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawLog(GL2 gl) {
-    TestDisplay.writeToScreen(gl, DrawLib.getTexture(DrawLib.TEX_HUD).getWidth());
+    TestDisplay.writeToScreen(gl, DrawLib.getTexture(TEX.TEX_HUD).getWidth());
   }
   
   /**

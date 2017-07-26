@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 import Drawing.DrawLib;
+import Enumerations.TEX;
 import com.jogamp.opengl.GL2;
 
 /**
@@ -68,7 +69,7 @@ public class TestDisplay {
       }
       gl.glPushMatrix();
       gl.glColor3fv( COLOR, 0);
-      gl.glTranslated(X_POS, -DrawLib.getTexture(DrawLib.TEX_HUD).getHeight()/2, 0);
+      gl.glTranslated(X_POS, -DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2, 0);
       for(TestData td : DISP_DATA) {
         DrawLib.drawText(td.getTestData(), -screenWidth/2, yPos);
         yPos -= SPACE;

@@ -1,6 +1,7 @@
 package Main;
 
 import Drawing.DrawLib;
+import Enumerations.TEX;
 import java.awt.Point;
 
 /**
@@ -23,7 +24,7 @@ public class Living extends Movable {
   }
   
   public Living() {
-    this(1, 1, 1, DrawLib.TEX_NONE, 0, 0, new Point.Float(0, 0));
+    this(1, 1, 1, TEX.TEX_NONE, 0, 0, new Point.Float(0, 0));
   }
   
   @Override

@@ -1,10 +1,9 @@
 package Main;
 
-import Drawing.DrawLib;
 import Enumerations.GAME_MODE;
 import Enumerations.ID;
 import Enumerations.SOUND_EFFECT;
-import static Main.Engine.setStatusMessage;
+import Enumerations.TEX;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -49,7 +48,7 @@ public class Hero extends Living {
   }
   
   public Hero() {
-    this(-1, 1, 1, 0, DrawLib.TEX_HERO, 0, 0);
+    this(-1, 1, 1, 0, TEX.TEX_HERO, 0, 0);
   }
   
   public long getScore() { return score; }
@@ -74,7 +73,7 @@ public class Hero extends Living {
   public void resetAll() {
     super.resetAll();
     godMode = false;
-    setTextureId(DrawLib.TEX_HERO);
+    setTextureId(TEX.TEX_HERO);
     resetScore();
     resetAmmo();
     resetArmor();
@@ -104,14 +103,14 @@ public class Hero extends Living {
       int objId = c.getObjectId();
       
       switch(texId) {
-      case DrawLib.TEX_PRI_WEAPON: break;
-      case DrawLib.TEX_ALT_WEAPON: break;
-      case DrawLib.TEX_HEALTH_ORB:
+      case TEX.TEX_PRI_WEAPON: break;
+      case TEX.TEX_ALT_WEAPON: break;
+      case TEX.TEX_HEALTH_ORB:
         if(Engine.isDebugging()) TestDisplay.addTestData("Hero HP: " + getHealth());
         addHealth(3);
         if(Engine.isDebugging()) TestDisplay.addTestData("Health orb: " + 3 + " / Hero HP: " + getHealth());
         break;
-      case DrawLib.TEX_LEVEL:
+      case TEX.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);
           speedY = 0;
@@ -196,7 +195,7 @@ public class Hero extends Living {
             break;
           default: 
             if(new Projectile().getClass().isInstance(c)) {
-              if(c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_1 || c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_2) {
+              if(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2) {
                 if(!wasRecentlyDamaged()) {
                   if(Engine.isDebugging()) TestDisplay.addTestData("Hero hit by projectile");
                   recentDamageTimer.start();
@@ -257,7 +256,7 @@ public class Hero extends Living {
     Point.Float zRot = Projectile.calcRotation(new Point.Float(x, y), direction);
     flipY = (zRot.x < 0);
     float xOffset = 20; // so projectile doesn't come from the hero's chest
-    return new Projectile(ID.getNewId(), DrawLib.TEX_PRI_WEAPON, zRot,
+    return new Projectile(ID.getNewId(), TEX.TEX_PRI_WEAPON, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
             getY(), 1); //fire primary, 1 damage
   }
@@ -268,7 +267,7 @@ public class Hero extends Living {
       flipY = (zRot.x < 0);
       float xOffset = 20; // so projectile doesn't come from the hero's chest
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
-      return new Projectile(ID.getNewId(), DrawLib.TEX_ALT_WEAPON, zRot,
+      return new Projectile(ID.getNewId(), TEX.TEX_ALT_WEAPON, zRot,
               (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
               getY(), 5); //fire, 5 damage
     }
@@ -322,13 +321,13 @@ public class Hero extends Living {
     // set texture id then call standard draw function
     if(getLives() > 0) {
       if(firstSequence && wasRecentlyDamaged() && !godMode) {
-        setTextureId(DrawLib.TEX_HERO_TRANSPARENT);
+        setTextureId(TEX.TEX_HERO_TRANSPARENT);
       } else { // second animation sequence
-        if(floatJumped) setTextureId(DrawLib.TEX_HERO_BACKPACK1);
-        else if(standingStill()) setTextureId(DrawLib.TEX_HERO);
+        if(floatJumped) setTextureId(TEX.TEX_HERO_BACKPACK1);
+        else if(standingStill()) setTextureId(TEX.TEX_HERO);
         else if(movingLeft() || movingRight()) {
-          if(firstSequence) setTextureId(DrawLib.TEX_HERO_RUN1);
-          else setTextureId(DrawLib.TEX_HERO_RUN2);
+          if(firstSequence) setTextureId(TEX.TEX_HERO_RUN1);
+          else setTextureId(TEX.TEX_HERO_RUN2);
         }
       }
     }
@@ -344,7 +343,7 @@ public class Hero extends Living {
     } catch (GameOverException ex) {
       this.setSpeedX(0);
       godMode = true;
-      setTextureId(DrawLib.TEX_HERO_DEAD);
+      setTextureId(TEX.TEX_HERO_DEAD);
       Engine.setGameMode(GAME_MODE.DYING);
     }
   }

@@ -1,6 +1,6 @@
 package Main;
 
-import Drawing.DrawLib;
+import Enumerations.TEX;
 import Test.TestDisplay;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class Enemy extends Living {
   }
   
   public Enemy() {
-    this(-1, 1, 1, DrawLib.TEX_ENEMY_BASIC, 0, 0, new Point.Float(0, 0));
+    this(-1, 1, 1, TEX.TEX_ENEMY_BASIC, 0, 0, new Point.Float(0, 0));
   }
   
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
@@ -32,7 +32,7 @@ public class Enemy extends Living {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
-      case DrawLib.TEX_LEVEL:
+      case TEX.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);
           speedY = 0;
@@ -81,7 +81,7 @@ public class Enemy extends Living {
         break;
       default:
         if(new Projectile().getClass().isInstance(c)) {
-          if(!(c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_1 || c.getTextureId() == DrawLib.TEX_ENEMY_WEAPON_2)) {
+          if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
             Projectile p = (Projectile)c;
             try {
               if(Engine.isDebugging()) TestDisplay.addTestData("Enemy HP: " + getHealth());

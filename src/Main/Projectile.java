@@ -1,7 +1,7 @@
 package Main;
 
 import Drawing.DrawLib;
-import Enumerations.ID;
+import Enumerations.TEX;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -91,7 +91,7 @@ public class Projectile extends Movable {
     for(Collidable c : collisions) {
       int collisiontexId = c.getTextureId();
       switch(collisiontexId) {
-      case DrawLib.TEX_LEVEL: // do nothing
+      case TEX.TEX_LEVEL: // do nothing
         break;
       default:
         invalidCollisions.add(c); // remove all but level collisions, will be processed be other classes

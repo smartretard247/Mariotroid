@@ -1,6 +1,7 @@
 package Main;
 
 import Drawing.DrawLib;
+import Enumerations.TEX;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,11 +23,11 @@ public class Collidable extends Drawable {
   }
   
   public Collidable(int x, int y) {
-    this(-1, DrawLib.TEX_NONE, x, y, 1, 1);
+    this(-1, TEX.TEX_NONE, x, y, 1, 1);
   }
   
   public Collidable() {
-    this(-1, DrawLib.TEX_NONE, 0, 0, 1, 1);
+    this(-1, TEX.TEX_NONE, 0, 0, 1, 1);
   }
   
   /**

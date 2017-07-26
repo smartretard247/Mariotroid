@@ -1,7 +1,7 @@
 package Main;
 
-import Drawing.DrawLib;
 import Enumerations.ID;
+import Enumerations.TEX;
 
 /**
  *
@@ -20,8 +20,8 @@ public class Door extends Collidable {
    * @param fX Upside down?
    */
   public Door(int id, int x, int y, int wx, int wy, boolean fX) {
-    super(id, DrawLib.TEX_DOOR, x, y);
-    warp = new Collidable(ID.ID_WARP, DrawLib.TEX_TRANSPARENT, this.x+wx, this.y+wy);
+    super(id, TEX.TEX_DOOR, x, y);
+    warp = new Collidable(ID.ID_WARP, TEX.TEX_TRANSPARENT, this.x+wx, this.y+wy);
     flipX = fX;
   }
   
@@ -34,7 +34,7 @@ public class Door extends Collidable {
   }
   
   public void activate() {
-    this.setTextureId(DrawLib.TEX_DOOR_POWERED);
+    this.setTextureId(TEX.TEX_DOOR_POWERED);
   }
   
   public Collidable getWarp() { return warp; }
