@@ -35,12 +35,13 @@ public class Boss extends Enemy {
   }
   
   @Override
-  public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
+  public List<Integer> processCollisions(ArrayList<Collidable> nearObjects) {
     List<Collidable> collisions = getCollisions(nearObjects);
-    List<Collidable> invalidCollisions = new LinkedList<>();
+    List<Integer> toRemove = new LinkedList<>();
     for(Collidable c : collisions) {
-      int id = c.getTextureId();
-      switch(id) {
+      int texId = c.getTextureId();
+      int objId = c.getObjectId();
+      switch(texId) {
       case TEX.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);
@@ -93,16 +94,18 @@ public class Boss extends Enemy {
               if(Engine.isDebugging()) TestDisplay.addTestData("Boss damage: " + p.getDamage() + " / Boss HP: " + getHealth());
             } catch (GameOverException ex) { // enemy died
               if(Engine.isDebugging()) TestDisplay.addTestData("Boss destroyed");
+              Engine.addScore(getPointsWorth());
+              Engine.getGameContainer().addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_HEALTH_ORB, getX(), getY()));
+              Engine.getGameContainer().activateDoor();
+              toRemove.add(getObjectId());
             }
-          } else {
-            invalidCollisions.add(c); // do not count as true collision, "friendly fire"
           }
+          toRemove.add(objId);
         }
         break;
       }
     }
-    collisions.removeAll(invalidCollisions);
-    return collisions;
+    return toRemove;
   }
   
   public int getMinX() { return minXLocation; }

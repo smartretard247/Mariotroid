@@ -23,11 +23,12 @@ public class Enemy extends Living {
     this(-1, 1, 1, TEX.TEX_ENEMY_BASIC, 0, 0, new Point.Float(0, 0));
   }
   
-  public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
+  @Override
+  public List<Integer> processCollisions(ArrayList<Collidable> nearObjects) {
     setSpeedY(getSpeedY() - PhysicsEngine.getGravity());
     
     List<Collidable> collisions = getCollisions(nearObjects);
-    List<Collidable> invalidCollisions = new LinkedList<>();
+    List<Integer> toRemove = new LinkedList<>();
     for(Collidable c : collisions) {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
@@ -89,16 +90,16 @@ public class Enemy extends Living {
               if(Engine.isDebugging()) TestDisplay.addTestData("Enemy damage: " + p.getDamage() + " / Enemy HP: " + getHealth());
             } catch (GameOverException ex) { // enemy died
               if(Engine.isDebugging()) TestDisplay.addTestData("Enemy destroyed");
+              Engine.addScore(getPointsWorth());
+              toRemove.add(getObjectId());
             }
-          } else {
-            invalidCollisions.add(c);
+            toRemove.add(objId);
           }
         }
         break;
       }
     }
-    collisions.removeAll(invalidCollisions); // do not count this as true collision
-    return collisions;
+    return toRemove;
   }
   
   @Override

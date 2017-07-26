@@ -54,7 +54,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final int INTROLENGTHMS = 3000;
   private static final Timer MESSAGE_TIMER = new Timer(5000, null);
   private final LinkedList<String> conversation = new LinkedList<>();
-  
+  private static long score = 0;
   private DrawLib drawLib;
   private static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
@@ -68,7 +68,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final TestDisplay testDisplay = new TestDisplay();
   private final Scene scene = new Scene(-600, -600, 0, 0.5f, 0.5f, 1.0f);; // trans x & y & z, scale x & y & z
   private final PhysicsEngine phy = new PhysicsEngine();
-  private final ObjectContainer game = new ObjectContainer();
+  private static final ObjectContainer game = new ObjectContainer();
   private final LinkedBlockingQueue<NextProjectile> qProjectiles = new LinkedBlockingQueue<>();
   private boolean slowMo = false;
   private final int TOTAL_LEVELS = 2;
@@ -82,6 +82,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private boolean pendingInteraction = false;
   
   // getters / setters
+  public static ObjectContainer getGameContainer() { return game; }
+  public static long getScore() { return score; }
+  public static void resetScore() { score = 0; }
+  public static void addScore(int points) { score += points; }
   public static void setGameMode(GAME_MODE mode) { gameMode = mode; }
   public static int getFrameNumber() { return frameNumber; }
   public static boolean isSoundEnabled() { return soundEnabled; }
@@ -162,7 +166,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     introTimer.start();
   
     // initial hero settings
-    hero = new Hero(ID.ID_HERO, 3, 10, 0, TEX.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
+    hero = new Hero(ID.ID_HERO, 3, 10, TEX.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
     game.addGO(hero);
   }
   
@@ -179,6 +183,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       loadDefaults();
       h.setDefaultPosition(300, 400);
       h.resetAll();
+      resetScore();
       hero.setGodMode(false);
       game.addGO(new Collidable(ID.ID_JETPACK, TEX.TEX_JETPACK, 1400, 350));
       game.addGO(new Collidable(ID.ID_SHELL, TEX.TEX_SHELL, 300, 800));
@@ -660,7 +665,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPushMatrix();
     gl.glTranslated(DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2-diffX,
             DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2, 0);
-    String text = "SCORE: " + Long.toString(hero.getScore());
+    String text = "SCORE: " + Long.toString(getScore());
     //DrawLib.drawText(text, new Point(DrawLib.getTexture(TEX.TEX_HUD).getWidth()-120, DrawLib.getTexture(TEX.TEX_HUD).getHeight()-20));
     DrawLib.drawText(text, -120, -20);
     gl.glPopMatrix();
@@ -985,111 +990,39 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       
       // for all objects
       visibleObjects.stream().forEach((c) -> {
-        // move all movables
-        if((new Movable()).getClass().isInstance(c)) {
-          Movable m = (Movable)c;
-          m.move();
-        }
-        // remove projectiles that collide with the level
-        if((new Projectile()).getClass().isInstance(c)) {
-          Projectile p = (Projectile)c;
-          List<Collidable> projectileCollisions = p.processCollisions(visibleObjects);
-          projectileCollisions.stream().forEach((c1) -> {
-            toRemove.add(p.getObjectId());
-          });
-        } else if((new Boss()).getClass().isInstance(c)) {
-          Boss boss = (Boss)c;
-          if(boss != null) {
-            if(!boss.didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true));
-            List<Collidable> bossCollisions = boss.processCollisions(visibleObjects);
-            bossCollisions.stream().forEach((c1) -> {
-              if(new Projectile().getClass().isInstance(c1)) {
-                toRemove.add(c1.getObjectId());
-                if(boss.getHealth() <= 0) { // enemy died
-                  toRemove.add(boss.getObjectId());
-                  game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_HEALTH_ORB, boss.getX(), boss.getY()));
-                  hero.addScore(boss.getPointsWorth());
-                  activateDoor(); // set warp point, and show powered door
-                }
-              }
-            });
+        if(c != null) {
+          // move all movables
+          if((new Movable()).getClass().isInstance(c)) {
+            ((Movable)c).move();
           }
-        } else if((new Enemy()).getClass().isInstance(c)) {
-          Enemy enemy = (Enemy)c;
-          if(enemy != null) {
-            List<Collidable> enemyCollisions = enemy.processCollisions(visibleObjects); // return valid collisions
-            enemyCollisions.stream().forEach((c1) -> {
-              if(new Projectile().getClass().isInstance(c1)) {
-                toRemove.add(c1.getObjectId());
-                if(enemy.getHealth() <= 0) { // enemy died
-                  hero.addScore(enemy.getPointsWorth());
-                  toRemove.add(enemy.getObjectId());
-                }
-              }
-            });
+          // process projectile collisions
+          if((new Projectile()).getClass().isInstance(c)) {
+            toRemove.addAll(((Projectile)c).processCollisions(visibleObjects));
+          }
+          // process interactive collisions
+          if((new FallingBox()).getClass().isInstance(c)) {
+            toRemove.addAll(((FallingBox)c).processCollisions(visibleObjects));
+          }
+          // fire boss weapon toward hero and process boss collisions
+          if((new Boss()).getClass().isInstance(c)) {
+            Boss boss = (Boss)c;
+            toRemove.addAll(boss.processCollisions(visibleObjects));
+            if(!boss.didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true));
+          }
+          // process all enemy collisions
+          if((new Enemy()).getClass().isInstance(c)) {
+            toRemove.addAll(((Enemy)c).processCollisions(visibleObjects));
           }
         }
       });
+      toRemove.addAll(hero.processCollisions(visibleObjects));
       
-      // hero collision detection
-      List<Collidable> heroCollisions = hero.processCollisions(visibleObjects);
-      for(Collidable c : heroCollisions){
-        int objId = c.getObjectId();
-        int texId = c.getTextureId();
-        switch(objId) {
-        case ID.ID_JETPACK:
-          hero.addScore(250);
-          toRemove.add(objId); // remove the jetpack image from the screen
-          break;
-        case ID.ID_SHELL:
-          hero.addScore(1000);
-          toRemove.add(objId); // remove the shell image from the screen
-          break;
-        case ID.ID_ARMOR:
-          Engine.setStatusMessage("Got armor!");
-          hero.addScore(275);
-          toRemove.add(objId); // remove the armor image from the screen
-          break;
-        case ID.ID_WARP: jumpToNextLevel();
-          break;
-        default: 
-          switch(texId) {
-            case TEX.TEX_SWITCH_ON:
-              Engine.setStatusMessage("Gravity reversed!");
-              PhysicsEngine.inverseGravity();
-              c.setTextureId(TEX.TEX_SWITCH_OFF);
-              break;
-            case TEX.TEX_ENEMY_WEAPON_1:
-            case TEX.TEX_ENEMY_WEAPON_2:
-              toRemove.add(objId);
-              break;
-            case TEX.TEX_HEALTH_ORB:
-              Engine.setStatusMessage("Picked up a health orb.");
-              setConversation(new String[] { "I said this.", "and then I said this." });
-              toRemove.add(objId);
-              break;
-            default: break;
-          }
-          break;
-        }
-      }
-      
-      // remove all ids tagged for removal
+      // check for warp collision, then remove all ids tagged for removal
+      if(toRemove.contains(ID.ID_WARP)) jumpToNextLevel();
       toRemove.stream().forEach((id) -> { game.removeAny(id); });
       break;
     default: break;
     }
-  }
-  
-  /**
-   * Removes the "closed" door and adds a "powered" door.  Also creates a collidable point at which
-   * contact will change game mode to WARPING.
-   */
-  private void activateDoor() {
-    Door door = (Door)game.getGO(ID.ID_DOOR);
-    door.activate();
-    game.addGO(door.getWarp());
-    Engine.setStatusMessage("Warp activated.");
   }
 
   /**

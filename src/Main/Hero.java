@@ -19,7 +19,6 @@ public class Hero extends Living {
   private static final int MAX_SECONDARY_AMMO = 5;
   private static final int JUMP_SPEED = 11;
   private int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
-  private long score;
   private boolean jumped;
   private boolean hasDoubleJump;
   private boolean floatJumped;
@@ -32,9 +31,8 @@ public class Hero extends Living {
   private boolean hasArmor;
   private boolean godMode = false;
   
-  public Hero(int objId, int startLives, int startHealth, long startScore, int texId, float x, float y) {
+  public Hero(int objId, int startLives, int startHealth, int texId, float x, float y) {
     super(objId, startLives, startHealth, texId, x, y, new Point.Float(0, 0));
-    score = startScore;
     fallCount = 0;
     hasSecondaryWeapon = false;
     secondaryAmmoCount = MAX_SECONDARY_AMMO;
@@ -48,12 +46,8 @@ public class Hero extends Living {
   }
   
   public Hero() {
-    this(-1, 1, 1, 0, TEX.TEX_HERO, 0, 0);
+    this(-1, 1, 1, TEX.TEX_HERO, 0, 0);
   }
-  
-  public long getScore() { return score; }
-  public void resetScore() { score = 0; }
-  public void addScore(int points) { score += points; }
   
   @Override
   public boolean loseHealth(int amount) throws GameOverException {
@@ -74,7 +68,6 @@ public class Hero extends Living {
     super.resetAll();
     godMode = false;
     setTextureId(TEX.TEX_HERO);
-    resetScore();
     resetAmmo();
     resetArmor();
     dropSecondaryWeapon();
@@ -83,17 +76,18 @@ public class Hero extends Living {
     
   }
   
-  public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects)  {
+  /**
+   * Checks for collisions with all objects in nearObjects.
+   * @param nearObjects
+   * @return an array list of valid id collisions
+   */
+  public List<Integer> processCollisions(ArrayList<Collidable> nearObjects)  {
     if(!isClimbing) setSpeedY(getSpeedY() - PhysicsEngine.getGravity());
     
-    //move();
     List<Collidable> collisions = getCollisions(nearObjects);
-    List<Collidable> invalidCollisions = new LinkedList<>();
+    List<Integer> toRemove = new LinkedList<>();
     if(Math.abs(this.getY()) > 3000) { //fell off map
-      try {
-        loseHealth(10);
-      } catch (GameOverException ex) {
-      }
+      try { loseHealth(10); } catch (GameOverException ex) { }
     }
     
     // additional things that the hero should do with each of the collided objects
@@ -103,12 +97,19 @@ public class Hero extends Living {
       int objId = c.getObjectId();
       
       switch(texId) {
+      case TEX.TEX_SWITCH_ON:
+        Engine.setStatusMessage("Gravity reversed!");
+        PhysicsEngine.inverseGravity();
+        c.setTextureId(TEX.TEX_SWITCH_OFF);
+        break;
       case TEX.TEX_PRI_WEAPON: break;
       case TEX.TEX_ALT_WEAPON: break;
       case TEX.TEX_HEALTH_ORB:
+        Engine.setStatusMessage("Picked up a health orb.");
         if(Engine.isDebugging()) TestDisplay.addTestData("Hero HP: " + getHealth());
         addHealth(3);
         if(Engine.isDebugging()) TestDisplay.addTestData("Health orb: " + 3 + " / Hero HP: " + getHealth());
+        toRemove.add(objId);
         break;
       case TEX.TEX_FALLING_BOX:
       case TEX.TEX_FALLING_BOX_S:
@@ -185,15 +186,24 @@ public class Hero extends Living {
             break;
           case ID.ID_SHELL:
             Engine.setStatusMessage("Got missles!");
+            Engine.addScore(1000);
             pickupSecondaryWeapon();
+            toRemove.add(objId);
             break;
           case ID.ID_ARMOR:
             Engine.setStatusMessage("Got armor!");
+            Engine.addScore(275);
             pickupArmor();
+            toRemove.add(objId);
             break;
           case ID.ID_JETPACK:
             Engine.setStatusMessage("Got jetpack!");
+            Engine.addScore(250);
             pickupJetpack();
+            toRemove.add(objId);
+            break;
+          case ID.ID_WARP:
+            toRemove.add(objId); // tag for renewal to tell Engine to call jumpToNextLevel()
             break;
           default: 
             if(new Projectile().getClass().isInstance(c)) {
@@ -207,9 +217,8 @@ public class Hero extends Living {
                   } catch (GameOverException ex) {
                     this.setLives(0);
                   }
+                  toRemove.add(objId);
                 }
-              } else {
-                invalidCollisions.add(c);
               }
             }
             break;
@@ -222,8 +231,7 @@ public class Hero extends Living {
       x += (x < lastWallCollision.getX()) ? 20 : -20;
       isClimbing = false;
     }
-    collisions.removeAll(invalidCollisions);
-    return collisions;
+    return toRemove;
   }
   
   public boolean canJump() { return !jumped; }

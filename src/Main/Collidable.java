@@ -67,4 +67,8 @@ public class Collidable extends Drawable {
   }
   
   public final int getObjectId() { return objectId; }
+  
+  public List<Integer> processCollisions(ArrayList<Collidable> nearObjects) {
+    throw new UnsupportedOperationException("Subclass did not override processCollisions from Collidable class.");
+  }
 }

@@ -119,4 +119,15 @@ public class ObjectContainer {
   public void deselectAllIO() {
     interactiveObjects.values().forEach((i) -> { i.deselect(); });
   }
+  
+  /**
+   * Removes the "closed" door and adds a "powered" door.  Also creates a collidable point at which
+   * contact will change game mode to WARPING.
+   */
+  public void activateDoor() {
+    Door door = (Door)getGO(ID.ID_DOOR);
+    door.activate();
+    addGO(door.getWarp());
+    Engine.setStatusMessage("Warp activated.");
+  }
 }

@@ -83,20 +83,19 @@ public class Projectile extends Movable {
   public int getDamage() { return damage; }
   public void setDamage(int to) { damage = to; }
   
-  public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
+  @Override
+  public List<Integer> processCollisions(ArrayList<Collidable> nearObjects) {
     List<Collidable> collisions = getCollisions(nearObjects);
-    List<Collidable> invalidCollisions = new LinkedList<>();
+    List<Integer> toRemove = new LinkedList<>();
     for(Collidable c : collisions) {
       int collisiontexId = c.getTextureId();
       switch(collisiontexId) {
-      case TEX.TEX_LEVEL: // do nothing
+      case TEX.TEX_LEVEL:
+        toRemove.add(this.getObjectId());
         break;
-      default:
-        invalidCollisions.add(c); // remove all but level collisions, will be processed be other classes
-        break;
+      default: break;
       }
     }
-    collisions.removeAll(invalidCollisions);
-    return collisions;
+    return toRemove;
   }
 }

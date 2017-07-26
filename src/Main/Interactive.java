@@ -7,7 +7,7 @@ import Enumerations.TEX;
  *
  * @author Jeezy
  */
-public class Interactive extends Movable {
+public abstract class Interactive extends Movable {
   private boolean selected = false;
   private final int selectedTexId;
   private final int deselectedTexId;
@@ -50,9 +50,5 @@ public class Interactive extends Movable {
    * Performs some action.  Derivations of this class should override doAction and call
    * super.doAction() on first line.
    */
-  public void doAction() {
-    if(selected) {
-      deselect();
-    }
-  }
+  public abstract void doAction();
 }
