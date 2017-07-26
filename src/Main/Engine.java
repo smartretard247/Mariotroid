@@ -189,7 +189,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, TEX.TEX_CALAMITY, 11000, 500, new Point.Float(10,10), 500));
       game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
       
-      game.addIO(new Interactive(ID.ID_FALLING_BOX, TEX.TEX_FALLING_BOX, TEX.TEX_FALLING_BOX_S, 1000, 900));
+      game.addIO(new FallingBox(ID.ID_FALLING_BOX, TEX.TEX_FALLING_BOX, TEX.TEX_FALLING_BOX_S, 1000, 990));
       break;
     case 2:// setup level 2, only add level 2 game objects to this map
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
@@ -806,10 +806,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           }
           break;
         case KeyEvent.VK_A: // move left
-          if(rightPressed){
+          if(rightPressed) {
             hero.setSpeedX(0);
-          }else{
-            hero.increaseSpeed(-GameObject.MAX_SPEED_X, 0);
+          } else {
+            hero.increaseSpeed(-Movable.MAX_SPEED_X, 0);
           }
           if(hero.isClimbing()) {
             hero.setClimbing(false);
@@ -818,10 +818,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           leftPressed = true;
           break;
         case KeyEvent.VK_D: // move right
-          if(leftPressed){
+          if(leftPressed) {
             hero.setSpeedX(0);
-          }else{
-            hero.increaseSpeed(GameObject.MAX_SPEED_X, 0);
+          } else {
+            hero.increaseSpeed(Movable.MAX_SPEED_X, 0);
           }
           if(hero.isClimbing()) {
             hero.setClimbing(false);
@@ -910,17 +910,17 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         hero.setSpeedY(0);
         break;
       case KeyEvent.VK_A: // stop moving left
-          if(rightPressed){
-            hero.increaseSpeed(GameObject.MAX_SPEED_X, 0);
-          }else{
+          if(rightPressed) {
+            hero.increaseSpeed(Movable.MAX_SPEED_X, 0);
+          } else {
             hero.setSpeedX(0);
           }
         leftPressed = false;
         break;
       case KeyEvent.VK_D: // stop moving right
-          if(leftPressed){
-            hero.increaseSpeed(-GameObject.MAX_SPEED_X, 0);
-          }else{
+          if(leftPressed) {
+            hero.increaseSpeed(-Movable.MAX_SPEED_X, 0);
+          } else {
             hero.setSpeedX(0);
           }
         rightPressed = false;
@@ -992,7 +992,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         }
         // remove projectiles that collide with the level
         if((new Projectile()).getClass().isInstance(c)) {
-          //projectiles.add((Projectile)c); // track visible projectiles
           Projectile p = (Projectile)c;
           List<Collidable> projectileCollisions = p.processCollisions(visibleObjects);
           projectileCollisions.stream().forEach((c1) -> {

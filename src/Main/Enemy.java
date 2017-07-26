@@ -24,7 +24,7 @@ public class Enemy extends Living {
   }
   
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects) {
-    setSpeedY(speedY - PhysicsEngine.getGravity());
+    setSpeedY(getSpeedY() - PhysicsEngine.getGravity());
     
     List<Collidable> collisions = getCollisions(nearObjects);
     List<Collidable> invalidCollisions = new LinkedList<>();
@@ -35,48 +35,48 @@ public class Enemy extends Living {
       case TEX.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);
-          speedY = 0;
+          setSpeedY(0);
         } else if(movingDownAndRight()) { // falling right and down
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
             adjustToLeftOf(c);
-            speedX = -speedX;
+            inverseSpeedX();
           } else {
             adjustToTopOf(c);
-            speedY = 0;
+            setSpeedY(0);
           }
         } else if(movingDownAndLeft()) { // falling left and down
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
             adjustToRightOf(c);
-            speedX = -speedX;
+            inverseSpeedX();
           } else {
             adjustToTopOf(c);
-            speedY = 0;
+            setSpeedY(0);
           }
         } else if(movingLeft()) { // moving left
           adjustToRightOf(c);
-          speedX = -speedX; // reverse direction
+          inverseSpeedX(); // reverse direction
         } else if(movingRight()) { // moving right
           adjustToLeftOf(c);
-          speedX = -speedX; // reverse direction
+          inverseSpeedX(); // reverse direction
         } else if(movingUpAndLeft()) { // flying upward and to the left
           if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
             adjustToRightOf(c);
-            speedX = -speedX; // reverse direction
+            inverseSpeedX(); // reverse direction
           } else {
             adjustToBottomOf(c);
-            speedY = 0;
+            setSpeedY(0);
           }
         } else if(movingUpAndRight()) { // flying upward and to the right
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
             adjustToLeftOf(c);
-            speedX = -speedX; // reverse direction
+            inverseSpeedX(); // reverse direction
           } else {
             adjustToBottomOf(c);
-            speedY = 0;
+            setSpeedY(0);
           }
         } else if(movingUp()) { // flying straight upward
           adjustToBottomOf(c);
-          speedY = 0;
+          setSpeedY(0);
         }
         break;
       default:

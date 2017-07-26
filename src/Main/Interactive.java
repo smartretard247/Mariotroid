@@ -7,7 +7,7 @@ import Enumerations.TEX;
  *
  * @author Jeezy
  */
-public class Interactive extends Collidable {
+public class Interactive extends Movable {
   private boolean selected = false;
   private final int selectedTexId;
   private final int deselectedTexId;

@@ -84,7 +84,7 @@ public class Hero extends Living {
   }
   
   public List<Collidable> processCollisions(ArrayList<Collidable> nearObjects)  {
-    if(!isClimbing) setSpeedY(speedY - PhysicsEngine.getGravity());
+    if(!isClimbing) setSpeedY(getSpeedY() - PhysicsEngine.getGravity());
     
     //move();
     List<Collidable> collisions = getCollisions(nearObjects);
@@ -98,7 +98,7 @@ public class Hero extends Living {
     
     // additional things that the hero should do with each of the collided objects
     for(Collidable c : collisions) {
-      if(Engine.isDebugging()) System.out.println("Collision, source object coord/speed: " + x + ", " + y + " / " + speedX + ", " + speedY);
+      if(Engine.isDebugging()) System.out.println("Collision, source object coord/speed: " + x + ", " + y + " / " + getSpeedX() + ", " + getSpeedY());
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       
@@ -110,10 +110,12 @@ public class Hero extends Living {
         addHealth(3);
         if(Engine.isDebugging()) TestDisplay.addTestData("Health orb: " + 3 + " / Hero HP: " + getHealth());
         break;
+      case TEX.TEX_FALLING_BOX:
+      case TEX.TEX_FALLING_BOX_S:
       case TEX.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);
-          speedY = 0;
+          setSpeedY(0);
           doLand();
         } else if(movingDownAndRight()) { // falling right and down
           if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
@@ -121,7 +123,7 @@ public class Hero extends Living {
             lastWallCollision = c;
           } else {
             adjustToTopOf(c);
-            speedY = 0;
+            setSpeedY(0);
             doLand();
           }
         } else if(movingDownAndLeft()) { // falling left and down
@@ -130,7 +132,7 @@ public class Hero extends Living {
             lastWallCollision = c;
           } else {
             adjustToTopOf(c);
-            speedY = 0;
+            setSpeedY(0);
             doLand();
           }
         } else if(movingLeft()) { // moving left
@@ -145,7 +147,7 @@ public class Hero extends Living {
             lastWallCollision = c;
           } else {
             adjustToBottomOf(c);
-            speedY = 0;
+            setSpeedY(0);
             if(PhysicsEngine.gravityIsInverted()) doLand();
           }
         } else if(movingUpAndRight()) { // flying upward and to the right
@@ -154,12 +156,12 @@ public class Hero extends Living {
             lastWallCollision = c;
           } else {
             adjustToBottomOf(c);
-            speedY = 0;
+            setSpeedY(0);
             if(PhysicsEngine.gravityIsInverted()) doLand();
           }
         } else if(movingUp()) { // flying straight upward
           adjustToBottomOf(c);
-          speedY = 0;
+          setSpeedY(0);
           if(PhysicsEngine.gravityIsInverted()) doLand();
         } else if(standingStill()) { // not moving, must be a different object
           adjustToBottomOf(c);

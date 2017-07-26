@@ -1,7 +1,6 @@
 package Drawing;
 
 import Enumerations.TEX;
-import Main.Interactive;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLException;
@@ -64,6 +63,8 @@ public class DrawLib {
     textureIdMap.put(TEX.TEX_TRANSPARENT, "/res/transparent.png");
     textureIdMap.put(TEX.TEX_SWITCH_ON, "/res/switch_on.png");
     textureIdMap.put(TEX.TEX_SWITCH_OFF, "/res/switch_off.png");
+    textureIdMap.put(TEX.TEX_FALLING_BOX, "/res/falling_box.png");
+    textureIdMap.put(TEX.TEX_FALLING_BOX_S, "/res/falling_box_s.png");
     
     // load custom font
     String fontName = "/res/spac3.ttf";

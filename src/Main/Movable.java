@@ -7,14 +7,23 @@ import java.awt.Point;
  *
  * @author Jeezy
  */
-public class Movable extends GameObject {
- 
-  public Movable(int objId, int texId, float x, float y, float w, float h, Point.Float speed) {
-    super(objId, texId, x, y, w, h, speed);
+public class Movable extends Collidable {
+  public static float MAX_SPEED_X = PhysicsEngine.getTerminalX();
+  public static float MAX_SPEED_Y = PhysicsEngine.getTerminalY();
+  private Point.Float defSpeed;
+  protected Point.Float speed;
+  private static final float SPRINT_MULTIPLIER = 1.5f;
+  private boolean isSprinting;
+  
+  public Movable(int objId, int texId, float x, float y, float w, float h, Point.Float s) {
+    super(objId, texId, x, y, w, h);
+    speed = s;
+    defSpeed = new Point.Float(s.x, s.y);
+    isSprinting = false;
   }
   
   public Movable(int objId, int texId, float x, float y, float w, float h) {
-    super(objId, texId, x, y, w, h, new Point.Float(0, 0));
+    this(objId, texId, x, y, w, h, new Point.Float(0, 0));
   }
   
   public Movable(int objId, int texId, float x, float y) {
@@ -29,49 +38,65 @@ public class Movable extends GameObject {
     this(-1, -1, 0, 0, 0, 0, new Point.Float(0, 0));
   }
   
+  // getters/setters
+  public Point.Float getSpeed() { return speed; }
+  public float getSpeedX() { return speed.x; }
+  public float getSpeedY() { return speed.y; }
+  public void setSpeedX(float spdX) { speed.x = spdX; }
+  public void setSpeedY(float spdY) { speed.y = spdY; }
+  public void setSpeed(float spdX, float spdY) { speed.x = spdX; speed.y = spdY; }
+  public void setSpeed(Point.Float to) { speed.x = to.x; speed.y = to.y; }
+  public void setDefaultSpeed(Point.Float to) { defSpeed = to; }
+  
+  public void resetAll() {
+    this.resetPosition();
+    this.setSpeed(defSpeed);
+    if(isSprinting) toggleSprint();
+  }
+  
   /**
    * Moves object by speedX and speedY, also flips image if direction changes.
    */
   public void move() {
-    x += speedX;
-    y += speedY;
-    if(speedX != 0) setFlipY(speedX < 0); // this reverses the sprite with direction changes
+    x += getSpeedX();
+    y += getSpeedY();
+    if(getSpeedX() != 0) setFlipY(getSpeedX() < 0); // this reverses the sprite with direction changes
   }
   
   public boolean standingStill() {
-    return (speedY == 0 && speedX == 0);
+    return (getSpeedY() == 0 && getSpeedX() == 0);
   }
   
   public boolean movingUp() {
-    return (speedY > 0 && speedX == 0);
+    return (getSpeedY() > 0 && getSpeedX() == 0);
   }
   
   public boolean movingDown() {
-    return (speedY < 0 && speedX == 0);
+    return (getSpeedY() < 0 && getSpeedX() == 0);
   }
   
   public boolean movingLeft() {
-    return (speedY == 0 && speedX < 0);
+    return (getSpeedY() == 0 && getSpeedX() < 0);
   }
   
   public boolean movingRight() {
-    return (speedY == 0 && speedX > 0);
+    return (getSpeedY() == 0 && getSpeedX() > 0);
   }
   
   public boolean movingUpAndLeft() {
-    return (speedY > 0 && speedX < 0);
+    return (getSpeedY() > 0 && getSpeedX() < 0);
   }
   
   public boolean movingUpAndRight() {
-    return (speedY > 0 && speedX > 0);
+    return (getSpeedY() > 0 && getSpeedX() > 0);
   }
   
   public boolean movingDownAndLeft() {
-    return (speedY < 0 && speedX < 0);
+    return (getSpeedY() < 0 && getSpeedX() < 0);
   }
   
   public boolean movingDownAndRight() {
-    return (speedY < 0 && speedX > 0);
+    return (getSpeedY() < 0 && getSpeedX() > 0);
   }
   
   public void adjustToBottomOf(Collidable c) {
@@ -89,4 +114,39 @@ public class Movable extends GameObject {
   public void adjustToLeftOf(Collidable c) {
     x = c.getLeft() - width/2 - 1;
   }
+  
+  public void inverseSpeedX() {
+    speed.x = -speed.x;
+  }
+  
+  public void inverseSpeedY() {
+    speed.y = -speed.y;
+  }
+  
+  public void increaseSpeed(float deltaX, float deltaY) {
+    speed.x += deltaX;
+    speed.y += deltaY;
+    if(Math.abs(speed.x) > MAX_SPEED_X)
+      speed.x = (speed.x < 0) ? -MAX_SPEED_X : MAX_SPEED_X;
+    if(Math.abs(speed.y) > MAX_SPEED_Y)
+      speed.y = (speed.y < 0) ? -MAX_SPEED_Y : MAX_SPEED_Y;
+  }
+  
+  /**
+   * Toggles between maximum running speeds.
+   */
+  public void toggleSprint() {
+    if(!isSprinting) {
+      MAX_SPEED_X *= SPRINT_MULTIPLIER;
+      isSprinting = true;
+    } else {
+      MAX_SPEED_X /= SPRINT_MULTIPLIER;
+      isSprinting = false;
+    }
+    if(speed.x != 0)
+      speed.x = (speed.x > 0) ? MAX_SPEED_X : -MAX_SPEED_X;
+  }
+  
+  public void setSprinting(boolean to) { isSprinting = to; }
+  public boolean isSprinting() { return isSprinting; }
 }

@@ -20,9 +20,7 @@ public class Projectile extends Movable {
   
   public Projectile(int objId, int texId, Point.Float zrot, float x, float y, int d) {
     super(objId, texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
-    Point.Float speed = calcSpeed(zrot);
-    speedX = speed.x;
-    speedY = speed.y;
+    setSpeed(calcSpeed(zrot));
     zRot = (int)Math.toDegrees(Math.atan2(zrot.y, zrot.x));
     damage = d;
   }

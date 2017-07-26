@@ -17,7 +17,6 @@ public class ObjectContainer {
   private final Map<Integer, Collidable> gameObjects = new HashMap<>();
   private final Map<Integer, Collidable> tempObjects = new HashMap<>(); // like level and projectiles
   private final Map<Integer, Interactive> interactiveObjects = new HashMap<>();
-  //private final ArrayList<Integer> visibleObjects = new ArrayList<>();
   
   public ArrayList<Collidable> getVisibles() {
     ArrayList<Collidable> v = new ArrayList<>();
