@@ -90,6 +90,8 @@ public class Projectile extends Movable {
     for(Collidable c : collisions) {
       int collisiontexId = c.getTextureId();
       switch(collisiontexId) {
+      case TEX.TEX_FALLING_BOX:
+      case TEX.TEX_FALLING_BOX_S:
       case TEX.TEX_LEVEL:
         toRemove.add(this.getObjectId());
         break;

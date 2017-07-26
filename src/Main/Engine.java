@@ -194,7 +194,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, TEX.TEX_CALAMITY, 11000, 500, new Point.Float(10,10), 500));
       game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
       
-      game.addIO(new FallingBox(ID.ID_FALLING_BOX, TEX.TEX_FALLING_BOX, TEX.TEX_FALLING_BOX_S, 1000, 990));
+      game.addIO(new FallingBox(ID.ID_FALLING_BOX, TEX.TEX_FALLING_BOX, TEX.TEX_FALLING_BOX_S, 1000, 960));
       break;
     case 2:// setup level 2, only add level 2 game objects to this map
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));

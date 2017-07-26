@@ -81,6 +81,7 @@ public class Hero extends Living {
    * @param nearObjects
    * @return an array list of valid id collisions
    */
+  @Override
   public List<Integer> processCollisions(ArrayList<Collidable> nearObjects)  {
     if(!isClimbing) setSpeedY(getSpeedY() - PhysicsEngine.getGravity());
     

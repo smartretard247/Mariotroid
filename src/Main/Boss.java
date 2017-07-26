@@ -99,8 +99,8 @@ public class Boss extends Enemy {
               Engine.getGameContainer().activateDoor();
               toRemove.add(getObjectId());
             }
+            toRemove.add(objId);
           }
-          toRemove.add(objId);
         }
         break;
       }
