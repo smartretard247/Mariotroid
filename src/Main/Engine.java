@@ -186,7 +186,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       h.resetAll();
       resetScore();
       hero.setGodMode(false);
-      game.addGO(new Collidable(ID.ID_JETPACK, TEX.TEX_JETPACK, 1400, 350));
+      game.addGO(new Collidable(ID.ID_JETPACK, TEX.TEX_JETPACK, 1700, 800));
       game.addGO(new Collidable(ID.ID_SHELL, TEX.TEX_SHELL, 300, 800));
       game.addGO(new Collidable(ID.ID_ARMOR, TEX.TEX_ARMOR, 5660, 198));
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 2000, 800, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
@@ -197,7 +197,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       b.setMinX(8930);
       game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
       
-      game.addIO(new FallingBox(ID.ID_FALLING_BOX, TEX.TEX_FALLING_BOX, TEX.TEX_FALLING_BOX_S, 1000, 960));
+      game.addIO(new FallingBox(ID.ID_FALLING_BOX, TEX.TEX_FALLING_BOX, TEX.TEX_FALLING_BOX_S, 760, 960));
       break;
     case 2:// setup level 2, only add level 2 game objects to this map
       game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));

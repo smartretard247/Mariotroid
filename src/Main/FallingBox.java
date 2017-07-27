@@ -22,7 +22,7 @@ public class FallingBox extends Interactive {
   
   @Override
   public void doAction() {
-    weight = 1f;
+    // do nothing because FallingBox falls when hit by hero projectile, not hero.interact()
   }
   
   /**
@@ -35,13 +35,23 @@ public class FallingBox extends Interactive {
     List<Collidable> collisions = getCollisions(nearObjects);
     List<Integer> toRemove = new LinkedList<>();
     for(Collidable c : collisions) {
-      int collisiontexId = c.getTextureId();
-      switch(collisiontexId) {
+      int texId = c.getTextureId();
+      int objId = c.getObjectId();
+      switch(texId) {
       case TEX.TEX_LEVEL:
         this.adjustToTopOf(c);
         this.setSpeedY(0);
         break;
       default:
+        if(new Projectile().getClass().isInstance(c)) {
+          if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
+            if(!isComplete()) {
+              weight = 1f;
+              setComplete(true);
+              Engine.setStatusMessage("Brick broke free!");
+            }
+          }
+        }
         break;
       }
     }

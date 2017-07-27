@@ -83,8 +83,6 @@ public class Hero extends Living {
    */
   @Override
   public List<Integer> processCollisions(ArrayList<Collidable> nearObjects)  {
-    //if(!isClimbing) setSpeedY(getSpeedY() - PhysicsEngine.getGravity());
-    
     List<Collidable> collisions = getCollisions(nearObjects);
     List<Integer> toRemove = new LinkedList<>();
     if(Math.abs(this.getY()) > 3000) { //fell off map
@@ -375,7 +373,8 @@ public class Hero extends Living {
   public void interact(Interactive i) {
     if(i != null) {
       i.doAction();
-      Engine.setStatusMessage("Picked an interactive object"); // do something
+      if(i.isComplete()) Engine.setStatusMessage("Can no longer interact with that object.");
+      else  Engine.setStatusMessage("Picked an interactive object"); // do something
     } else {
       Engine.setStatusMessage("Nothing around to interact with.");
     }

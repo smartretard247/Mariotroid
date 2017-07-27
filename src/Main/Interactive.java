@@ -8,6 +8,7 @@ import Enumerations.TEX;
  * @author Jeezy
  */
 public abstract class Interactive extends Heavy {
+  private boolean interactionComplete = false;
   private boolean selected = false;
   private final int selectedTexId;
   private final int deselectedTexId;
@@ -31,6 +32,8 @@ public abstract class Interactive extends Heavy {
   }
   
   public boolean isSelected() { return selected; }
+  public boolean isComplete() { return interactionComplete; }
+  public void setComplete(boolean to) { interactionComplete = to; }
   
   public void select() {
     if(!selected) {
@@ -47,8 +50,7 @@ public abstract class Interactive extends Heavy {
   }
   
   /**
-   * Performs some action.  Derivations of this class should override doAction and call
-   * super.doAction() on first line.
+   * Performs some action.
    */
   public abstract void doAction();
 }
