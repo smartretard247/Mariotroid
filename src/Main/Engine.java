@@ -281,6 +281,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case INTRO: drawIntro(gl); break; // END INTRO
       case START_MENU: drawStartMenu(gl); break; // END START MENU
       case DYING:
+      case TALKING:
       case RUNNING: drawNormalGamePlay(gl); break; // END RUNNING
       case PAUSED: drawPauseMenu(gl); break; // END PAUSED
       case GAME_OVER: drawGameOver(gl); break;
@@ -324,10 +325,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glTranslated(0, 0, scene.globalZ); // global z should decrease by 40 after each zoom
     adjustScene(gl, false);
     detectInteractiveObject();
-    if(pendingInteraction) {
-      hero.interact(interactiveObject);
-      pendingInteraction = false;
-    }
+    
     drawLevel(gl);
     drawHero(gl);
     fireProjectiles(); // fire projectile from the queue
@@ -722,11 +720,24 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
   }
 
+  /**
+   * Transforms the view into the z-axis 40 times by an increment of 1.
+   */
   private void transitionToNextLevel() {
     // this is for slow mo jumping to next level
     if(slowMo) { 
       ++scene.globalZ;
       if(scene.globalZ % scene.LEVEL_DEPTH == 0) slowMo = false;
+    }
+  }
+
+  /**
+   * Checks for pending interaction with an object, if true performs interaction.
+   */
+  private void processPendingInteraction() {
+    if(pendingInteraction) {
+      hero.interact(interactiveObject);
+      pendingInteraction = false;
     }
   }
 
@@ -996,6 +1007,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     case RUNNING:
       if(checkForWin()) return;
       transitionToNextLevel();
+      processPendingInteraction();
       PhysicsEngine.fall(); // apply gravity to all heavy objects
       
       ArrayList<Collidable> visibleObjects = game.getVisibles();
@@ -1216,9 +1228,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     LinkedList<String> reverse = new LinkedList<>();
     for(String s : convo)
       reverse.push(s);
+    if(debugging) conversation.clear();
     while(!reverse.isEmpty())
       conversation.push(reverse.pop());
-    MESSAGE_TIMER.start();
+    if(debugging) MESSAGE_TIMER.restart();
+    else MESSAGE_TIMER.start();
   }
   
   /**
