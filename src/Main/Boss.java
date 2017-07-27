@@ -22,10 +22,16 @@ public class Boss extends Enemy {
     super(objId, startLives, startHealth, texId, x, y, speed);
     pointsWorth = points;
     fireTimer.setRepeats(false);
+    weight = 0;
   }
   
   public Boss() {
     this(-1, 1, 1, TEX.TEX_ENEMY_BASIC, 0, 0, new Point.Float(0, 0), 0);
+  }
+  
+  @Override
+  public void draw() {
+    super.draw(false);
   }
   
   @Override

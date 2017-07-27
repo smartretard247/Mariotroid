@@ -25,14 +25,14 @@ public class Enemy extends Living {
   
   @Override
   public List<Integer> processCollisions(ArrayList<Collidable> nearObjects) {
-    setSpeedY(getSpeedY() - PhysicsEngine.getGravity());
-    
     List<Collidable> collisions = getCollisions(nearObjects);
     List<Integer> toRemove = new LinkedList<>();
     for(Collidable c : collisions) {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
+      case TEX.TEX_FALLING_BOX:
+      case TEX.TEX_FALLING_BOX_S:
       case TEX.TEX_LEVEL:
         if(movingDown()) { // falling straight down
           adjustToTopOf(c);
@@ -103,14 +103,17 @@ public class Enemy extends Living {
   }
   
   @Override
-  public void move() {
-    if(PhysicsEngine.gravityIsInverted()) this.setSpeedY(20);
-    super.move();
-  }
-  
-  @Override
   public void draw() {
     flipX = PhysicsEngine.gravityIsInverted();
+    super.draw();
+  }
+  
+  /**
+   * Sets flipX to fX before calling super.draw()
+   * @param fX flip on x axis?
+   */
+  public void draw(boolean fX) {
+    flipX = fX;
     super.draw();
   }
   

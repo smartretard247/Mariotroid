@@ -13,6 +13,7 @@ public class FallingBox extends Interactive {
 
   FallingBox(int id, int texId, int selTexId, float x, float y) {
     super(id, texId, selTexId, x, y);
+    weight = 0;
   }
 
   FallingBox() {
@@ -21,7 +22,7 @@ public class FallingBox extends Interactive {
   
   @Override
   public void doAction() {
-    PhysicsEngine.fall(this);
+    weight = 1f;
   }
   
   /**

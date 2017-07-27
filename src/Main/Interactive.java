@@ -7,7 +7,7 @@ import Enumerations.TEX;
  *
  * @author Jeezy
  */
-public abstract class Interactive extends Movable {
+public abstract class Interactive extends Heavy {
   private boolean selected = false;
   private final int selectedTexId;
   private final int deselectedTexId;

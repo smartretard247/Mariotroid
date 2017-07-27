@@ -17,7 +17,7 @@ import Test.TestDisplay;
  */
 public class Hero extends Living {
   private static final int MAX_SECONDARY_AMMO = 5;
-  private static final int JUMP_SPEED = 11;
+  private static final int JUMP_SPEED = 85;
   private int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
   private boolean jumped;
   private boolean hasDoubleJump;
@@ -83,7 +83,7 @@ public class Hero extends Living {
    */
   @Override
   public List<Integer> processCollisions(ArrayList<Collidable> nearObjects)  {
-    if(!isClimbing) setSpeedY(getSpeedY() - PhysicsEngine.getGravity());
+    //if(!isClimbing) setSpeedY(getSpeedY() - PhysicsEngine.getGravity());
     
     List<Collidable> collisions = getCollisions(nearObjects);
     List<Integer> toRemove = new LinkedList<>();
@@ -230,7 +230,7 @@ public class Hero extends Living {
     // Move on top of object if reached the top
     if(reachedTop()){
       x += (x < lastWallCollision.getX()) ? 20 : -20;
-      isClimbing = false;
+      setClimbing(false);
     }
     return toRemove;
   }
@@ -238,16 +238,16 @@ public class Hero extends Living {
   public boolean canJump() { return !jumped; }
   public void doJump() {
     if(Engine.isSoundEnabled()) SOUND_EFFECT.JUMP.play();
-    ++fallCount;
+    fallCount++;
     jumped = true;
-    setSpeedY(JUMP_SPEED*PhysicsEngine.getGravity());
+    setSpeedY(JUMP_SPEED);
   }
   public boolean canDoubleJump() { return !floatJumped && jumped && hasDoubleJump; }
   public void doDoubleJump() {
     if(Engine.isSoundEnabled()) SOUND_EFFECT.JETPACK.play();
-    ++fallCount;
+    fallCount++;
     floatJumped = true;
-    setSpeedY(JUMP_SPEED*PhysicsEngine.getGravity());
+    setSpeedY(JUMP_SPEED);
   }
   
   public void doLand() {
@@ -255,7 +255,7 @@ public class Hero extends Living {
     jumped = false;
     floatJumped = false;
     fallCount = 0; // reset fall count
-    isClimbing = false;
+    setClimbing(false);
   }
   
   public boolean hasSecondaryWeapon() { return hasSecondaryWeapon; }
@@ -317,7 +317,11 @@ public class Hero extends Living {
   }
   
   public boolean isClimbing() { return isClimbing; }
-  public void setClimbing(boolean to) { isClimbing = to; }
+  public void setClimbing(boolean to) { 
+    isClimbing = to;
+    if(isClimbing) weight = 0;
+    else weight = 1f;
+  }
   
   public boolean wasRecentlyDamaged() { return recentDamageTimer.isRunning(); }
   
@@ -343,7 +347,7 @@ public class Hero extends Living {
       }
     }
     
-    setFlipX(PhysicsEngine.getGravity() < 0);
+    setFlipX(PhysicsEngine.gravityIsInverted());
     super.draw();
   }
   

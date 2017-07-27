@@ -178,6 +178,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     PhysicsEngine.resetGravity();
     game.clearGOs(); // will not clear the hero
     Hero h = (Hero)game.getGO(ID.ID_HERO);
+    Boss b;
     switch(level) {
     case 1:// only add level 1 visible objects to this map
       loadDefaults();
@@ -192,6 +193,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, TEX.TEX_ENEMY_BASIC, 4000, 800, new Point.Float(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, TEX.TEX_ENEMY_BASIC, 8075, 240, new Point.Float(5,0)));
       game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, TEX.TEX_CALAMITY, 11000, 500, new Point.Float(10,10), 500));
+      b = (Boss)game.getGO(ID.ID_CALAMITY);
+      b.setMinX(8930);
       game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
       
       game.addIO(new FallingBox(ID.ID_FALLING_BOX, TEX.TEX_FALLING_BOX, TEX.TEX_FALLING_BOX_S, 1000, 960));
@@ -201,7 +204,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, TEX.TEX_ENEMY_BASIC, 4000, 950, new Point.Float(5,0)));
       game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, TEX.TEX_ENEMY_BASIC, 8075, 950, new Point.Float(5,0)));
       game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, TEX.TEX_CALAMITY, 300, 575, new Point.Float(10,10), 750));
-      Boss b = (Boss)game.getGO(ID.ID_CALAMITY);
+      b = (Boss)game.getGO(ID.ID_CALAMITY);
       b.setMinX(0);
       b.setMaxX(2570);
       game.addGO(new Door(ID.ID_DOOR, 300, 987, -60, 70, true));
@@ -706,6 +709,27 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     return menubar;
   }
 
+  private boolean checkForWin() {
+    if(won) { // check for winning conditions
+      if(SOUND_EFFECT.volume != SOUND_EFFECT.Volume.MUTE) {
+        SOUND_EFFECT.THEME.stop();
+        SOUND_EFFECT.WIN.play(Math.max(SOUND_EFFECT.getGain(), 6f));
+      }
+      gameMode = GAME_MODE.WIN;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private void transitionToNextLevel() {
+    // this is for slow mo jumping to next level
+    if(slowMo) { 
+      ++scene.globalZ;
+      if(scene.globalZ % scene.LEVEL_DEPTH == 0) slowMo = false;
+    }
+  }
+
   /**
    * A class to define the ActionListener object that will respond to menu commands.
    */
@@ -970,20 +994,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       break;
     case DYING: if(!hero.wasRecentlyDamaged()) { gameMode = GAME_MODE.GAME_OVER; }
     case RUNNING:
-      if(won) {
-        if(SOUND_EFFECT.volume != SOUND_EFFECT.Volume.MUTE) {
-          SOUND_EFFECT.THEME.stop();
-          SOUND_EFFECT.WIN.play(Math.max(SOUND_EFFECT.getGain(), 6f));
-        }
-        gameMode = GAME_MODE.WIN;
-        return;
-      } // check for winning conditions
-      
-      // this is for slow mo jumping to next level
-      if(slowMo) { 
-        ++scene.globalZ;
-        if(scene.globalZ % scene.LEVEL_DEPTH == 0) slowMo = false;
-      }
+      if(checkForWin()) return;
+      transitionToNextLevel();
+      PhysicsEngine.fall(); // apply gravity to all heavy objects
       
       ArrayList<Collidable> visibleObjects = game.getVisibles();
       ArrayList<Integer> toRemove = new ArrayList<>(); // keep track of ids to remove at end of frame
