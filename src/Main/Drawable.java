@@ -17,7 +17,7 @@ public class Drawable {
   private float defX;
   private float defY;
   protected boolean flipX, flipY;
-  public final float color[]; // rgb color for non-sprites
+  public float color[]; // rgb color tint
   
   public Drawable(int texId, float x, float y, float w, float h) {
     textureId = texId;
@@ -29,7 +29,7 @@ public class Drawable {
     height = h;
     flipX = false;
     flipY = false;
-    color = new float[] { 0.0f, 0.0f, 0.0f };
+    color = new float[] { 1.0f, 1.0f, 1.0f };
   }
   
   public Drawable(int texId, float x, float y) {
@@ -84,6 +84,7 @@ public class Drawable {
    */
   public void setFlipX(boolean to) { flipX = to; }
   
+  public float[] getColor() { return color; }
   public void setColor(float r, float g, float b) {
     color[0] = r;
     color[1] = g;
@@ -97,6 +98,7 @@ public class Drawable {
   public void draw() {
     GL.glPushMatrix();
     GL.glTranslated(getX(), getY(), 0);
+    GL.glColor3f(color[0], color[1], color[2]);
     if(textureId >= 0) {
       if(flipY)
         GL.glRotated(180, 0, 1, 0);
@@ -104,7 +106,6 @@ public class Drawable {
         GL.glRotated(180, 1, 0, 0);
       DrawLib.drawTexturedRectangle(textureId, width, height);
     } else {
-      GL.glColor3d(color[0], color[1], color[2]);
       DrawLib.drawRectangle(width, height);
     }
     GL.glPopMatrix();

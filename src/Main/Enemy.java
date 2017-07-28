@@ -31,72 +31,72 @@ public class Enemy extends Living {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
-      case TEX.TEX_FALLING_BOX:
-      case TEX.TEX_FALLING_BOX_S:
-      case TEX.TEX_LEVEL:
-        if(movingDown()) { // falling straight down
-          adjustToTopOf(c);
-          setSpeedY(0);
-        } else if(movingDownAndRight()) { // falling right and down
-          if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
-            adjustToLeftOf(c);
-            inverseSpeedX();
-          } else {
+        case TEX.TEX_FLYING_BOX:
+        case TEX.TEX_FALLING_BOX:
+        case TEX.TEX_LEVEL:
+          if(movingDown()) { // falling straight down
             adjustToTopOf(c);
             setSpeedY(0);
-          }
-        } else if(movingDownAndLeft()) { // falling left and down
-          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
-            adjustToRightOf(c);
-            inverseSpeedX();
-          } else {
-            adjustToTopOf(c);
-            setSpeedY(0);
-          }
-        } else if(movingLeft()) { // moving left
-          adjustToRightOf(c);
-          inverseSpeedX(); // reverse direction
-        } else if(movingRight()) { // moving right
-          adjustToLeftOf(c);
-          inverseSpeedX(); // reverse direction
-        } else if(movingUpAndLeft()) { // flying upward and to the left
-          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
-            adjustToRightOf(c);
-            inverseSpeedX(); // reverse direction
-          } else {
-            adjustToBottomOf(c);
-            setSpeedY(0);
-          }
-        } else if(movingUpAndRight()) { // flying upward and to the right
-          if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
-            adjustToLeftOf(c);
-            inverseSpeedX(); // reverse direction
-          } else {
-            adjustToBottomOf(c);
-            setSpeedY(0);
-          }
-        } else if(movingUp()) { // flying straight upward
-          adjustToBottomOf(c);
-          setSpeedY(0);
-        }
-        break;
-      default:
-        if(new Projectile().getClass().isInstance(c)) {
-          if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
-            Projectile p = (Projectile)c;
-            try {
-              if(Engine.isDebugging()) TestDisplay.addTestData("Enemy HP: " + getHealth());
-              loseHealth(p.getDamage());
-              if(Engine.isDebugging()) TestDisplay.addTestData("Enemy damage: " + p.getDamage() + " / Enemy HP: " + getHealth());
-            } catch (GameOverException ex) { // enemy died
-              if(Engine.isDebugging()) TestDisplay.addTestData("Enemy destroyed");
-              Engine.addScore(getPointsWorth());
-              toRemove.add(getObjectId());
+          } else if(movingDownAndRight()) { // falling right and down
+            if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
+              adjustToLeftOf(c);
+              inverseSpeedX();
+            } else {
+              adjustToTopOf(c);
+              setSpeedY(0);
             }
-            toRemove.add(objId);
+          } else if(movingDownAndLeft()) { // falling left and down
+            if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
+              adjustToRightOf(c);
+              inverseSpeedX();
+            } else {
+              adjustToTopOf(c);
+              setSpeedY(0);
+            }
+          } else if(movingLeft()) { // moving left
+            adjustToRightOf(c);
+            inverseSpeedX(); // reverse direction
+          } else if(movingRight()) { // moving right
+            adjustToLeftOf(c);
+            inverseSpeedX(); // reverse direction
+          } else if(movingUpAndLeft()) { // flying upward and to the left
+            if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
+              adjustToRightOf(c);
+              inverseSpeedX(); // reverse direction
+            } else {
+              adjustToBottomOf(c);
+              setSpeedY(0);
+            }
+          } else if(movingUpAndRight()) { // flying upward and to the right
+            if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
+              adjustToLeftOf(c);
+              inverseSpeedX(); // reverse direction
+            } else {
+              adjustToBottomOf(c);
+              setSpeedY(0);
+            }
+          } else if(movingUp()) { // flying straight upward
+            adjustToBottomOf(c);
+            setSpeedY(0);
           }
-        }
-        break;
+          break;
+        default:
+          if(new Projectile().getClass().isInstance(c)) {
+            if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
+              Projectile p = (Projectile)c;
+              try {
+                if(Engine.isDebugging()) TestDisplay.addTestData("Enemy HP: " + getHealth());
+                loseHealth(p.getDamage());
+                if(Engine.isDebugging()) TestDisplay.addTestData("Enemy damage: " + p.getDamage() + " / Enemy HP: " + getHealth());
+              } catch (GameOverException ex) { // enemy died
+                if(Engine.isDebugging()) TestDisplay.addTestData("Enemy destroyed");
+                Engine.addScore(getPointsWorth());
+                toRemove.add(getObjectId());
+              }
+              toRemove.add(objId);
+            }
+          }
+          break;
       }
     }
     return toRemove;

@@ -20,6 +20,7 @@ public final class ID {
   public static final int ID_SHELL = 9;
   public static final int ID_SWITCH = 10;
   public static final int ID_FALLING_BOX = 11;
+  public static final int ID_FLYING_BOX = 12;
   
   public static final int getNewId() { return ObjectContainer.getNewId(); }
   public static final int getLastId() { return ObjectContainer.getLastId(); }

@@ -48,67 +48,67 @@ public class Boss extends Enemy {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
-      case TEX.TEX_LEVEL:
-        if(movingDown()) { // falling straight down
-          adjustToTopOf(c);
-          inverseSpeedY();
-        } else if(movingDownAndRight()) { // falling right and down
-          if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
-            adjustToLeftOf(c);
-            inverseSpeedX();
-          } else {
+        case TEX.TEX_LEVEL:
+          if(movingDown()) { // falling straight down
             adjustToTopOf(c);
             inverseSpeedY();
-          }
-        } else if(movingDownAndLeft()) { // falling left and down
-          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
-            adjustToRightOf(c);
-            inverseSpeedX();
-          } else {
-            adjustToTopOf(c);
-            inverseSpeedY();
-          }
-        } else if(movingLeft()) { // moving left
-          adjustToRightOf(c);
-          inverseSpeedX(); // reverse direction
-        } else if(movingRight()) { // moving right
-          adjustToLeftOf(c);
-          inverseSpeedX(); // reverse direction
-        } else if(movingUpAndLeft()) { // flying upward and to the left
-          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
-            adjustToRightOf(c);
-          } else {
-            adjustToBottomOf(c);
-            inverseSpeedY();
-          }
-        } else if(movingUpAndRight()) { // flying upward and to the right
-          if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
-            adjustToLeftOf(c);
-          } else {
-            adjustToBottomOf(c);
-            inverseSpeedY();
-          }
-        }
-        break;
-      default:
-        if(new Projectile().getClass().isInstance(c)) {
-          if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
-            Projectile p = (Projectile)c;
-            try {
-              if(Engine.isDebugging()) TestDisplay.addTestData("Boss HP: " + getHealth());
-              loseHealth(p.getDamage());
-              if(Engine.isDebugging()) TestDisplay.addTestData("Boss damage: " + p.getDamage() + " / Boss HP: " + getHealth());
-            } catch (GameOverException ex) { // enemy died
-              if(Engine.isDebugging()) TestDisplay.addTestData("Boss destroyed");
-              Engine.addScore(getPointsWorth());
-              Engine.getGameContainer().addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_HEALTH_ORB, getX(), getY()));
-              Engine.getGameContainer().activateDoor();
-              toRemove.add(getObjectId());
+          } else if(movingDownAndRight()) { // falling right and down
+            if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
+              adjustToLeftOf(c);
+              inverseSpeedX();
+            } else {
+              adjustToTopOf(c);
+              inverseSpeedY();
             }
-            toRemove.add(objId);
+          } else if(movingDownAndLeft()) { // falling left and down
+            if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
+              adjustToRightOf(c);
+              inverseSpeedX();
+            } else {
+              adjustToTopOf(c);
+              inverseSpeedY();
+            }
+          } else if(movingLeft()) { // moving left
+            adjustToRightOf(c);
+            inverseSpeedX(); // reverse direction
+          } else if(movingRight()) { // moving right
+            adjustToLeftOf(c);
+            inverseSpeedX(); // reverse direction
+          } else if(movingUpAndLeft()) { // flying upward and to the left
+            if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
+              adjustToRightOf(c);
+            } else {
+              adjustToBottomOf(c);
+              inverseSpeedY();
+            }
+          } else if(movingUpAndRight()) { // flying upward and to the right
+            if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
+              adjustToLeftOf(c);
+            } else {
+              adjustToBottomOf(c);
+              inverseSpeedY();
+            }
           }
-        }
-        break;
+          break;
+        default:
+          if(new Projectile().getClass().isInstance(c)) {
+            if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
+              Projectile p = (Projectile)c;
+              try {
+                if(Engine.isDebugging()) TestDisplay.addTestData("Boss HP: " + getHealth());
+                loseHealth(p.getDamage());
+                if(Engine.isDebugging()) TestDisplay.addTestData("Boss damage: " + p.getDamage() + " / Boss HP: " + getHealth());
+              } catch (GameOverException ex) { // enemy died
+                if(Engine.isDebugging()) TestDisplay.addTestData("Boss destroyed");
+                Engine.addScore(getPointsWorth());
+                Engine.getGameContainer().addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_HEALTH_ORB, getX(), getY()));
+                Engine.getGameContainer().activateDoor();
+                toRemove.add(getObjectId());
+              }
+              toRemove.add(objId);
+            }
+          }
+          break;
       }
     }
     return toRemove;

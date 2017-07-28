@@ -27,7 +27,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,7 +52,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private static Timer introTimer;
   private final int INTROLENGTHMS = 3000;
   private static final Timer MESSAGE_TIMER = new Timer(5000, null);
-  private final LinkedList<String> conversation = new LinkedList<>();
+  private static final LinkedList<String> CONVERSATION = new LinkedList<>();
   private static long score = 0;
   private DrawLib drawLib;
   private static GAME_MODE gameMode = GAME_MODE.INTRO;
@@ -180,37 +179,37 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     Hero h = (Hero)game.getGO(ID.ID_HERO);
     Boss b;
     switch(level) {
-    case 1:// only add level 1 visible objects to this map
-      loadDefaults();
-      h.setDefaultPosition(300, 400);
-      h.resetAll();
-      resetScore();
-      hero.setGodMode(false);
-      game.addGO(new Collidable(ID.ID_JETPACK, TEX.TEX_JETPACK, 1700, 800));
-      game.addGO(new Collidable(ID.ID_SHELL, TEX.TEX_SHELL, 300, 800));
-      game.addGO(new Collidable(ID.ID_ARMOR, TEX.TEX_ARMOR, 5660, 198));
-      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 2000, 800, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
-      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, TEX.TEX_ENEMY_BASIC, 4000, 800, new Point.Float(5,0)));
-      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, TEX.TEX_ENEMY_BASIC, 8075, 240, new Point.Float(5,0)));
-      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, TEX.TEX_CALAMITY, 11000, 500, new Point.Float(10,10), 500));
-      b = (Boss)game.getGO(ID.ID_CALAMITY);
-      b.setMinX(8930);
-      game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
-      
-      game.addIO(new FallingBox(ID.ID_FALLING_BOX, TEX.TEX_FALLING_BOX, TEX.TEX_FALLING_BOX_S, 760, 960));
-      break;
-    case 2:// setup level 2, only add level 2 game objects to this map
-      game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
-      game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, TEX.TEX_ENEMY_BASIC, 4000, 950, new Point.Float(5,0)));
-      game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, TEX.TEX_ENEMY_BASIC, 8075, 950, new Point.Float(5,0)));
-      game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, TEX.TEX_CALAMITY, 300, 575, new Point.Float(10,10), 750));
-      b = (Boss)game.getGO(ID.ID_CALAMITY);
-      b.setMinX(0);
-      b.setMaxX(2570);
-      game.addGO(new Door(ID.ID_DOOR, 300, 987, -60, 70, true));
-      game.addGO(new Collidable(ID.ID_SWITCH, TEX.TEX_SWITCH_ON, 5366, 708));
-      break;
-    default: System.out.println("Unknown level number while resetting visibles."); break;
+      case 1:// only add level 1 visible objects to this map
+        loadDefaults();
+        h.setDefaultPosition(300, 400);
+        h.resetAll();
+        resetScore();
+        hero.setGodMode(false);
+        game.addGO(new Collidable(ID.ID_JETPACK, TEX.TEX_JETPACK, 1800, 800));
+        game.addGO(new Collidable(ID.ID_SHELL, TEX.TEX_SHELL, 300, 800));
+        game.addGO(new Collidable(ID.ID_ARMOR, TEX.TEX_ARMOR, 5660, 198));
+        game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 2000, 800, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
+        game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, TEX.TEX_ENEMY_BASIC, 4000, 800, new Point.Float(5,0)));
+        game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, TEX.TEX_ENEMY_BASIC, 8075, 240, new Point.Float(5,0)));
+        game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, TEX.TEX_CALAMITY, 11000, 500, new Point.Float(10,10), 500));
+        b = (Boss)game.getGO(ID.ID_CALAMITY);
+        b.setMinX(8930);
+        game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
+
+        game.addIO(new FallingBox(ID.ID_FALLING_BOX, TEX.TEX_FALLING_BOX, 760, 960));
+        break;
+      case 2:// setup level 2, only add level 2 game objects to this map
+        game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
+        game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, TEX.TEX_ENEMY_BASIC, 4000, 950, new Point.Float(5,0)));
+        game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, TEX.TEX_ENEMY_BASIC, 8075, 950, new Point.Float(5,0)));
+        game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, TEX.TEX_CALAMITY, 300, 575, new Point.Float(10,10), 750));
+        b = (Boss)game.getGO(ID.ID_CALAMITY);
+        b.setMinX(0);
+        b.setMaxX(2570);
+        game.addGO(new Door(ID.ID_DOOR, 300, 987, -60, 70, true));
+        game.addGO(new Collidable(ID.ID_SWITCH, TEX.TEX_SWITCH_ON, 5366, 708));
+        break;
+      default: System.out.println("Unknown level number while resetting visibles."); break;
     }
   }
   
@@ -298,7 +297,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    * @param forBackgroundScene adjust for the background scene?
    */
-  public void adjustScene(GL2 gl, boolean forBackgroundScene) {
+  public void translateScene(GL2 gl, boolean forBackgroundScene) {
     if(!forBackgroundScene) {
       if(hero.getX() > 600 && hero.getX() < 10500)
         gl.glTranslated(-hero.getX(), scene.transY, scene.transZ);
@@ -323,7 +322,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPushMatrix(); // save initial transform
     gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
     gl.glTranslated(0, 0, scene.globalZ); // global z should decrease by 40 after each zoom
-    adjustScene(gl, false);
+    translateScene(gl, false);
     detectInteractiveObject();
     
     drawLevel(gl);
@@ -341,18 +340,19 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl the drawing context
    */
   private void drawConversation(GL2 gl) {
-    String message = (!conversation.isEmpty()) ? conversation.peek() : null;
+    String message = (!CONVERSATION.isEmpty()) ? CONVERSATION.peek() : null;
     if(MESSAGE_TIMER.isRunning() && message != null) { // check if we need to display a message
       int calculatedOffset = -5 * message.length();
       gl.glPushMatrix();
-      gl.glColor3fv(new float[] { 1.0f, 1.0f, 0 }, 0);
+      gl.glColor3f(1.0f, 1.0f, 0);
       gl.glTranslated(20, DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2-60, 0);
       DrawLib.drawText(message, calculatedOffset, 0);
       gl.glPopMatrix();
-    } else if(!conversation.isEmpty()) {
-      conversation.pop();
+    } else if(!CONVERSATION.isEmpty()) {
+      CONVERSATION.pop();
       MESSAGE_TIMER.start();
     }
+    if(CONVERSATION.isEmpty()) gameMode = GAME_MODE.RUNNING;
   }
   
   /**
@@ -451,6 +451,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawBackground(GL2 gl) {
     gl.glPushMatrix();
     gl.glScaled(1.1, 1.1, 1);
+    gl.glColor3f(1f, 1f, 1f);
     if(!swapBackground) {
       DrawLib.drawTexturedRectangle(TEX.TEX_BACKGROUND_1, DrawLib.getTexture(TEX.TEX_HUD).getWidth(), DrawLib.getTexture(TEX.TEX_HUD).getHeight()); // background level
     } else {
@@ -465,7 +466,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawLevel(GL2 gl) {
     gl.glPushMatrix();
-    adjustScene(gl, true);
+    gl.glColor3f(1f, 1f, 1f);
+    translateScene(gl, true);
     if(currLevel < TOTAL_LEVELS)
       DrawLib.drawTexturedRectangle(TEX.TEX_LEVEL_DECOR_1+(currLevel%2)); // draw the background level
     gl.glPopMatrix();
@@ -487,6 +489,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawForeground(GL2 gl) {
     // draw foreground objects here
     gl.glPushMatrix();
+    gl.glColor3f(1f, 1f, 1f);
     gl.glTranslated(DrawLib.getTexture(TEX.TEX_LEVEL_DECOR_1).getWidth()/2, DrawLib.getTexture(TEX.TEX_LEVEL_DECOR_1).getHeight()/2, 0); // levels MUST be same size as DECOR_1
     if(showDecor) {
       if(currLevel <= TOTAL_LEVELS) DrawLib.drawTexturedRectangle(TEX.TEX_LEVEL_DECOR_1+Math.abs(currLevel%2-1));
@@ -555,32 +558,35 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   /**
-   * Performs the selected start menu action.
+   * Performs the selected menu action, based on the current game mode.
    */
-  private void doStartMenuSelection() {
-    switch(this.startMenuSelection) {
-      case START_GAME:
-        gameMode = GAME_MODE.RUNNING;
-        loadLevel(1);
+  private void doMenuSelection() {
+    switch (gameMode) {
+      case PAUSED:
+        switch(this.pauseMenuSelection) {
+          case RESTART:
+            CONVERSATION.clear();
+            gameMode = GAME_MODE.RUNNING;
+            loadLevel(1);
+            break;
+          case CONTINUE:
+            if(CONVERSATION.isEmpty()) gameMode = GAME_MODE.RUNNING;
+            else gameMode = GAME_MODE.TALKING;
+            break;
+          default: break;
+        }
         break;
-      case EXIT:
-        System.exit(0);
-        break;
-      default: break;
-    }
-  }
-  
-  /**
-   * Performs the selected pause menu action.
-   */
-  private void doPauseMenuSelection() {
-    switch(this.pauseMenuSelection) {
-      case RESTART:
-        gameMode = GAME_MODE.RUNNING;
-        loadLevel(1);
-        break;
-      case CONTINUE:
-        gameMode = GAME_MODE.RUNNING;
+      case START_MENU:
+        switch(this.startMenuSelection) {
+          case START_GAME:
+            gameMode = GAME_MODE.RUNNING;
+            loadLevel(1);
+            break;
+          case EXIT:
+            System.exit(0);
+            break;
+          default: break;
+        }
         break;
       default: break;
     }
@@ -741,6 +747,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     }
   }
 
+  private void pauseGame() {
+    gameMode = GAME_MODE.PAUSED;
+    this.pauseMenuSelection = PAUSE_MENU_OPTION.CONTINUE;
+  }
+
+  private void skipSentence() {
+    if(!CONVERSATION.isEmpty()) CONVERSATION.pop(); // skip the current text
+    MESSAGE_TIMER.restart();
+  }
+
   /**
    * A class to define the ActionListener object that will respond to menu commands.
    */
@@ -772,150 +788,160 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     int key = e.getKeyCode();  // Tells which key was pressed.
     
     switch (key) {
-    case KeyEvent.VK_F4: debugging = !debugging;
-      Engine.setStatusMessage((debugging) ? "--DEBUGGING ON--" : "--DEBUGGING OFF--");
-      if(!debugging) hero.setGodMode(false);
-      break;
-    case KeyEvent.VK_F5:
-      if(debugging) {
-        hero.toggleGodMode();
-        Engine.setStatusMessage((hero.getGodMode()) ? "--GOD MODE ON--" : "--GOD MODE OFF--");
-      }
-      break;
-    case KeyEvent.VK_F6: if(debugging) {
-        swapBackground = !swapBackground;
-        Engine.setStatusMessage((!swapBackground) ? "--BACKGROUND 1--" : "--BACKGROUND 2--");
-      }
-      break;
-    case KeyEvent.VK_F7: if(debugging) { 
-        showDecor = !showDecor;
-        Engine.setStatusMessage((showDecor) ? "--DECOR ON--" : "--DECOR OFF--");
-      }
-      break;
-    case KeyEvent.VK_F8:
-      if(debugging) {
-        jumpToNextLevel();
-        Engine.setStatusMessage("--LEVEL SKIPPED--");
-      }
-      break;
-    case KeyEvent.VK_F9:
-      cycleVolume();
-      String message = "Volume changed to ";
-      switch(SOUND_EFFECT.volume) {
-      case MUTE:
-        message += "MUTED";
-        soundEnabled = false;
+      case KeyEvent.VK_F4: debugging = !debugging;
+        Engine.setStatusMessage((debugging) ? "--DEBUGGING ON--" : "--DEBUGGING OFF--");
+        if(!debugging) hero.setGodMode(false);
         break;
-      default:
-        message += SOUND_EFFECT.volume.toString();
-        soundEnabled = true;
+      case KeyEvent.VK_F5:
+        if(debugging) {
+          hero.toggleGodMode();
+          Engine.setStatusMessage((hero.getGodMode()) ? "--GOD MODE ON--" : "--GOD MODE OFF--");
+        }
         break;
-      }
-      Engine.setStatusMessage(message);
-      break;
-    case KeyEvent.VK_F10: showControls = !showControls;
-      Engine.setStatusMessage((showControls) ? "--CONTROLS ON--" : "--CONTROLS OFF--");
-      break;
+      case KeyEvent.VK_F6: if(debugging) {
+          swapBackground = !swapBackground;
+          Engine.setStatusMessage((!swapBackground) ? "--BACKGROUND 1--" : "--BACKGROUND 2--");
+        }
+        break;
+      case KeyEvent.VK_F7: if(debugging) { 
+          showDecor = !showDecor;
+          Engine.setStatusMessage((showDecor) ? "--DECOR ON--" : "--DECOR OFF--");
+        }
+        break;
+      case KeyEvent.VK_F8:
+        if(debugging) {
+          jumpToNextLevel();
+          Engine.setStatusMessage("--LEVEL SKIPPED--");
+        }
+        break;
+      case KeyEvent.VK_F9:
+        cycleVolume();
+        String message = "Volume changed to ";
+        switch(SOUND_EFFECT.volume) {
+          case MUTE:
+            message += "MUTED";
+            soundEnabled = false;
+            break;
+          default:
+            message += SOUND_EFFECT.volume.toString();
+            soundEnabled = true;
+            break;
+        }
+        Engine.setStatusMessage(message);
+        break;
+      case KeyEvent.VK_F10: showControls = !showControls;
+        Engine.setStatusMessage((showControls) ? "--CONTROLS ON--" : "--CONTROLS OFF--");
+        break;
     }
     
     switch(gameMode) { // controls are based on the game mode
-    case DYING:
-    case RUNNING:
-      if(hero.getLives() > 0) {
+      case TALKING:
         switch (key) {
-        case KeyEvent.VK_F:
-          pendingInteraction = true;
-          break;
-        case KeyEvent.VK_SHIFT:
-          hero.toggleSprint();
-          break;
-        case KeyEvent.VK_P: // pause/unpause
-          gameMode = GAME_MODE.PAUSED;
-          this.pauseMenuSelection = PAUSE_MENU_OPTION.CONTINUE;
-          break;
-        case KeyEvent.VK_W: // climb up
-          if(hero.canClimb()) {
-            hero.setClimbing(true);
-            hero.setSpeedY(5);
-          }
-          break;
-        case KeyEvent.VK_S: // climb down
-          if(hero.canClimb()) {
-            hero.setClimbing(true);
-            hero.setSpeedY(-5);
-          }
-          break;
-        case KeyEvent.VK_A: // move left
-          if(rightPressed) {
-            hero.setSpeedX(0);
-          } else {
-            hero.increaseSpeed(-Movable.MAX_SPEED_X, 0);
-          }
-          if(hero.isClimbing()) {
-            hero.setClimbing(false);
-            hero.setSpeedY(-1);
-          }
-          leftPressed = true;
-          break;
-        case KeyEvent.VK_D: // move right
-          if(leftPressed) {
-            hero.setSpeedX(0);
-          } else {
-            hero.increaseSpeed(Movable.MAX_SPEED_X, 0);
-          }
-          if(hero.isClimbing()) {
-            hero.setClimbing(false);
-            hero.setSpeedY(-1);
-          }
-          rightPressed = true;
-          break;
-        case KeyEvent.VK_SPACE: // jump
-          if(hero.canJump()) {
-            hero.doJump();
-          } else {
-            if(hero.canDoubleJump()) {
-              hero.doDoubleJump();
-            }
-          }
-          break;
-        default: break;
+          case KeyEvent.VK_P:
+            pauseGame();
+            break;
+          case KeyEvent.VK_ENTER:
+            skipSentence();
+            break;
+          default: break;
         }
-      }
-      break; // END RUNNING
-    case PAUSED: // then we are paused, so change keyboard options
-      switch (key) {
-      case KeyEvent.VK_W: this.pauseMenuSelection = pauseMenuSelection.prev(); // scroll upward through menu
         break;
-      case KeyEvent.VK_S: this.pauseMenuSelection = pauseMenuSelection.next(); // scroll downward through menu
+      case DYING:
+      case RUNNING:
+        if(hero.getLives() > 0) {
+          switch (key) {
+            case KeyEvent.VK_F:
+              pendingInteraction = true;
+              break;
+            case KeyEvent.VK_SHIFT:
+              hero.toggleSprint();
+              break;
+            case KeyEvent.VK_P: // pause/unpause
+              pauseGame();
+              break;
+            case KeyEvent.VK_W: // climb up
+              if(hero.canClimb()) {
+                hero.setClimbing(true);
+                hero.setSpeedY(5);
+              }
+              break;
+            case KeyEvent.VK_S: // climb down
+              if(hero.canClimb()) {
+                hero.setClimbing(true);
+                hero.setSpeedY(-5);
+              }
+              break;
+            case KeyEvent.VK_A: // move left
+              if(rightPressed) {
+                hero.setSpeedX(0);
+              } else {
+                hero.increaseSpeed(-Movable.MAX_SPEED_X, 0);
+              }
+              if(hero.isClimbing()) {
+                hero.setClimbing(false);
+                hero.setSpeedY(-1);
+              }
+              leftPressed = true;
+              break;
+            case KeyEvent.VK_D: // move right
+              if(leftPressed) {
+                hero.setSpeedX(0);
+              } else {
+                hero.increaseSpeed(Movable.MAX_SPEED_X, 0);
+              }
+              if(hero.isClimbing()) {
+                hero.setClimbing(false);
+                hero.setSpeedY(-1);
+              }
+              rightPressed = true;
+              break;
+            case KeyEvent.VK_SPACE: // jump
+              if(hero.canJump()) {
+                hero.doJump();
+              } else {
+                if(hero.canDoubleJump()) {
+                  hero.doDoubleJump();
+                }
+              }
+              break;
+            default: break;
+          }
+        }
+        break; // END RUNNING
+      case PAUSED: // then we are paused, so change keyboard options
+        switch (key) {
+          case KeyEvent.VK_W: pauseMenuSelection = pauseMenuSelection.prev(); // scroll upward through menu
+            break;
+          case KeyEvent.VK_S: pauseMenuSelection = pauseMenuSelection.next(); // scroll downward through menu
+            break;
+          case KeyEvent.VK_ENTER:
+            doMenuSelection();
+            break;
+          case KeyEvent.VK_P: // pause/unpause
+            gameMode = GAME_MODE.RUNNING;
+            break;
+          default: break;
+        }
+        break; // END PAUSED
+      case START_MENU:
+        switch(key) {
+          case KeyEvent.VK_W: startMenuSelection = startMenuSelection.prev(); // scroll upward through menu
+            break;
+          case KeyEvent.VK_S: startMenuSelection = startMenuSelection.next(); // scroll downward through menu
+            break;
+          case KeyEvent.VK_ENTER: doMenuSelection();
+            break;
+          default: break;
+        }
+        break; // END START_MENU
+      case WIN:
+        if(key == KeyEvent.VK_ENTER) gameMode = GAME_MODE.CREDITS;
         break;
-      case KeyEvent.VK_ENTER:
-        doPauseMenuSelection();
-        break;
-      case KeyEvent.VK_P: // pause/unpause
-        gameMode = GAME_MODE.RUNNING;
+      case CREDITS:
+      case GAME_OVER:
+        if(key == KeyEvent.VK_ENTER) gameMode = GAME_MODE.START_MENU;
         break;
       default: break;
-      }
-      break; // END PAUSED
-    case START_MENU:
-      switch(key) {
-      case KeyEvent.VK_W: this.startMenuSelection = startMenuSelection.prev(); // scroll upward through menu
-        break;
-      case KeyEvent.VK_S: this.startMenuSelection = startMenuSelection.next(); // scroll downward through menu
-        break;
-      case KeyEvent.VK_ENTER: doStartMenuSelection();
-        break;
-      default: break;
-      }
-      break; // END START_MENU
-    case WIN:
-      if(key == KeyEvent.VK_ENTER) gameMode = GAME_MODE.CREDITS;
-      break;
-    case CREDITS:
-    case GAME_OVER:
-      if(key == KeyEvent.VK_ENTER) gameMode = GAME_MODE.START_MENU;
-      break;
-    default: break;
     }
     display.repaint();  // Causes the display() function to be called.
   }
@@ -941,39 +967,34 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void keyReleased(KeyEvent e) { 
     int key = e.getKeyCode();  // Tells which key was pressed.
     switch(gameMode) { // controls are based on the game mode
-    case RUNNING:
-      switch (key) {
-      case KeyEvent.VK_W: // stop climbimg
-        hero.setSpeedY(0);
-        break;
-      case KeyEvent.VK_S: // stop climbimg
-        hero.setSpeedY(0);
-        break;
-      case KeyEvent.VK_A: // stop moving left
-          if(rightPressed) {
-            hero.increaseSpeed(Movable.MAX_SPEED_X, 0);
-          } else {
-            hero.setSpeedX(0);
-          }
-        leftPressed = false;
-        break;
-      case KeyEvent.VK_D: // stop moving right
-          if(leftPressed) {
-            hero.increaseSpeed(-Movable.MAX_SPEED_X, 0);
-          } else {
-            hero.setSpeedX(0);
-          }
-        rightPressed = false;
-        break;
-      case KeyEvent.VK_SPACE: // stop jump, start fall
-        //++hero.fallCount;
-        //if(!hero.didLand() && hero.fallCount <= 2) hero.setSpeedY(-PhysicsEngine.GRAVITY);
-        //if(!hero.didLand()) hero.setSpeedY(-PhysicsEngine.GRAVITY);
+      case RUNNING:
+        switch (key) {
+          case KeyEvent.VK_W: // stop climbimg
+            hero.setSpeedY(0);
+            break;
+          case KeyEvent.VK_S: // stop climbimg
+            hero.setSpeedY(0);
+            break;
+          case KeyEvent.VK_A: // stop moving left
+            if(rightPressed) {
+              hero.increaseSpeed(Movable.MAX_SPEED_X, 0);
+            } else {
+              hero.setSpeedX(0);
+            }
+            leftPressed = false;
+            break;
+          case KeyEvent.VK_D: // stop moving right
+            if(leftPressed) {
+              hero.increaseSpeed(-Movable.MAX_SPEED_X, 0);
+            } else {
+              hero.setSpeedX(0);
+            }
+            rightPressed = false;
+            break;
+          default: break;
+        }
         break;
       default: break;
-    }
-    break;
-    default: break;
     }
   }
 
@@ -993,60 +1014,60 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     frameNumber++;
     
     switch(gameMode) {
-    case WARPING:
-      if(warping) {
-        scene.transZ -= scene.LEVEL_DEPTH;
-        hero.setDefaultPosition(hero.getX(), hero.getY()); // continue from this point if die
-        warping = false;
-      } else {
-        slowMo = true;
-        gameMode = GAME_MODE.RUNNING;
-      }
-      break;
-    case DYING: if(!hero.wasRecentlyDamaged()) { gameMode = GAME_MODE.GAME_OVER; }
-    case RUNNING:
-      if(checkForWin()) return;
-      transitionToNextLevel();
-      processPendingInteraction();
-      PhysicsEngine.fall(); // apply gravity to all heavy objects
-      
-      ArrayList<Collidable> visibleObjects = game.getVisibles();
-      ArrayList<Integer> toRemove = new ArrayList<>(); // keep track of ids to remove at end of frame
-      
-      // for all objects
-      visibleObjects.stream().forEach((c) -> {
-        if(c != null) {
-          // move all movables
-          if((new Movable()).getClass().isInstance(c)) {
-            ((Movable)c).move();
-          }
-          // process projectile collisions
-          if((new Projectile()).getClass().isInstance(c)) {
-            toRemove.addAll(((Projectile)c).processCollisions(visibleObjects));
-          }
-          // process interactive collisions
-          if((new FallingBox()).getClass().isInstance(c)) {
-            toRemove.addAll(((FallingBox)c).processCollisions(visibleObjects));
-          }
-          // fire boss weapon toward hero and process boss collisions
-          if((new Boss()).getClass().isInstance(c)) {
-            Boss boss = (Boss)c;
-            toRemove.addAll(boss.processCollisions(visibleObjects));
-            if(!boss.didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true));
-          }
-          // process all enemy collisions
-          if((new Enemy()).getClass().isInstance(c)) {
-            toRemove.addAll(((Enemy)c).processCollisions(visibleObjects));
-          }
+      case WARPING:
+        if(warping) {
+          scene.transZ -= scene.LEVEL_DEPTH;
+          hero.setDefaultPosition(hero.getX(), hero.getY()); // continue from this point if die
+          warping = false;
+        } else {
+          slowMo = true;
+          gameMode = GAME_MODE.RUNNING;
         }
-      });
-      toRemove.addAll(hero.processCollisions(visibleObjects));
-      
-      // check for warp collision, then remove all ids tagged for removal
-      if(toRemove.contains(ID.ID_WARP)) jumpToNextLevel();
-      toRemove.stream().forEach((id) -> { game.removeAny(id); });
-      break;
-    default: break;
+        break;
+      case DYING: if(!hero.wasRecentlyDamaged()) { gameMode = GAME_MODE.GAME_OVER; }
+      case RUNNING:
+        if(checkForWin()) return;
+        transitionToNextLevel();
+        processPendingInteraction();
+        PhysicsEngine.fall(); // apply gravity to all heavy objects
+
+        ArrayList<Collidable> visibleObjects = game.getVisibles();
+        ArrayList<Integer> toRemove = new ArrayList<>(); // keep track of ids to remove at end of frame
+
+        // for all objects
+        visibleObjects.stream().forEach((c) -> {
+          if(c != null) {
+            // move all movables
+            if((new Movable()).getClass().isInstance(c)) {
+              ((Movable)c).move();
+            }
+            // process projectile collisions
+            if((new Projectile()).getClass().isInstance(c)) {
+              toRemove.addAll(((Projectile)c).processCollisions(visibleObjects));
+            }
+            // process interactive collisions
+            if((new FallingBox()).getClass().isInstance(c)) {
+              toRemove.addAll(((FallingBox)c).processCollisions(visibleObjects));
+            }
+            // fire boss weapon toward hero and process boss collisions
+            if((new Boss()).getClass().isInstance(c)) {
+              Boss boss = (Boss)c;
+              toRemove.addAll(boss.processCollisions(visibleObjects));
+              if(!boss.didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true));
+            }
+            // process all enemy collisions
+            if((new Enemy()).getClass().isInstance(c)) {
+              toRemove.addAll(((Enemy)c).processCollisions(visibleObjects));
+            }
+          }
+        });
+        toRemove.addAll(hero.processCollisions(visibleObjects));
+
+        // check for warp collision, then remove all ids tagged for removal
+        if(toRemove.contains(ID.ID_WARP)) jumpToNextLevel();
+        toRemove.stream().forEach((id) -> { game.removeAny(id); });
+        break;
+      default: break;
     }
   }
 
@@ -1102,18 +1123,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     // handle clicks subject to gameMode
     switch(gameMode) { // controls are based on the game mode
-    case RUNNING:
-      switch(key) {
-      case MouseEvent.BUTTON1: // left click
-        qProjectiles.offer(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
-        break;
-      case MouseEvent.BUTTON3: // right click
-        qProjectiles.offer(new NextProjectile(sc, false)); // add the projectile to the queue, to be fired during next update
+      case RUNNING:
+        switch(key) {
+          case MouseEvent.BUTTON1: // left click
+            qProjectiles.offer(new NextProjectile(sc, true)); // add the projectile to the queue, to be fired during next update
+            break;
+          case MouseEvent.BUTTON3: // right click
+            qProjectiles.offer(new NextProjectile(sc, false)); // add the projectile to the queue, to be fired during next update
+            break;
+          default: break;
+        }
         break;
       default: break;
-      }
-      break;
-    default: break;
     }
     
     display.repaint();    //  only needed if display should change
@@ -1153,14 +1174,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   @Override
   public void mouseMoved(MouseEvent evt) {
     switch(gameMode) {
-    case START_MENU:
-      if(evt.getY() > display.getHeight()/2) this.startMenuSelection = START_MENU_OPTION.EXIT;
-      else this.startMenuSelection = START_MENU_OPTION.START_GAME;
-      break;
-    case RUNNING:
-      currentMousePos = evt.getPoint();
-      break;
-    default: break;
+      case START_MENU:
+        if(evt.getY() > display.getHeight()/2) this.startMenuSelection = START_MENU_OPTION.EXIT;
+        else this.startMenuSelection = START_MENU_OPTION.START_GAME;
+        break;
+      case RUNNING:
+        currentMousePos = evt.getPoint();
+        break;
+      default: break;
     }
   }
 
@@ -1182,27 +1203,27 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     int key = evt.getButton();
     
     switch(gameMode) { // controls are based on the game mode
-    case START_MENU:
-      switch (key) {
-      case MouseEvent.BUTTON1: doStartMenuSelection(); // pick selection
+      case START_MENU:
+        switch (key) {
+          case MouseEvent.BUTTON1: doMenuSelection(); // pick selection
+            break;
+          case MouseEvent.BUTTON3: // right click to select next option
+            this.startMenuSelection = startMenuSelection.next(); // scroll downward through menu
+            break;
+          default: break;
+        }
+        break; // END START_MENU
+      case WIN:
+        if(key == MouseEvent.BUTTON1) gameMode = GAME_MODE.CREDITS;
         break;
-      case MouseEvent.BUTTON3: // right click to select next option
-        this.startMenuSelection = startMenuSelection.next(); // scroll downward through menu
-        break;
+      case CREDITS:
+      case GAME_OVER:
+        switch(key) {
+          case MouseEvent.BUTTON1:
+            gameMode = GAME_MODE.START_MENU;
+          default: break;
+        }
       default: break;
-      }
-      break; // END START_MENU
-    case WIN:
-      if(key == MouseEvent.BUTTON1) gameMode = GAME_MODE.CREDITS;
-      break;
-    case CREDITS:
-    case GAME_OVER:
-      switch(key) {
-      case MouseEvent.BUTTON1:
-        gameMode = GAME_MODE.START_MENU;
-      default: break;
-      }
-    default: break;
     }
   }
   @Override public void mouseEntered(MouseEvent evt) { 
@@ -1224,15 +1245,18 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * Adds a conversation, each string will be displayed for 5 seconds.
    * @param convo 
    */
-  public void setConversation(String[] convo) {
+  public static void setConversation(String[] convo) {
     LinkedList<String> reverse = new LinkedList<>();
     for(String s : convo)
       reverse.push(s);
-    if(debugging) conversation.clear();
+    if(debugging) CONVERSATION.clear();
     while(!reverse.isEmpty())
-      conversation.push(reverse.pop());
+      CONVERSATION.push(reverse.pop());
     if(debugging) MESSAGE_TIMER.restart();
-    else MESSAGE_TIMER.start();
+    else {
+      MESSAGE_TIMER.start();
+      gameMode = GAME_MODE.TALKING;
+    }
   }
   
   /**

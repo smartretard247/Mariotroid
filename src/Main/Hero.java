@@ -96,137 +96,137 @@ public class Hero extends Living {
       int objId = c.getObjectId();
       
       switch(texId) {
-      case TEX.TEX_SWITCH_ON:
-        Engine.setStatusMessage("Gravity reversed!");
-        PhysicsEngine.inverseGravity();
-        c.setTextureId(TEX.TEX_SWITCH_OFF);
-        break;
-      case TEX.TEX_PRI_WEAPON: break;
-      case TEX.TEX_ALT_WEAPON: break;
-      case TEX.TEX_HEALTH_ORB:
-        Engine.setStatusMessage("Picked up a health orb.");
-        if(Engine.isDebugging()) TestDisplay.addTestData("Hero HP: " + getHealth());
-        addHealth(3);
-        if(Engine.isDebugging()) TestDisplay.addTestData("Health orb: " + 3 + " / Hero HP: " + getHealth());
-        toRemove.add(objId);
-        break;
-      case TEX.TEX_FALLING_BOX:
-      case TEX.TEX_FALLING_BOX_S:
-      case TEX.TEX_LEVEL:
-        if(movingDown()) { // falling straight down
-          adjustToTopOf(c);
-          setSpeedY(0);
-          doLand();
-        } else if(movingDownAndRight()) { // falling right and down
-          if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
-            adjustToLeftOf(c);
-            lastWallCollision = c;
-          } else {
+        case TEX.TEX_SWITCH_ON:
+          Engine.setStatusMessage("Gravity reversed!");
+          PhysicsEngine.inverseGravity();
+          c.setTextureId(TEX.TEX_SWITCH_OFF);
+          break;
+        case TEX.TEX_PRI_WEAPON: break;
+        case TEX.TEX_ALT_WEAPON: break;
+        case TEX.TEX_HEALTH_ORB:
+          Engine.setStatusMessage("Picked up a health orb.");
+          if(Engine.isDebugging()) TestDisplay.addTestData("Hero HP: " + getHealth());
+          addHealth(3);
+          if(Engine.isDebugging()) TestDisplay.addTestData("Health orb: " + 3 + " / Hero HP: " + getHealth());
+          toRemove.add(objId);
+          break;
+        case TEX.TEX_FLYING_BOX:
+        case TEX.TEX_FALLING_BOX:
+        case TEX.TEX_LEVEL:
+          if(movingDown()) { // falling straight down
             adjustToTopOf(c);
             setSpeedY(0);
             doLand();
-          }
-        } else if(movingDownAndLeft()) { // falling left and down
-          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
-            adjustToRightOf(c);
-            lastWallCollision = c;
-          } else {
-            adjustToTopOf(c);
-            setSpeedY(0);
-            doLand();
-          }
-        } else if(movingLeft()) { // moving left
-          adjustToRightOf(c);
-          lastWallCollision = c;
-        } else if(movingRight()) { // moving right
-          adjustToLeftOf(c);
-          lastWallCollision = c;
-        } else if(movingUpAndLeft()) { // flying upward and to the left
-          if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
-            adjustToRightOf(c);
-            lastWallCollision = c;
-          } else {
-            adjustToBottomOf(c);
-            setSpeedY(0);
-            if(PhysicsEngine.gravityIsInverted()) doLand();
-          }
-        } else if(movingUpAndRight()) { // flying upward and to the right
-          if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
-            adjustToLeftOf(c);
-            lastWallCollision = c;
-          } else {
-            adjustToBottomOf(c);
-            setSpeedY(0);
-            if(PhysicsEngine.gravityIsInverted()) doLand();
-          }
-        } else if(movingUp()) { // flying straight upward
-          adjustToBottomOf(c);
-          setSpeedY(0);
-          if(PhysicsEngine.gravityIsInverted()) doLand();
-        } else if(standingStill()) { // not moving, must be a different object
-          adjustToBottomOf(c);
-          if(Engine.isDebugging()) System.out.println("Hero not moving, source must be a different object");
-        }
-        break;
-      default: // then check for object ids to react to (like enemies)
-        switch(objId) {
-          case ID.ID_ENEMY_1: // these are simple damage, from contact with enemy sprites
-          case ID.ID_ENEMY_2:
-          case ID.ID_ENEMY_3:
-          case ID.ID_CALAMITY:
-            if(!wasRecentlyDamaged()) {
-              if(Engine.isDebugging()) TestDisplay.addTestData("Hero hit by enemy");
-              recentDamageTimer.start();
-              try {
-                loseHealth((int)(Enemy.getBaseDamage()*armor));
-              } catch (GameOverException ex) {
-              }
+          } else if(movingDownAndRight()) { // falling right and down
+            if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
+              adjustToLeftOf(c);
+              lastWallCollision = c;
+            } else {
+              adjustToTopOf(c);
+              setSpeedY(0);
+              doLand();
             }
-            break;
-          case ID.ID_SHELL:
-            Engine.setStatusMessage("Got missles!");
-            Engine.addScore(1000);
-            pickupSecondaryWeapon();
-            toRemove.add(objId);
-            break;
-          case ID.ID_ARMOR:
-            Engine.setStatusMessage("Got armor!");
-            Engine.addScore(275);
-            pickupArmor();
-            toRemove.add(objId);
-            break;
-          case ID.ID_JETPACK:
-            Engine.setStatusMessage("Got jetpack!");
-            Engine.addScore(250);
-            pickupJetpack();
-            toRemove.add(objId);
-            break;
-          case ID.ID_WARP:
-            toRemove.add(objId); // tag for renewal to tell Engine to call jumpToNextLevel()
-            break;
-          default: 
-            if(new Projectile().getClass().isInstance(c)) {
-              if(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2) {
-                if(!wasRecentlyDamaged()) {
-                  if(Engine.isDebugging()) TestDisplay.addTestData("Hero hit by projectile");
-                  recentDamageTimer.start();
-                  Projectile p = (Projectile)c;
-                  try {
-                    loseHealth((int)(p.getDamage()*armor));
-                  } catch (GameOverException ex) {
-                    this.setLives(0);
-                  }
-                  toRemove.add(objId);
+          } else if(movingDownAndLeft()) { // falling left and down
+            if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
+              adjustToRightOf(c);
+              lastWallCollision = c;
+            } else {
+              adjustToTopOf(c);
+              setSpeedY(0);
+              doLand();
+            }
+          } else if(movingLeft()) { // moving left
+            adjustToRightOf(c);
+            lastWallCollision = c;
+          } else if(movingRight()) { // moving right
+            adjustToLeftOf(c);
+            lastWallCollision = c;
+          } else if(movingUpAndLeft()) { // flying upward and to the left
+            if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
+              adjustToRightOf(c);
+              lastWallCollision = c;
+            } else {
+              adjustToBottomOf(c);
+              setSpeedY(0);
+              if(PhysicsEngine.gravityIsInverted()) doLand();
+            }
+          } else if(movingUpAndRight()) { // flying upward and to the right
+            if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
+              adjustToLeftOf(c);
+              lastWallCollision = c;
+            } else {
+              adjustToBottomOf(c);
+              setSpeedY(0);
+              if(PhysicsEngine.gravityIsInverted()) doLand();
+            }
+          } else if(movingUp()) { // flying straight upward
+            adjustToBottomOf(c);
+            setSpeedY(0);
+            if(PhysicsEngine.gravityIsInverted()) doLand();
+          } else if(standingStill()) { // not moving, must be a different object
+            adjustToBottomOf(c);
+            if(Engine.isDebugging()) System.out.println("Hero not moving, source must be a different object");
+          }
+          break;
+        default: // then check for object ids to react to (like enemies)
+          switch(objId) {
+            case ID.ID_ENEMY_1: // these are simple damage, from contact with enemy sprites
+            case ID.ID_ENEMY_2:
+            case ID.ID_ENEMY_3:
+            case ID.ID_CALAMITY:
+              if(!wasRecentlyDamaged()) {
+                if(Engine.isDebugging()) TestDisplay.addTestData("Hero hit by enemy");
+                recentDamageTimer.start();
+                try {
+                  loseHealth((int)(Enemy.getBaseDamage()*armor));
+                } catch (GameOverException ex) {
                 }
               }
-            }
-            break;
-        }
-        break;
+              break;
+            case ID.ID_SHELL:
+              Engine.setStatusMessage("Got missles!");
+              Engine.addScore(1000);
+              pickupSecondaryWeapon();
+              toRemove.add(objId);
+              break;
+            case ID.ID_ARMOR:
+              Engine.setStatusMessage("Got armor!");
+              Engine.addScore(275);
+              pickupArmor();
+              toRemove.add(objId);
+              break;
+            case ID.ID_JETPACK:
+              Engine.setStatusMessage("Got jetpack!");
+              Engine.addScore(250);
+              pickupJetpack();
+              toRemove.add(objId);
+              break;
+            case ID.ID_WARP:
+              toRemove.add(objId); // tag for renewal to tell Engine to call jumpToNextLevel()
+              break;
+            default: 
+              if(new Projectile().getClass().isInstance(c)) {
+                if(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2) {
+                  if(!wasRecentlyDamaged()) {
+                    if(Engine.isDebugging()) TestDisplay.addTestData("Hero hit by projectile");
+                    recentDamageTimer.start();
+                    Projectile p = (Projectile)c;
+                    try {
+                      loseHealth((int)(p.getDamage()*armor));
+                    } catch (GameOverException ex) {
+                      this.setLives(0);
+                    }
+                    toRemove.add(objId);
+                  }
+                }
+              }
+              break;
+          }
+          break;
       }
     }
     // Move on top of object if reached the top
-    if(reachedTop()){
+    if(reachedTop()) {
       x += (x < lastWallCollision.getX()) ? 20 : -20;
       setClimbing(false);
     }

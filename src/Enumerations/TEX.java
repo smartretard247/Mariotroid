@@ -37,5 +37,5 @@ public final class TEX {
   public static final int TEX_SWITCH_ON = 26;
   public static final int TEX_SWITCH_OFF = 27;
   public static final int TEX_FALLING_BOX = 28;
-  public static final int TEX_FALLING_BOX_S = 29;
+  public static final int TEX_FLYING_BOX = 29;
 }

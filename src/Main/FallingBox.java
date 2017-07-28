@@ -11,13 +11,13 @@ import java.util.List;
  */
 public class FallingBox extends Interactive {
 
-  FallingBox(int id, int texId, int selTexId, float x, float y) {
-    super(id, texId, selTexId, x, y);
+  FallingBox(int id, int texId, float x, float y) {
+    super(id, texId, x, y);
     weight = 0;
   }
 
   FallingBox() {
-    this(-1, -1, -1, 0, 0);
+    this(-1, -1, 0, 0);
   }
   
   @Override
@@ -38,21 +38,23 @@ public class FallingBox extends Interactive {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
-      case TEX.TEX_LEVEL:
-        this.adjustToTopOf(c);
-        this.setSpeedY(0);
-        break;
-      default:
-        if(new Projectile().getClass().isInstance(c)) {
-          if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
-            if(!isComplete()) {
-              weight = 1f;
-              setComplete(true);
-              Engine.setStatusMessage("Brick broke free!");
+        case TEX.TEX_FLYING_BOX:
+        case TEX.TEX_FALLING_BOX:
+        case TEX.TEX_LEVEL:
+          this.adjustToTopOf(c);
+          this.setSpeedY(0);
+          break;
+        default:
+          if(new Projectile().getClass().isInstance(c)) {
+            if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
+              if(!isComplete()) {
+                weight = 1f;
+                setComplete(true);
+                Engine.setStatusMessage("Brick broke free!");
+              }
             }
           }
-        }
-        break;
+          break;
       }
     }
     return toRemove;
