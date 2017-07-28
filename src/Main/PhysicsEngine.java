@@ -9,6 +9,9 @@ import java.util.ArrayList;
 public class PhysicsEngine {
   private static final ArrayList<Heavy> HEAVY_OBJS = new ArrayList<>();
   private static int gravity = -10;
+  private static final ArrayList<Heavy> DRAG_OBJS = new ArrayList<>();
+  private static int drag = 2;
+  
   private static final int DEFAULT_GRAVITY = -10;
   private static final int TERMINAL_VELOCITY = 300;
   private static final int TERMINAL_SPRINT = 20;
@@ -27,15 +30,35 @@ public class PhysicsEngine {
   }
   
   /**
-   * Adds the supplied movable object to a list of all objects to which gravity will be applied.
-   * @param m 
+   * Apply drag to all heavy objects.
    */
-  public static void addHeavy(Heavy m) {
-    if(m != null) HEAVY_OBJS.add(m);
+  public static void drag() {
+    DRAG_OBJS.forEach((h) -> {
+      boolean movingLeft = h.getSpeedX() < 0;
+      float horzSpeed = Math.abs(h.getSpeedX()) - (drag * h.getWeight());
+      if (horzSpeed <= 0) {
+        horzSpeed = 0;
+      } else {
+        horzSpeed = movingLeft ? -horzSpeed : horzSpeed;
+      }
+      h.setSpeedX(horzSpeed);
+    });
   }
   
-  public static void removeHeavy(Heavy m) {
-    if(HEAVY_OBJS.contains(m)) HEAVY_OBJS.remove(m);
+  /**
+   * Adds the supplied movable object to a list of all objects to which gravity will be applied.
+   * @param h 
+   */
+  public static void addHeavy(Heavy h) {
+    if(h != null) HEAVY_OBJS.add(h);
+  }
+  
+  public static void removeHeavy(Heavy h) {
+    if(HEAVY_OBJS.contains(h)) HEAVY_OBJS.remove(h);
+  }
+  
+  public static void addDrag(Heavy h) {
+    if(h != null) DRAG_OBJS.add(h);
   }
   
   public static void inverseGravity() { gravity = -gravity; }

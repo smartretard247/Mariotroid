@@ -13,6 +13,7 @@ public class FlyingBox extends Interactive {
 
   FlyingBox(int id, int texId, float x, float y) {
     super(id, texId, x, y);
+    PhysicsEngine.addDrag(this);
   }
 
   FlyingBox() {
@@ -39,8 +40,13 @@ public class FlyingBox extends Interactive {
       switch(texId) {
         case TEX.TEX_BOX:
         case TEX.TEX_LEVEL:
-          this.adjustToTopOf(c);
-          this.setSpeedY(0);
+          if(movingRight()) {
+            adjustToLeftOf(c);
+          } else if(movingLeft()) {
+            adjustToRightOf(c);
+          }
+          adjustToTopOf(c);
+          setSpeedY(0);
           break;
         default:
           if(new Projectile().getClass().isInstance(c)) {

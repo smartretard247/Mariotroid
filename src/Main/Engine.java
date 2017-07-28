@@ -1033,6 +1033,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         transitionToNextLevel();
         processPendingInteraction();
         PhysicsEngine.fall(); // apply gravity to all heavy objects
+        PhysicsEngine.drag(); // apply drag to all necessary objects
 
         ArrayList<Collidable> visibleObjects = game.getVisibles();
         ArrayList<Integer> toRemove = new ArrayList<>(); // keep track of ids to remove at end of frame
