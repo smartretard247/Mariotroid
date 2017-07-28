@@ -121,6 +121,19 @@ public class ObjectContainer {
   }
   
   /**
+   * Deselects all BUT supplied interactive objects.
+   * @param i
+   */
+  public void deselectAllIOBut(Interactive i) {
+    if(interactiveObjects.containsKey(i.getObjectId())) {
+      interactiveObjects.values().forEach((i2) -> {
+        if(i2.getObjectId() != i.getObjectId())
+          i2.deselect();
+      });
+    }
+  }
+  
+  /**
    * Removes the "closed" door and adds a "powered" door.  Also creates a collidable point at which
    * contact will change game mode to WARPING.
    */

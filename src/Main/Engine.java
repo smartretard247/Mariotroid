@@ -195,8 +195,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         b = (Boss)game.getGO(ID.ID_CALAMITY);
         b.setMinX(8930);
         game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
-
-        game.addIO(new FallingBox(ID.ID_FALLING_BOX, TEX.TEX_FALLING_BOX, 760, 960));
+        int boxHeight = DrawLib.getTexture(TEX.TEX_BOX).getHeight();
+        game.addIO(new FallingBox(ID.ID_FALLING_BOX, TEX.TEX_BOX, 760, 960));
+        game.addIO(new FlyingBox(ID.ID_FLYING_BOX, TEX.TEX_BOX, 8810, 960-boxHeight*2));
+        game.addIO(new FlyingBox(ID.ID_FLYING_BOX_2, TEX.TEX_BOX, 8810, 960-boxHeight));
+        game.addIO(new FlyingBox(ID.ID_FLYING_BOX_3, TEX.TEX_BOX, 8810, 960));
         break;
       case 2:// setup level 2, only add level 2 game objects to this map
         game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
@@ -1037,26 +1040,23 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         // for all objects
         visibleObjects.stream().forEach((c) -> {
           if(c != null) {
-            // move all movables
             if((new Movable()).getClass().isInstance(c)) {
-              ((Movable)c).move();
+              ((Movable)c).move(); // move all movables
             }
-            // process projectile collisions
+            
+            // process collisions, should be else ifs here, NOT ABOVE
             if((new Projectile()).getClass().isInstance(c)) {
               toRemove.addAll(((Projectile)c).processCollisions(visibleObjects));
-            }
-            // process interactive collisions
-            if((new FallingBox()).getClass().isInstance(c)) {
+            } else if((new FallingBox()).getClass().isInstance(c)) {
               toRemove.addAll(((FallingBox)c).processCollisions(visibleObjects));
-            }
-            // fire boss weapon toward hero and process boss collisions
-            if((new Boss()).getClass().isInstance(c)) {
+            } else if((new FlyingBox()).getClass().isInstance(c)) {
+              toRemove.addAll(((FlyingBox)c).processCollisions(visibleObjects));
+            } else if((new Boss()).getClass().isInstance(c)) {
               Boss boss = (Boss)c;
               toRemove.addAll(boss.processCollisions(visibleObjects));
+              // fire boss weapon toward hero
               if(!boss.didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true));
-            }
-            // process all enemy collisions
-            if((new Enemy()).getClass().isInstance(c)) {
+            } else if((new Enemy()).getClass().isInstance(c)) {
               toRemove.addAll(((Enemy)c).processCollisions(visibleObjects));
             }
           }
@@ -1193,6 +1193,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     interactiveObject = game.getInteractive(currentMousePos);
     if(interactiveObject != null) {
       interactiveObject.select();
+      game.deselectAllIOBut(interactiveObject);
     } else {
       game.deselectAllIO();
     }

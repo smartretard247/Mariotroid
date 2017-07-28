@@ -110,8 +110,7 @@ public class Hero extends Living {
           if(Engine.isDebugging()) TestDisplay.addTestData("Health orb: " + 3 + " / Hero HP: " + getHealth());
           toRemove.add(objId);
           break;
-        case TEX.TEX_FLYING_BOX:
-        case TEX.TEX_FALLING_BOX:
+        case TEX.TEX_BOX:
         case TEX.TEX_LEVEL:
           if(movingDown()) { // falling straight down
             adjustToTopOf(c);

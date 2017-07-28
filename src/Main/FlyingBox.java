@@ -9,20 +9,19 @@ import java.util.List;
  *
  * @author Jeezy
  */
-public class FallingBox extends Interactive {
+public class FlyingBox extends Interactive {
 
-  FallingBox(int id, int texId, float x, float y) {
+  FlyingBox(int id, int texId, float x, float y) {
     super(id, texId, x, y);
-    weight = 0;
   }
 
-  FallingBox() {
+  FlyingBox() {
     this(-1, -1, 0, 0);
   }
   
   @Override
   public void doAction() {
-    // do nothing because FallingBox falls when hit by hero projectile, not hero.interact()
+    // do nothing because FlyingBox flys off when hit by hero projectile, not hero.interact()
   }
   
   /**
@@ -47,9 +46,8 @@ public class FallingBox extends Interactive {
           if(new Projectile().getClass().isInstance(c)) {
             if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
               if(!isComplete()) {
-                weight = 1f;
-                setComplete(true);
-                Engine.setStatusMessage("Brick broke free!");
+                Projectile p = (Projectile)c;
+                setSpeed(p.getSpeed());
               }
             }
           }

@@ -31,8 +31,7 @@ public class Enemy extends Living {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
-        case TEX.TEX_FLYING_BOX:
-        case TEX.TEX_FALLING_BOX:
+        case TEX.TEX_BOX:
         case TEX.TEX_LEVEL:
           if(movingDown()) { // falling straight down
             adjustToTopOf(c);

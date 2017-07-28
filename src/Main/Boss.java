@@ -48,6 +48,7 @@ public class Boss extends Enemy {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
+        case TEX.TEX_BOX:
         case TEX.TEX_LEVEL:
           if(movingDown()) { // falling straight down
             adjustToTopOf(c);

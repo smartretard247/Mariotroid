@@ -90,9 +90,8 @@ public class Projectile extends Movable {
     for(Collidable c : collisions) {
       int collisiontexId = c.getTextureId();
       switch(collisiontexId) {
-      case TEX.TEX_FALLING_BOX:   // remove if onethese three 
-      case TEX.TEX_FLYING_BOX: // of these textures
-      case TEX.TEX_LEVEL:         // are collided with 
+      case TEX.TEX_BOX:   // remove if one of these
+      case TEX.TEX_LEVEL:         // textures are collided with 
         toRemove.add(this.getObjectId());
         break;
       default: break;
