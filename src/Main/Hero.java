@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.swing.Timer;
 import Test.TestDisplay;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -51,14 +53,8 @@ public class Hero extends Living {
   
   @Override
   public boolean loseHealth(int amount) throws GameOverException {
-    if(!godMode) {
-      if(Engine.isDebugging()) TestDisplay.addTestData("Hero HP: " + getHealth());
-      if(!super.loseHealth(amount)) { // if dead after losing health
-        if(Engine.isDebugging()) TestDisplay.addTestData("Hero HP: " + getHealth());
-        if(getLives() > 0) resetHealth();
-        if(getLives() > 0) resetPosition();
-      }
-    }
+    if(Engine.isDebugging()) TestDisplay.addTestData("Hero HP: " + getHealth());
+    if(!godMode) { super.loseHealth(amount); }
     if(Engine.isDebugging()) TestDisplay.addTestData("Hero damage: " + amount + " / Hero HP: " + getHealth());
     return true;
   }
@@ -73,7 +69,6 @@ public class Hero extends Living {
     dropSecondaryWeapon();
     dropJetpack();
     doLand();
-    
   }
   
   /**
@@ -86,7 +81,8 @@ public class Hero extends Living {
     List<Collidable> collisions = getCollisions(nearObjects);
     List<Integer> toRemove = new LinkedList<>();
     if(Math.abs(this.getY()) > 3000) { //fell off map
-      try { loseHealth(10); } catch (GameOverException ex) { }
+      die();
+      return toRemove;
     }
     
     // additional things that the hero should do with each of the collided objects
@@ -179,6 +175,7 @@ public class Hero extends Living {
                 try {
                   loseHealth((int)(Enemy.getBaseDamage()*armor));
                 } catch (GameOverException ex) {
+                  toRemove.add(this.getObjectId());
                 }
               }
               break;
@@ -342,6 +339,8 @@ public class Hero extends Living {
           else setTextureId(TEX.TEX_HERO_RUN2);
         }
       }
+    } else {
+      setTextureId(TEX.TEX_HERO_DEAD);
     }
     
     setFlipX(PhysicsEngine.gravityIsInverted());
@@ -355,14 +354,17 @@ public class Hero extends Living {
     } catch (GameOverException ex) {
       this.setSpeedX(0);
       godMode = true;
-      setTextureId(TEX.TEX_HERO_DEAD);
       Engine.setGameMode(GAME_MODE.DYING);
     }
   }
   
   public boolean getGodMode() { return godMode; }
-  public void setGodMode(boolean to) { godMode = to; }
-  public void toggleGodMode() { godMode = !godMode; }
+  public void setGodMode(boolean to) {
+    godMode = to;
+    if(godMode) PhysicsEngine.removeHeavy(this);
+    else PhysicsEngine.addHeavy(this);
+  }
+  public void toggleGodMode() { setGodMode(!godMode); }
   
   /**
    * Performs whatever action is associated to the currently selected object.  If no valid object

@@ -85,7 +85,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public static long getScore() { return score; }
   public static void resetScore() { score = 0; }
   public static void addScore(int points) { score += points; }
-  public static void setGameMode(GAME_MODE mode) { gameMode = mode; }
+  public static void setGameMode(GAME_MODE mode) { Engine.gameMode = mode; }
   public static int getFrameNumber() { return frameNumber; }
   public static boolean isSoundEnabled() { return soundEnabled; }
   public static boolean isDebugging() { return debugging; }
@@ -233,8 +233,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       LevelBuilder levelBuilder = new LevelBuilder(fileName);
       ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
       level.stream().forEach((r) -> {
-        int id = ID.getNewId();
-        game.addTO(id, new Collidable(id, TEX.TEX_LEVEL, r.x(), r.y(), r.w(), r.h()));
+        game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_LEVEL, r.x()-r.w()/2, r.y(), 1, r.h()));
+        game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_LEVEL, r.x()+r.w()/2, r.y(), 1, r.h()));
+        game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_LEVEL, r.x(), r.y()+r.h()/2, r.w(), 1));
+        game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_LEVEL, r.x(), r.y()-r.h()/2, r.w(), 1));
       });
     }
     
@@ -355,7 +357,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       CONVERSATION.pop();
       MESSAGE_TIMER.start();
     }
-    if(CONVERSATION.isEmpty()) gameMode = GAME_MODE.RUNNING;
+    if(gameMode == GAME_MODE.TALKING) {
+      if(CONVERSATION.isEmpty()) gameMode = GAME_MODE.RUNNING;
+    }
   }
   
   /**
@@ -1027,7 +1031,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           gameMode = GAME_MODE.RUNNING;
         }
         break;
-      case DYING: if(!hero.wasRecentlyDamaged()) { gameMode = GAME_MODE.GAME_OVER; }
+      case DYING: 
+        if(!hero.wasRecentlyDamaged()) {
+          gameMode = GAME_MODE.GAME_OVER;
+        }
       case RUNNING:
         if(checkForWin()) return;
         transitionToNextLevel();
@@ -1062,7 +1069,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             }
           }
         });
-        toRemove.addAll(hero.processCollisions(visibleObjects));
+        if(!hero.getGodMode()) toRemove.addAll(hero.processCollisions(visibleObjects));
 
         // check for warp collision, then remove all ids tagged for removal
         if(toRemove.contains(ID.ID_WARP)) jumpToNextLevel();

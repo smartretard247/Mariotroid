@@ -66,5 +66,9 @@ public class Living extends Heavy {
   public void setLives(int to) { lives = to; }
   public void resetLives() { lives = defLives; }
   public void addLive() { ++lives; }
-  protected void die() throws GameOverException { if(--lives <= 0) throw new GameOverException(); }
+  protected void die() throws GameOverException {
+    if(--lives <= 0) throw new GameOverException();
+    resetHealth();
+    resetPosition();
+  }
 }

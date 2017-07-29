@@ -50,7 +50,7 @@ public class PhysicsEngine {
    * @param h 
    */
   public static void addHeavy(Heavy h) {
-    if(h != null) HEAVY_OBJS.add(h);
+    if(h != null && !HEAVY_OBJS.contains(h)) HEAVY_OBJS.add(h);
   }
   
   public static void removeHeavy(Heavy h) {
@@ -58,7 +58,7 @@ public class PhysicsEngine {
   }
   
   public static void addDrag(Heavy h) {
-    if(h != null) DRAG_OBJS.add(h);
+    if(h != null && !DRAG_OBJS.contains(h)) DRAG_OBJS.add(h);
   }
   
   public static void inverseGravity() { gravity = -gravity; }
