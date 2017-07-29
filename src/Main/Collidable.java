@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author Jeezy
  */
-public class Collidable extends Drawable {
+public abstract class Collidable extends Drawable {
   private final int objectId;
   
   public Collidable(int objId, int texId, float x, float y, float w, float h) {
@@ -68,7 +68,5 @@ public class Collidable extends Drawable {
   
   public final int getObjectId() { return objectId; }
   
-  public List<Integer> processCollisions(ArrayList<Collidable> nearObjects) {
-    throw new UnsupportedOperationException("Subclass did not override processCollisions from Collidable class.");
-  }
+  public abstract List<Integer> processCollisions(ArrayList<Collidable> nearObjects);
 }

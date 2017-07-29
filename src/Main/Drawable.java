@@ -98,12 +98,23 @@ public class Drawable {
    */
   public void setFlipX(boolean to) { flipX = to; }
   
-  public float[] getColor() { return color; }
-  public void setColor(float r, float g, float b) {
+  /**
+   * Sets the objects RGB color while returning the old color.
+   * @param r red component
+   * @param g green component
+   * @param b blue component
+   * @return float[] of object's old RGB color
+   */
+  public float[] setColor(float r, float g, float b) {
     color[0] = r;
     color[1] = g;
     color[2] = b;
+    return new float[] { r, g, b };
   }
+  public float[] setColor(float[] to) {
+    return setColor(to[0], to[1], to[2]);
+  }
+  public float[] getColor() { return color; }
   
   /**
    * Draws the game object using a valid textureId, if one is not present it will draw a plain

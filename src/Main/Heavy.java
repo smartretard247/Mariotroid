@@ -7,7 +7,7 @@ import java.awt.Point;
  *
  * @author Jeezy
  */
-public class Heavy extends Movable {
+public abstract class Heavy extends Movable {
   protected float weight;
   
   public Heavy(int objId, int texId, float x, float y, float w, float h, Point.Float s) {

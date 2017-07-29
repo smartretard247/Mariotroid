@@ -10,9 +10,17 @@ import Enumerations.TEX;
 public abstract class Interactive extends Heavy {
   private boolean interactionComplete = false;
   private boolean selected = false;
+  private final float[] selColor;
+  private final float[] normalColor ;
+  
+  public Interactive(int objId, int texId, float x, float y, float w, float h, float[] sColor) {
+    super(objId, texId, x, y, w, h);
+    normalColor = new float[] { 1f, 1f, 1f };
+    selColor = sColor;
+  }
   
   public Interactive(int objId, int texId, float x, float y, float w, float h) {
-    super(objId, texId, x, y, w, h);
+    this(objId, texId, x, y, w, h, new float[] { 1f, 1f, 0 });
   }
   
   public Interactive(int objId, int texId, float x, float y) {
@@ -32,17 +40,29 @@ public abstract class Interactive extends Heavy {
   public void setComplete(boolean to) { interactionComplete = to; }
   
   public void select() {
-    if(!selected) {
-      setColor(1f, 1f, 0);
+    if(!selected && !interactionComplete) {
+      setColor(selColor);
       selected = true;
     }
   }
   
   public void deselect() {
     if(selected) {
-      setColor(1f, 1f, 1f);
+      setColor(normalColor);
       selected = false;
     }
+  }
+  
+  public void setColorSelected(float r, float g, float b) { 
+    selColor[0] = r;
+    selColor[1] = g;
+    selColor[2] = b;
+  }
+  
+  public void setColorNormal(float r, float g, float b) { 
+    normalColor[0] = r;
+    normalColor[1] = g;
+    normalColor[2] = b;
   }
   
   /**

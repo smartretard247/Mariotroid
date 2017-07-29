@@ -92,15 +92,12 @@ public class Hero extends Living {
     
     // additional things that the hero should do with each of the collided objects
     for(Collidable c : collisions) {
-      if(Engine.isDebugging()) System.out.println("Collision, source object coord/speed: " + x + ", " + y + " / " + getSpeedX() + ", " + getSpeedY());
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       
       switch(texId) {
-        case TEX.SWITCH_ON:
-          Engine.setStatusMessage("Gravity reversed!");
-          PhysicsEngine.inverseGravity();
-          c.setTextureId(TEX.SWITCH_OFF);
+        case TEX.SWITCH:
+          
           break;
         case TEX.PRI_WEAPON: break;
         case TEX.ALT_WEAPON: break;

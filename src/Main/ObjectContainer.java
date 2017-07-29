@@ -2,6 +2,7 @@ package Main;
 
 import Drawing.DrawLib;
 import Enumerations.ID;
+import com.jogamp.opengl.GL2;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,11 +28,14 @@ public class ObjectContainer {
   }
   
   public void addGO(Collidable c) {
-    gameObjects.put(c.getObjectId(), c);
+    if(c instanceof Interactive)
+      addIO((Interactive)c);
+    else
+      gameObjects.putIfAbsent(c.getObjectId(), c);
   }
   
-  public void addIO(Interactive i) {
-    interactiveObjects.put(i.getObjectId(), i);
+  private void addIO(Interactive i) {
+    interactiveObjects.putIfAbsent(i.getObjectId(), i);
   }
   
   private void removeGO(int id) {
@@ -71,9 +75,8 @@ public class ObjectContainer {
   }
   
   public void addTO(int id, Collidable c) {
-    if(!tempObjects.containsKey(id)) {
+    if(!tempObjects.containsKey(id))
       tempObjects.put(id, c);
-    }
   }
   
   private void removeTO(int id) {
@@ -101,7 +104,7 @@ public class ObjectContainer {
    * @param at screen coordinates
    * @return the selected interactive object
    */
-  public Interactive getInteractive(Point at) {
+  public Interactive getInteractiveAt(Point at) {
     Point.Float wc = DrawLib.screenToWorld(at);
     Rectangle point = new Rectangle(wc.x, wc.y, 1, 1);
     for(Interactive i : interactiveObjects.values()) {

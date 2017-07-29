@@ -2,6 +2,8 @@ package Main;
 
 import Enumerations.ID;
 import Enumerations.TEX;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -21,7 +23,7 @@ public class Door extends Collidable {
    */
   public Door(int id, int x, int y, int wx, int wy, boolean fX) {
     super(id, TEX.DOOR, x, y);
-    warp = new Collidable(ID.WARP, TEX.TRANSPARENT, this.x+wx, this.y+wy);
+    warp = new Item(ID.WARP, TEX.TRANSPARENT, this.x+wx, this.y+wy);
     flipX = fX;
   }
   
@@ -38,4 +40,9 @@ public class Door extends Collidable {
   }
   
   public Collidable getWarp() { return warp; }
+
+  @Override
+  public List<Integer> processCollisions(ArrayList<Collidable> nearObjects) {
+    return null;
+  }
 }

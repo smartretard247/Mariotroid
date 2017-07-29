@@ -61,8 +61,7 @@ public class DrawLib {
     textureIdMap.put(TEX.BACKGROUND_2, "/res/background_2.jpg");
     textureIdMap.put(TEX.HEALTH_ORB, "/res/health_orb.png");
     textureIdMap.put(TEX.TRANSPARENT, "/res/transparent.png");
-    textureIdMap.put(TEX.SWITCH_ON, "/res/switch_on.png");
-    textureIdMap.put(TEX.SWITCH_OFF, "/res/switch_off.png");
+    textureIdMap.put(TEX.SWITCH, "/res/switch.png");
     textureIdMap.put(TEX.BOX, "/res/box.png");
     //textureIdMap.put(TEX.TEXT_BOX, "/res/text_box.png");
     

@@ -1,7 +1,11 @@
 package Main;
 
 import Drawing.DrawLib;
+import Enumerations.TEX;
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -149,4 +153,30 @@ public class Movable extends Collidable {
   
   public void setSprinting(boolean to) { isSprinting = to; }
   public boolean isSprinting() { return isSprinting; }
+
+  @Override
+  public List<Integer> processCollisions(ArrayList<Collidable> nearObjects) {
+    List<Collidable> collisions = getCollisions(nearObjects);
+    List<Integer> toRemove = new LinkedList<>();
+    for(Collidable c : collisions) {
+      int texId = c.getTextureId();
+      switch(texId) {
+        case TEX.LEVEL:
+          if(movingUp())
+            this.adjustToBottomOf(c);
+          else if(movingDown())
+            this.adjustToTopOf(c);
+          this.setSpeedY(0);
+          
+          if(movingLeft())
+            this.adjustToRightOf(c);
+          else if(movingRight())
+            this.adjustToLeftOf(c);
+          this.setSpeedX(0);
+          break;
+        default: break;
+      }
+    }
+    return toRemove;
+  }
 }
