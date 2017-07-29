@@ -255,6 +255,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     won = false;
     scene.resetAll(); // do not change scene in other cases
     SOUND_EFFECT.THEME.playLoop();
+    TestDisplay.resetLogWindow();
   }
   
   /**
@@ -1035,6 +1036,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         if(!hero.wasRecentlyDamaged()) {
           gameMode = GAME_MODE.GAME_OVER;
         }
+        break;
       case RUNNING:
         if(checkForWin()) return;
         transitionToNextLevel();
@@ -1069,11 +1071,13 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             }
           }
         });
-        if(!hero.getGodMode()) toRemove.addAll(hero.processCollisions(visibleObjects));
+        toRemove.addAll(hero.processCollisions(visibleObjects));
 
         // check for warp collision, then remove all ids tagged for removal
         if(toRemove.contains(ID.ID_WARP)) jumpToNextLevel();
         toRemove.stream().forEach((id) -> { game.removeAny(id); });
+        
+        if(hero.getLives() == 0) { gameMode = GAME_MODE.DYING; } // check for game over
         break;
       default: break;
     }
@@ -1308,6 +1312,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawLog(GL2 gl) {
+    if(gameMode == GAME_MODE.RUNNING || gameMode == GAME_MODE.TALKING
+            || gameMode == GAME_MODE.DYING || gameMode == GAME_MODE.WARPING)
     TestDisplay.writeToScreen(gl, DrawLib.getTexture(TEX.TEX_HUD).getWidth());
   }
   

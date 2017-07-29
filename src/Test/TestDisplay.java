@@ -55,6 +55,13 @@ public class TestDisplay {
     logText += dataString + "\r\n";
     DISP_DATA.add(new TestData(dataString));
   }
+  
+  /**
+   * Erases the screen log.  Will not remove logs to be saved to file.
+   */
+  public static void resetLogWindow() {
+    DISP_DATA.clear();
+  }
 
   /**
    * Writes the test data that hasn't timed out to the screen.

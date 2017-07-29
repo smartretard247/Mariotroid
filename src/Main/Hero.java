@@ -71,6 +71,14 @@ public class Hero extends Living {
     doLand();
   }
   
+  @Override
+  public void move() {
+    super.move();
+    if(Math.abs(this.getY()) > 3000) { //fell off map
+      die();
+    }
+  }
+  
   /**
    * Checks for collisions with all objects in nearObjects.
    * @param nearObjects
@@ -80,10 +88,6 @@ public class Hero extends Living {
   public List<Integer> processCollisions(ArrayList<Collidable> nearObjects)  {
     List<Collidable> collisions = getCollisions(nearObjects);
     List<Integer> toRemove = new LinkedList<>();
-    if(Math.abs(this.getY()) > 3000) { //fell off map
-      die();
-      return toRemove;
-    }
     
     // additional things that the hero should do with each of the collided objects
     for(Collidable c : collisions) {
@@ -353,8 +357,7 @@ public class Hero extends Living {
       super.die();
     } catch (GameOverException ex) {
       this.setSpeedX(0);
-      godMode = true;
-      Engine.setGameMode(GAME_MODE.DYING);
+      godMode = true; // prevent further damage, so damage timer will eventually expire
     }
   }
   
