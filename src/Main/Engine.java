@@ -209,8 +209,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         b.setMaxX(2570);
         GAME.addGO(new Door(ID.DOOR, 300, 987, -60, 70, true));
         GAME.addGO(new GravitySwitch(ID.SWITCH, TEX.SWITCH, 5366, 702));
-        GravitySwitch gs = (GravitySwitch)GAME.getIO(ID.SWITCH);
-        gs.setColorSelected(0.2f, 0, 0.5f);
         break;
       default: System.out.println("Unknown level number while resetting visibles."); break;
     }
@@ -389,8 +387,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       float yOffset = 10, vSpace = 20;
       float[] textColor = new float[] { 1.0f, 0.5f, 0.0f };
       String[] debugControls = { "Debugging:", "F4 - Toggle debug", "F5 - Toggle god mode", "F6 - Toggle backgrounds", "F7 - Toggle level decor", "F8 - Jump to next level" };
-      String[] keyboardControls = { "Keyboard:", "A - Move left", "D - Move right", "W - Climb wall", "S - Descend wall", "SHIFT - Toggle run", "SPACE - Jump/Double jump", "P - Pause" };
-      String[] mouseControls = { "             Right click - Fire alternate weapon", "Mouse: Left click - Fire primary weapon", "F10 - Control display on/off", "F9 - Adjust volume" };
+      String[] keyboardControls = { "Keyboard:", "A - Move left", "D - Move right", "W - Climb wall", "S - Descend wall", "F - Interact", "SHIFT - Toggle run", "SPACE - Jump/double jump", "P - Pause" };
+      String[] mouseControls = { "          Right click - Fire alternate weapon", "Mouse: Left click - Fire primary weapon", "F10 - Control display on/off", "F9 - Adjust volume" };
       gl.glPushMatrix();
       gl.glColor3fv(textColor, 0);
       gl.glTranslated(-DrawLib.getTexture(TEX.HUD).getWidth()/2, -DrawLib.getTexture(TEX.HUD).getHeight()/2+yOffset, 0);
@@ -406,7 +404,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       gl.glPushMatrix();
       for(String s : keyboardControls) {
         DrawLib.drawText(s, 0, 0);
-        gl.glTranslated(s.length()*11,0,0);
+        gl.glTranslated(s.length()*10,0,0);
       }
       gl.glPopMatrix();
       gl.glTranslated(0,vSpace,0);

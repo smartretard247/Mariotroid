@@ -16,8 +16,8 @@ public class GravitySwitch extends Interactive {
     if(!isComplete()) {
       Engine.setStatusMessage("Gravity reversed!");
       PhysicsEngine.inverseGravity();
-      setColor(1f, 0.5f, 1f);
-      setColorNormal(1f, 0.5f, 1f);
+      setColor(1f, 0.5f, 1f); // deactivated color
+      setColorNormal(1f, 0.5f, 1f); // deactivated color
       setComplete(true);
     }
   }

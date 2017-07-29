@@ -71,6 +71,22 @@ public class Movable extends Collidable {
     return (getSpeedY() == 0 && getSpeedX() == 0);
   }
   
+  public boolean movingUpIgnoreX() {
+    return (getSpeedY() > 0);
+  }
+  
+  public boolean movingDownIgnoreX() {
+    return (getSpeedY() < 0);
+  }
+  
+  public boolean movingRightIgnoreY() {
+    return (getSpeedX() > 0);
+  }
+  
+  public boolean movingLeftIgnoreY() {
+    return (getSpeedX() < 0);
+  }
+  
   public boolean movingUp() {
     return (getSpeedY() > 0 && getSpeedX() == 0);
   }

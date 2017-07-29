@@ -20,7 +20,7 @@ public abstract class Interactive extends Heavy {
   }
   
   public Interactive(int objId, int texId, float x, float y, float w, float h) {
-    this(objId, texId, x, y, w, h, new float[] { 1f, 1f, 0 });
+    this(objId, texId, x, y, w, h, new float[] { 0.5f, 0.3f, 0.8f });
   }
   
   public Interactive(int objId, int texId, float x, float y) {

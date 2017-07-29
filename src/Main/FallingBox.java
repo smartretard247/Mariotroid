@@ -40,7 +40,10 @@ public class FallingBox extends Interactive {
       switch(texId) {
         case TEX.BOX:
         case TEX.LEVEL:
-          this.adjustToTopOf(c);
+          if(movingUpIgnoreX())
+            this.adjustToBottomOf(c);
+          else if(movingDownIgnoreX())
+            this.adjustToTopOf(c);
           this.setSpeedY(0);
           break;
         default:
