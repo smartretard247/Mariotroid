@@ -14,5 +14,6 @@ public enum GAME_MODE {
   WIN,
   CREDITS,
   WARPING,
-  DYING
+  DYING,
+  SLOW_MO
 }

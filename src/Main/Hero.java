@@ -1,6 +1,5 @@
 package Main;
 
-import Enumerations.GAME_MODE;
 import Enumerations.ID;
 import Enumerations.SOUND_EFFECT;
 import Enumerations.TEX;
@@ -10,8 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.swing.Timer;
 import Test.TestDisplay;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -47,8 +44,12 @@ public class Hero extends Living {
     hasArmor = false;
   }
   
+  public Hero(int objId, int startLives, int startHealth, int texId) {
+    this(objId, startLives, startHealth, texId, 0, 0);
+  }
+  
   public Hero() {
-    this(-1, 1, 1, TEX.TEX_HERO, 0, 0);
+    this(-1, 1, 1, TEX.HERO, 0, 0);
   }
   
   @Override
@@ -63,7 +64,7 @@ public class Hero extends Living {
   public void resetAll() {
     super.resetAll();
     godMode = false;
-    setTextureId(TEX.TEX_HERO);
+    setTextureId(TEX.HERO);
     resetAmmo();
     resetArmor();
     dropSecondaryWeapon();
@@ -96,22 +97,22 @@ public class Hero extends Living {
       int objId = c.getObjectId();
       
       switch(texId) {
-        case TEX.TEX_SWITCH_ON:
+        case TEX.SWITCH_ON:
           Engine.setStatusMessage("Gravity reversed!");
           PhysicsEngine.inverseGravity();
-          c.setTextureId(TEX.TEX_SWITCH_OFF);
+          c.setTextureId(TEX.SWITCH_OFF);
           break;
-        case TEX.TEX_PRI_WEAPON: break;
-        case TEX.TEX_ALT_WEAPON: break;
-        case TEX.TEX_HEALTH_ORB:
+        case TEX.PRI_WEAPON: break;
+        case TEX.ALT_WEAPON: break;
+        case TEX.HEALTH_ORB:
           Engine.setStatusMessage("Picked up a health orb.");
           if(Engine.isDebugging()) TestDisplay.addTestData("Hero HP: " + getHealth());
           addHealth(3);
           if(Engine.isDebugging()) TestDisplay.addTestData("Health orb: " + 3 + " / Hero HP: " + getHealth());
           toRemove.add(objId);
           break;
-        case TEX.TEX_BOX:
-        case TEX.TEX_LEVEL:
+        case TEX.BOX:
+        case TEX.LEVEL:
           if(movingDown()) { // falling straight down
             adjustToTopOf(c);
             setSpeedY(0);
@@ -169,10 +170,10 @@ public class Hero extends Living {
           break;
         default: // then check for object ids to react to (like enemies)
           switch(objId) {
-            case ID.ID_ENEMY_1: // these are simple damage, from contact with enemy sprites
-            case ID.ID_ENEMY_2:
-            case ID.ID_ENEMY_3:
-            case ID.ID_CALAMITY:
+            case ID.ENEMY_1: // these are simple damage, from contact with enemy sprites
+            case ID.ENEMY_2:
+            case ID.ENEMY_3:
+            case ID.CALAMITY:
               if(!wasRecentlyDamaged()) {
                 if(Engine.isDebugging()) TestDisplay.addTestData("Hero hit by enemy");
                 recentDamageTimer.start();
@@ -183,30 +184,30 @@ public class Hero extends Living {
                 }
               }
               break;
-            case ID.ID_SHELL:
+            case ID.SHELL:
               Engine.setStatusMessage("Got missles!");
               Engine.addScore(1000);
               pickupSecondaryWeapon();
               toRemove.add(objId);
               break;
-            case ID.ID_ARMOR:
+            case ID.ARMOR:
               Engine.setStatusMessage("Got armor!");
               Engine.addScore(275);
               pickupArmor();
               toRemove.add(objId);
               break;
-            case ID.ID_JETPACK:
+            case ID.JETPACK:
               Engine.setStatusMessage("Got jetpack!");
               Engine.addScore(250);
               pickupJetpack();
               toRemove.add(objId);
               break;
-            case ID.ID_WARP:
+            case ID.WARP:
               toRemove.add(objId); // tag for renewal to tell Engine to call jumpToNextLevel()
               break;
             default: 
               if(new Projectile().getClass().isInstance(c)) {
-                if(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2) {
+                if(c.getTextureId() == TEX.ENEMY_WEAPON_1 || c.getTextureId() == TEX.ENEMY_WEAPON_2) {
                   if(!wasRecentlyDamaged()) {
                     if(Engine.isDebugging()) TestDisplay.addTestData("Hero hit by projectile");
                     recentDamageTimer.start();
@@ -265,7 +266,7 @@ public class Hero extends Living {
     Point.Float zRot = Projectile.calcRotation(new Point.Float(x, y), direction);
     flipY = (zRot.x < 0);
     float xOffset = 20; // so projectile doesn't come from the hero's chest
-    return new Projectile(ID.getNewId(), TEX.TEX_PRI_WEAPON, zRot,
+    return new Projectile(ID.getNewId(), TEX.PRI_WEAPON, zRot,
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
             getY(), 1); //fire primary, 1 damage
   }
@@ -276,7 +277,7 @@ public class Hero extends Living {
       flipY = (zRot.x < 0);
       float xOffset = 20; // so projectile doesn't come from the hero's chest
       if(--secondaryAmmoCount == 0) hasSecondaryWeapon = false;
-      return new Projectile(ID.getNewId(), TEX.TEX_ALT_WEAPON, zRot,
+      return new Projectile(ID.getNewId(), TEX.ALT_WEAPON, zRot,
               (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
               getY(), 5); //fire, 5 damage
     }
@@ -334,17 +335,17 @@ public class Hero extends Living {
     // set texture id then call standard draw function
     if(getLives() > 0) {
       if(firstSequence && wasRecentlyDamaged() && !godMode) {
-        setTextureId(TEX.TEX_HERO_TRANSPARENT);
+        setTextureId(TEX.HERO_TRANSPARENT);
       } else { // second animation sequence
-        if(floatJumped) setTextureId(TEX.TEX_HERO_BACKPACK1);
-        else if(standingStill()) setTextureId(TEX.TEX_HERO);
+        if(floatJumped) setTextureId(TEX.HERO_BACKPACK1);
+        else if(standingStill()) setTextureId(TEX.HERO);
         else if(movingLeft() || movingRight()) {
-          if(firstSequence) setTextureId(TEX.TEX_HERO_RUN1);
-          else setTextureId(TEX.TEX_HERO_RUN2);
+          if(firstSequence) setTextureId(TEX.HERO_RUN1);
+          else setTextureId(TEX.HERO_RUN2);
         }
       }
     } else {
-      setTextureId(TEX.TEX_HERO_DEAD);
+      setTextureId(TEX.HERO_DEAD);
     }
     
     setFlipX(PhysicsEngine.gravityIsInverted());

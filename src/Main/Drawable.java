@@ -19,10 +19,18 @@ public class Drawable {
   protected boolean flipX, flipY;
   public float color[]; // rgb color tint
   
-  public Drawable(int texId, float x, float y, float w, float h) {
+  /**
+   * Creates a complete drawable object.
+   * @param texId texture ID
+   * @param xPos x coordinate
+   * @param yPos y coordinate
+   * @param w width
+   * @param h height
+   */
+  public Drawable(int texId, float xPos, float yPos, float w, float h) {
     textureId = texId;
-    this.x = x;
-    this.y = y;
+    x = xPos;
+    y = yPos;
     defX = x;
     defY = y;
     width = w;
@@ -32,6 +40,12 @@ public class Drawable {
     color = new float[] { 1.0f, 1.0f, 1.0f };
   }
   
+  /**
+   * Creates a drawable object, gets width and height using texture ID.
+   * @param texId texture ID
+   * @param x x coordinate
+   * @param y y coordinate
+   */
   public Drawable(int texId, float x, float y) {
     this(texId, x, y, DrawLib.getTexture(texId).getWidth(), DrawLib.getTexture(texId).getHeight());
   }

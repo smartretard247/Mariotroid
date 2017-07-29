@@ -80,7 +80,7 @@ public class TestDisplay {
     }
     gl.glPushMatrix();
     gl.glColor3fv( COLOR, 0);
-    gl.glTranslated(X_POS, -DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2, 0);
+    gl.glTranslated(X_POS, -DrawLib.getTexture(TEX.HUD).getHeight()/2, 0);
     for(TestData td : DISP_DATA) {
       DrawLib.drawText(td.getTestData(), -screenWidth/2, yPos);
       yPos -= SPACE;

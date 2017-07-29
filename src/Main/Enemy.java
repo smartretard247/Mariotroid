@@ -20,7 +20,7 @@ public class Enemy extends Living {
   }
   
   public Enemy() {
-    this(-1, 1, 1, TEX.TEX_ENEMY_BASIC, 0, 0, new Point.Float(0, 0));
+    this(-1, 1, 1, TEX.ENEMY_BASIC, 0, 0, new Point.Float(0, 0));
   }
   
   @Override
@@ -31,8 +31,8 @@ public class Enemy extends Living {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
-        case TEX.TEX_BOX:
-        case TEX.TEX_LEVEL:
+        case TEX.BOX:
+        case TEX.LEVEL:
           if(movingDown()) { // falling straight down
             adjustToTopOf(c);
             setSpeedY(0);
@@ -81,7 +81,7 @@ public class Enemy extends Living {
           break;
         default:
           if(new Projectile().getClass().isInstance(c)) {
-            if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
+            if(!(c.getTextureId() == TEX.ENEMY_WEAPON_1 || c.getTextureId() == TEX.ENEMY_WEAPON_2)) {
               Projectile p = (Projectile)c;
               try {
                 if(Engine.isDebugging()) TestDisplay.addTestData("Enemy HP: " + getHealth());

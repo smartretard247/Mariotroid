@@ -8,13 +8,13 @@ import java.awt.Point;
  *
  * @author Jeezy
  */
-public class Living extends Heavy {
+public abstract class Living extends Heavy {
   private final int MAX_HEALTH = 10;
   private int health;
   private final int defHealth;
   private int lives;
   private final int defLives;
-  protected String name = "Default";
+  protected String name = "Living";
   
   public Living(int objId, int startLives, int startHealth, int texId, float x, float y, Point.Float s) {
     super(objId, texId, x, y, (texId >= 0) ? DrawLib.getTexture(texId).getWidth() : 0, (texId >= 0) ? DrawLib.getTexture(texId).getHeight() : 0, s);
@@ -25,7 +25,7 @@ public class Living extends Heavy {
   }
   
   public Living() {
-    this(1, 1, 1, TEX.TEX_NONE, 0, 0, new Point.Float(0, 0));
+    this(1, 1, 1, TEX.NONE, 0, 0, new Point.Float(0, 0));
   }
   
   public String getName() { return name; }

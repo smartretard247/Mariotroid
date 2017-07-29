@@ -35,35 +35,35 @@ public class DrawLib {
     gl = context;
     
   // all images should be listed here, and stored in the textures directory
-    textureIdMap.put(TEX.TEX_HERO, "/res/hero.png");
-    textureIdMap.put(TEX.TEX_HERO_DEAD, "/res/hero_dead.png");
-    textureIdMap.put(TEX.TEX_HERO_RUN1, "/res/hero_run_step_1.png");
-    textureIdMap.put(TEX.TEX_HERO_RUN2, "/res/hero_run_step_2.png");
-    textureIdMap.put(TEX.TEX_HERO_BACKPACK1, "/res/hero_backpack_run_step_1.png");
-    textureIdMap.put(TEX.TEX_HERO_TRANSPARENT, "/res/hero_transparent.png");
-    textureIdMap.put(TEX.TEX_LOGO, "/res/logo.png");
-    textureIdMap.put(TEX.TEX_HEALTH, "/res/hud_health.png");
-    textureIdMap.put(TEX.TEX_HUD, "/res/layer_hud.png");
-    textureIdMap.put(TEX.TEX_SHELL, "/res/hud_shell.png");
-    textureIdMap.put(TEX.TEX_ALT_WEAPON, "/res/projectile_blue.png");
-    textureIdMap.put(TEX.TEX_PRI_WEAPON, "/res/projectile_orange.png");
-    textureIdMap.put(TEX.TEX_ENEMY_WEAPON_1, "/res/projectile_purple.png");
-    textureIdMap.put(TEX.TEX_ENEMY_WEAPON_2, "/res/projectile_green.png");
-    textureIdMap.put(TEX.TEX_JETPACK, "/res/jetpack.png");
-    textureIdMap.put(TEX.TEX_ENEMY_BASIC, "/res/enemy_basic.png");
-    textureIdMap.put(TEX.TEX_LEVEL_DECOR_1, "/res/layer_decor_1.png"); // only load the first two levels
-    textureIdMap.put(TEX.TEX_LEVEL_DECOR_2, "/res/layer_decor_2.png"); // the rest will alternate btw these id's
-    textureIdMap.put(TEX.TEX_CALAMITY, "/res/calamity.png");
-    textureIdMap.put(TEX.TEX_DOOR, "/res/door.png");
-    textureIdMap.put(TEX.TEX_DOOR_POWERED, "/res/door_powered.png");
-    textureIdMap.put(TEX.TEX_ARMOR, "/res/armor.png");
-    textureIdMap.put(TEX.TEX_BACKGROUND_1, "/res/background_1.jpg");
-    textureIdMap.put(TEX.TEX_BACKGROUND_2, "/res/background_2.jpg");
-    textureIdMap.put(TEX.TEX_HEALTH_ORB, "/res/health_orb.png");
-    textureIdMap.put(TEX.TEX_TRANSPARENT, "/res/transparent.png");
-    textureIdMap.put(TEX.TEX_SWITCH_ON, "/res/switch_on.png");
-    textureIdMap.put(TEX.TEX_SWITCH_OFF, "/res/switch_off.png");
-    textureIdMap.put(TEX.TEX_BOX, "/res/box.png");
+    textureIdMap.put(TEX.HERO, "/res/hero.png");
+    textureIdMap.put(TEX.HERO_DEAD, "/res/hero_dead.png");
+    textureIdMap.put(TEX.HERO_RUN1, "/res/hero_run_step_1.png");
+    textureIdMap.put(TEX.HERO_RUN2, "/res/hero_run_step_2.png");
+    textureIdMap.put(TEX.HERO_BACKPACK1, "/res/hero_backpack_run_step_1.png");
+    textureIdMap.put(TEX.HERO_TRANSPARENT, "/res/hero_transparent.png");
+    textureIdMap.put(TEX.LOGO, "/res/logo.png");
+    textureIdMap.put(TEX.HEALTH, "/res/hud_health.png");
+    textureIdMap.put(TEX.HUD, "/res/layer_hud.png");
+    textureIdMap.put(TEX.SHELL, "/res/hud_shell.png");
+    textureIdMap.put(TEX.ALT_WEAPON, "/res/projectile_blue.png");
+    textureIdMap.put(TEX.PRI_WEAPON, "/res/projectile_orange.png");
+    textureIdMap.put(TEX.ENEMY_WEAPON_1, "/res/projectile_purple.png");
+    textureIdMap.put(TEX.ENEMY_WEAPON_2, "/res/projectile_green.png");
+    textureIdMap.put(TEX.JETPACK, "/res/jetpack.png");
+    textureIdMap.put(TEX.ENEMY_BASIC, "/res/enemy_basic.png");
+    textureIdMap.put(TEX.LEVEL_DECOR_1, "/res/layer_decor_1.png"); // only load the first two levels
+    textureIdMap.put(TEX.LEVEL_DECOR_2, "/res/layer_decor_2.png"); // the rest will alternate btw these id's
+    textureIdMap.put(TEX.CALAMITY, "/res/calamity.png");
+    textureIdMap.put(TEX.DOOR, "/res/door.png");
+    textureIdMap.put(TEX.DOOR_POWERED, "/res/door_powered.png");
+    textureIdMap.put(TEX.ARMOR, "/res/armor.png");
+    textureIdMap.put(TEX.BACKGROUND_1, "/res/background_1.jpg");
+    textureIdMap.put(TEX.BACKGROUND_2, "/res/background_2.jpg");
+    textureIdMap.put(TEX.HEALTH_ORB, "/res/health_orb.png");
+    textureIdMap.put(TEX.TRANSPARENT, "/res/transparent.png");
+    textureIdMap.put(TEX.SWITCH_ON, "/res/switch_on.png");
+    textureIdMap.put(TEX.SWITCH_OFF, "/res/switch_off.png");
+    textureIdMap.put(TEX.BOX, "/res/box.png");
     
     // load custom font
     String fontName = "/res/spac3.ttf";
@@ -108,7 +108,7 @@ public class DrawLib {
       }
     } catch (IOException | GLException e) {
       System.out.println("Could not create a texture, see loadTexture().");
-      e.printStackTrace();
+      //e.printStackTrace();
     }
   }
   

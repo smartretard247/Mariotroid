@@ -62,7 +62,7 @@ public class ObjectContainer {
    * Clears all game, temp, and interactive objects except for the hero.
    */
   public void clearGOs() {
-    Hero h = (Hero)gameObjects.get(ID.ID_HERO);
+    Hero h = (Hero)gameObjects.get(ID.HERO);
     gameObjects.clear();
     if(h != null) addGO(h);
     tempObjects.clear();
@@ -138,7 +138,7 @@ public class ObjectContainer {
    * contact will change game mode to WARPING.
    */
   public void activateDoor() {
-    Door door = (Door)getGO(ID.ID_DOOR);
+    Door door = (Door)getGO(ID.DOOR);
     door.activate();
     addGO(door.getWarp());
     Engine.setStatusMessage("Warp activated.");

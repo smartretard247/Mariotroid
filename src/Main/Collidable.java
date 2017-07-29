@@ -23,11 +23,11 @@ public class Collidable extends Drawable {
   }
   
   public Collidable(int x, int y) {
-    this(-1, TEX.TEX_NONE, x, y, 1, 1);
+    this(-1, TEX.NONE, x, y, 1, 1);
   }
   
   public Collidable() {
-    this(-1, TEX.TEX_NONE, 0, 0, 1, 1);
+    this(-1, TEX.NONE, 0, 0, 1, 1);
   }
   
   /**

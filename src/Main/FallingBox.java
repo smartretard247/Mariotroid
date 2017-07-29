@@ -38,14 +38,14 @@ public class FallingBox extends Interactive {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
-        case TEX.TEX_BOX:
-        case TEX.TEX_LEVEL:
+        case TEX.BOX:
+        case TEX.LEVEL:
           this.adjustToTopOf(c);
           this.setSpeedY(0);
           break;
         default:
           if(new Projectile().getClass().isInstance(c)) {
-            if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
+            if(!(c.getTextureId() == TEX.ENEMY_WEAPON_1 || c.getTextureId() == TEX.ENEMY_WEAPON_2)) {
               if(!isComplete()) {
                 weight = 1f;
                 setComplete(true);

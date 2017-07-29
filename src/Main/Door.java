@@ -20,8 +20,8 @@ public class Door extends Collidable {
    * @param fX Upside down?
    */
   public Door(int id, int x, int y, int wx, int wy, boolean fX) {
-    super(id, TEX.TEX_DOOR, x, y);
-    warp = new Collidable(ID.ID_WARP, TEX.TEX_TRANSPARENT, this.x+wx, this.y+wy);
+    super(id, TEX.DOOR, x, y);
+    warp = new Collidable(ID.WARP, TEX.TRANSPARENT, this.x+wx, this.y+wy);
     flipX = fX;
   }
   
@@ -34,7 +34,7 @@ public class Door extends Collidable {
   }
   
   public void activate() {
-    this.setTextureId(TEX.TEX_DOOR_POWERED);
+    this.setTextureId(TEX.DOOR_POWERED);
   }
   
   public Collidable getWarp() { return warp; }

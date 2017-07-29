@@ -1,5 +1,6 @@
 package Main;
 
+import Drawing.DrawLib;
 import Enumerations.ID;
 import Enumerations.TEX;
 import Test.TestDisplay;
@@ -14,7 +15,7 @@ import javax.swing.Timer;
  * @author Jeezy
  */
 public class Boss extends Enemy {
-  private int minXLocation = 9000; // to keep from entering the rest of the level
+  private int minXLocation = 0; // to keep from entering the rest of the level
   private int maxXLocation = 12000;
   private final Timer fireTimer = new Timer(5000, null);
   
@@ -26,7 +27,7 @@ public class Boss extends Enemy {
   }
   
   public Boss() {
-    this(-1, 1, 1, TEX.TEX_ENEMY_BASIC, 0, 0, new Point.Float(0, 0), 0);
+    this(-1, 1, 1, TEX.ENEMY_BASIC, 0, 0, new Point.Float(0, 0), 0);
   }
   
   @Override
@@ -37,7 +38,7 @@ public class Boss extends Enemy {
   @Override
   public void move() {
     super.move();
-    if(x < minXLocation || x > maxXLocation) inverseSpeedX();
+    if(x < minXLocation + width/2 || x > maxXLocation - width/2) inverseSpeedX();
   }
   
   @Override
@@ -48,8 +49,8 @@ public class Boss extends Enemy {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
-        case TEX.TEX_BOX:
-        case TEX.TEX_LEVEL:
+        case TEX.BOX:
+        case TEX.LEVEL:
           if(movingDown()) { // falling straight down
             adjustToTopOf(c);
             inverseSpeedY();
@@ -93,7 +94,7 @@ public class Boss extends Enemy {
           break;
         default:
           if(new Projectile().getClass().isInstance(c)) {
-            if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
+            if(!(c.getTextureId() == TEX.ENEMY_WEAPON_1 || c.getTextureId() == TEX.ENEMY_WEAPON_2)) {
               Projectile p = (Projectile)c;
               try {
                 if(Engine.isDebugging()) TestDisplay.addTestData("Boss HP: " + getHealth());
@@ -102,7 +103,7 @@ public class Boss extends Enemy {
               } catch (GameOverException ex) { // enemy died
                 if(Engine.isDebugging()) TestDisplay.addTestData("Boss destroyed");
                 Engine.addScore(getPointsWorth());
-                Engine.getGameContainer().addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_HEALTH_ORB, getX(), getY()));
+                Engine.getGameContainer().addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.HEALTH_ORB, getX(), getY()));
                 Engine.getGameContainer().activateDoor();
                 toRemove.add(getObjectId());
               }
@@ -125,7 +126,7 @@ public class Boss extends Enemy {
     Point.Float zRot = Projectile.calcRotation(new Point.Float(x, y), direction);
     flipY = (zRot.x < 0);
     if(Engine.isDebugging()) TestDisplay.addTestData("Boss fire to: (" + getX() + ", " + getY() + ")");
-    return new Projectile(ID.getNewId(), TEX.TEX_ENEMY_WEAPON_1, zRot, getX(), getY(), 5); // fire primary, 5 damage
+    return new Projectile(ID.getNewId(), TEX.ENEMY_WEAPON_1, zRot, getX(), getY(), 5); // fire primary, 5 damage
   }
   
   public boolean didRecentlyFire() { return fireTimer.isRunning(); }

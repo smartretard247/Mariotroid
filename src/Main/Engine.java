@@ -45,13 +45,15 @@ import javax.swing.JFrame;
 public class Engine extends JPanel implements GLEventListener, KeyListener, MouseListener, 
         MouseMotionListener, ActionListener {
   //////// VARIBLES
+  private static boolean debugging = true;
+  
   private final GLJPanel display;
   private final Dimension windowDim = new Dimension(1280,720);
   private Timer animationTimer;
   private static int frameNumber = 0; // The current frame number for an animation.
   private static Timer introTimer;
-  private final int INTROLENGTHMS = 3000;
-  private static final Timer MESSAGE_TIMER = new Timer(5000, null);
+  private final int INTROLENGTHMS = debugging ? 0 : 3000;
+  private static final Timer MESSAGE_TIMER = new Timer(4000, null);
   private static final LinkedList<String> CONVERSATION = new LinkedList<>();
   private static long score = 0;
   private DrawLib drawLib;
@@ -59,7 +61,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
   private PAUSE_MENU_OPTION pauseMenuSelection = PAUSE_MENU_OPTION.CONTINUE;
   private boolean won = false;
-  private boolean warping = false;
   private boolean showControls = true;
   private boolean showDecor = true;
   private boolean swapBackground = false;
@@ -67,12 +68,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final TestDisplay testDisplay = new TestDisplay();
   private final Scene scene = new Scene(-600, -600, 0, 0.5f, 0.5f, 1.0f);; // trans x & y & z, scale x & y & z
   private final PhysicsEngine phy = new PhysicsEngine();
-  private static final ObjectContainer game = new ObjectContainer();
+  private static final ObjectContainer GAME = new ObjectContainer();
   private final LinkedBlockingQueue<NextProjectile> qProjectiles = new LinkedBlockingQueue<>();
-  private boolean slowMo = false;
   private final int TOTAL_LEVELS = 2;
   private int currLevel = 1;
-  private static boolean debugging = false;
   private Hero hero;
   private boolean leftPressed = false;
   private boolean rightPressed = false;
@@ -81,7 +80,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private boolean pendingInteraction = false;
   
   // getters / setters
-  public static ObjectContainer getGameContainer() { return game; }
+  public static ObjectContainer getGameContainer() { return GAME; }
   public static long getScore() { return score; }
   public static void resetScore() { score = 0; }
   public static void addScore(int points) { score += points; }
@@ -165,8 +164,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     introTimer.start();
   
     // initial hero settings
-    hero = new Hero(ID.ID_HERO, 3, 10, TEX.TEX_HERO, 300, 400); // objId, 3 lives, 10 health, 0 score, texId, x, y
-    game.addGO(hero);
+    hero = new Hero(ID.HERO, 3, 10, TEX.HERO); // objId, 3 lives, 10 health, 0 score, texId, x, y
+    GAME.addGO(hero);
   }
   
   /**
@@ -175,42 +174,42 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void setupVisibles(int level) {
     PhysicsEngine.resetGravity();
-    game.clearGOs(); // will not clear the hero
-    Hero h = (Hero)game.getGO(ID.ID_HERO);
+    GAME.clearGOs(); // will not clear the hero
+    Hero h = (Hero)GAME.getGO(ID.HERO);
     Boss b;
     switch(level) {
       case 1:// only add level 1 visible objects to this map
         loadDefaults();
-        h.setDefaultPosition(300, 400);
+        h.setDefaultPosition(300, 190);
         h.resetAll();
         resetScore();
         hero.setGodMode(false);
-        game.addGO(new Collidable(ID.ID_JETPACK, TEX.TEX_JETPACK, 1800, 800));
-        game.addGO(new Collidable(ID.ID_SHELL, TEX.TEX_SHELL, 300, 800));
-        game.addGO(new Collidable(ID.ID_ARMOR, TEX.TEX_ARMOR, 5660, 198));
-        game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 2000, 800, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
-        game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, TEX.TEX_ENEMY_BASIC, 4000, 800, new Point.Float(5,0)));
-        game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, TEX.TEX_ENEMY_BASIC, 8075, 240, new Point.Float(5,0)));
-        game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, TEX.TEX_CALAMITY, 11000, 500, new Point.Float(10,10), 500));
-        b = (Boss)game.getGO(ID.ID_CALAMITY);
+        GAME.addGO(new Collidable(ID.JETPACK, TEX.JETPACK, 1800, 800));
+        GAME.addGO(new Collidable(ID.SHELL, TEX.SHELL, 300, 800));
+        GAME.addGO(new Collidable(ID.ARMOR, TEX.ARMOR, 5660, 198));
+        GAME.addGO(new Enemy(ID.ENEMY_1, 1, 1, TEX.ENEMY_BASIC, 2000, 800, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
+        GAME.addGO(new Enemy(ID.ENEMY_2, 1, 1, TEX.ENEMY_BASIC, 4000, 800, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.ENEMY_3, 1, 1, TEX.ENEMY_BASIC, 8075, 240, new Point.Float(5,0)));
+        GAME.addGO(new Boss(ID.CALAMITY, 1, 20, TEX.CALAMITY, 11000, 500, new Point.Float(10,10), 500));
+        b = (Boss)GAME.getGO(ID.CALAMITY);
         b.setMinX(8930);
-        game.addGO(new Door(ID.ID_DOOR, 11100, 163, 75, 0));
-        int boxHeight = DrawLib.getTexture(TEX.TEX_BOX).getHeight();
-        game.addIO(new FallingBox(ID.ID_FALLING_BOX, TEX.TEX_BOX, 760, 960));
-        game.addIO(new FlyingBox(ID.ID_FLYING_BOX, TEX.TEX_BOX, 8810, 960-boxHeight*2));
-        game.addIO(new FlyingBox(ID.ID_FLYING_BOX_2, TEX.TEX_BOX, 8810, 960-boxHeight));
-        game.addIO(new FlyingBox(ID.ID_FLYING_BOX_3, TEX.TEX_BOX, 8810, 960));
+        GAME.addGO(new Door(ID.DOOR, 11100, 163, 75, 0));
+        int boxHeight = DrawLib.getTexture(TEX.BOX).getHeight();
+        GAME.addIO(new FallingBox(ID.FALLING_BOX, TEX.BOX, 760, 960));
+        GAME.addIO(new FlyingBox(ID.FLYING_BOX, TEX.BOX, 8810, 960-boxHeight*2));
+        GAME.addIO(new FlyingBox(ID.FLYING_BOX_2, TEX.BOX, 8810, 960-boxHeight));
+        GAME.addIO(new FlyingBox(ID.FLYING_BOX_3, TEX.BOX, 8810, 960));
         break;
       case 2:// setup level 2, only add level 2 game objects to this map
-        game.addGO(new Enemy(ID.ID_ENEMY_1, 1, 1, TEX.TEX_ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
-        game.addGO(new Enemy(ID.ID_ENEMY_2, 1, 1, TEX.TEX_ENEMY_BASIC, 4000, 950, new Point.Float(5,0)));
-        game.addGO(new Enemy(ID.ID_ENEMY_3, 1, 1, TEX.TEX_ENEMY_BASIC, 8075, 950, new Point.Float(5,0)));
-        game.addGO(new Boss(ID.ID_CALAMITY, 1, 20, TEX.TEX_CALAMITY, 300, 575, new Point.Float(10,10), 750));
-        b = (Boss)game.getGO(ID.ID_CALAMITY);
+        GAME.addGO(new Enemy(ID.ENEMY_1, 1, 1, TEX.ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.ENEMY_2, 1, 1, TEX.ENEMY_BASIC, 4000, 950, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.ENEMY_3, 1, 1, TEX.ENEMY_BASIC, 8075, 950, new Point.Float(5,0)));
+        GAME.addGO(new Boss(ID.CALAMITY, 1, 20, TEX.CALAMITY, 300, 575, new Point.Float(10,10), 750));
+        b = (Boss)GAME.getGO(ID.CALAMITY);
         b.setMinX(0);
         b.setMaxX(2570);
-        game.addGO(new Door(ID.ID_DOOR, 300, 987, -60, 70, true));
-        game.addGO(new Collidable(ID.ID_SWITCH, TEX.TEX_SWITCH_ON, 5366, 708));
+        GAME.addGO(new Door(ID.DOOR, 300, 987, -60, 70, true));
+        GAME.addGO(new Collidable(ID.SWITCH, TEX.SWITCH_ON, 5366, 708));
         break;
       default: System.out.println("Unknown level number while resetting visibles."); break;
     }
@@ -233,10 +232,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       LevelBuilder levelBuilder = new LevelBuilder(fileName);
       ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
       level.stream().forEach((r) -> {
-        game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_LEVEL, r.x()-r.w()/2, r.y(), 1, r.h()));
-        game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_LEVEL, r.x()+r.w()/2, r.y(), 1, r.h()));
-        game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_LEVEL, r.x(), r.y()+r.h()/2, r.w(), 1));
-        game.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.TEX_LEVEL, r.x(), r.y()-r.h()/2, r.w(), 1));
+        GAME.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.LEVEL, r.x(), r.y(), r.w(), r.h()));
+        //GAME.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.LEVEL, r.x()-r.w()/2, r.y(), 1, r.h()));
+        //GAME.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.LEVEL, r.x()+r.w()/2, r.y(), 1, r.h()));
+        //GAME.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.LEVEL, r.x(), r.y()+r.h()/2, r.w(), 1));
+        //GAME.addTO(ID.getNewId(), new Collidable(ID.getLastId(), TEX.LEVEL, r.x(), r.y()-r.h()/2, r.w(), 1));
       });
     }
     
@@ -249,13 +249,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   public void loadDefaults() {
     currLevel = 1; // no need to adjust level number on any further cases
-    debugging = false;
     swapBackground = false;
     showDecor = true;
     won = false;
     scene.resetAll(); // do not change scene in other cases
     SOUND_EFFECT.THEME.playLoop();
     TestDisplay.resetLogWindow();
+    hero.setName("Hero");
+    Engine.setConversation(new String[] { hero.getName() + ": where am I?" });
   }
   
   /**
@@ -263,13 +264,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * will set won to true.
    */
   public void jumpToNextLevel() {
-    if(++currLevel <= TOTAL_LEVELS){
+    if(++currLevel <= TOTAL_LEVELS) {
       hero.setSpeedX(0);
-      warping = true;
       gameMode = GAME_MODE.WARPING;
-      hero.doJump();
       loadLevel(currLevel);
-    }else{
+    } else {
       setConversation(new String[] { "YOU WIN!!" });
       won = true;
     }
@@ -287,6 +286,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case START_MENU: drawStartMenu(gl); break; // END START MENU
       case DYING:
       case TALKING:
+      case SLOW_MO:
       case RUNNING: drawNormalGamePlay(gl); break; // END RUNNING
       case PAUSED: drawPauseMenu(gl); break; // END PAUSED
       case GAME_OVER: drawGameOver(gl); break;
@@ -295,6 +295,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       default: break;
     }
     drawLog(gl);
+    if(debugging) drawDebugWindow(gl);
     gl.glPopMatrix(); // return to initial transform
   }
   
@@ -330,7 +331,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glTranslated(0, 0, scene.globalZ); // global z should decrease by 40 after each zoom
     translateScene(gl, false);
     detectInteractiveObject();
-    
     drawLevel(gl);
     drawHero(gl);
     fireProjectiles(); // fire projectile from the queue
@@ -348,10 +348,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawConversation(GL2 gl) {
     String message = (!CONVERSATION.isEmpty()) ? CONVERSATION.peek() : null;
     if(MESSAGE_TIMER.isRunning() && message != null) { // check if we need to display a message
+      int additionalXOffset = 20;
       int calculatedOffset = -5 * message.length();
+      int calculatedHeight = 20; // * message[].length();
       gl.glPushMatrix();
+      gl.glTranslated(additionalXOffset, DrawLib.getTexture(TEX.HUD).getHeight()/2-60, 0); // 20 moves to center
+      // draw box behind text
+      Drawable textBox = new Drawable(TEX.NONE, -additionalXOffset/2, 5, calculatedOffset*2.5f, calculatedHeight*2);
+      textBox.setColor(0, 0.2f, 1f);
+      textBox.draw();
       gl.glColor3f(1.0f, 1.0f, 0);
-      gl.glTranslated(20, DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2-60, 0);
       DrawLib.drawText(message, calculatedOffset, 0);
       gl.glPopMatrix();
     } else if(!CONVERSATION.isEmpty()) {
@@ -370,7 +376,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawGameOver(GL2 gl) {
     gl.glPushMatrix();
     gl.glColor3fv(new float[] { 1.0f, 0.0f, 0.0f }, 0);
-    gl.glTranslated(-DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2, 0, 0);
+    gl.glTranslated(-DrawLib.getTexture(TEX.HUD).getWidth()/2, 0, 0);
     DrawLib.drawText("GAME OVER", 100+(frameNumber%500*2), 0);
     gl.glPopMatrix();
   }
@@ -387,7 +393,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       String[] mouseControls = { "             Right click - Fire alternate weapon", "Mouse: Left click - Fire primary weapon", "F10 - Control display on/off", "F9 - Adjust volume" };
       gl.glPushMatrix();
       gl.glColor3fv(textColor, 0);
-      gl.glTranslated(-DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2, -DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2+yOffset, 0);
+      gl.glTranslated(-DrawLib.getTexture(TEX.HUD).getWidth()/2, -DrawLib.getTexture(TEX.HUD).getHeight()/2+yOffset, 0);
       if(debugging) {
         gl.glPushMatrix();
         for(String s : debugControls) {
@@ -417,7 +423,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawCredits(GL2 gl) {
     gl.glPushMatrix();
-    gl.glTranslated(-DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2, 0, 0);
+    gl.glTranslated(-DrawLib.getTexture(TEX.HUD).getWidth()/2, 0, 0);
     ArrayList<String> credits = new ArrayList<>();
     credits.add("TEAM MARIOTROID!");
     credits.add("----------------");
@@ -441,14 +447,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   /**
-   * Draws scrolling "YOU WIN!"
+   * Draws scrolling "THE END"
    * @param gl 
    */
   private void drawWin(GL2 gl) {
     gl.glPushMatrix();
     gl.glColor3fv( new float[] { (float)Math.random(), (float)Math.random(), (float)Math.random() }, 0);
-    gl.glTranslated(-DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2, 0, 0);
-    DrawLib.drawText("YOU WIN!", 100+(frameNumber%500*2), 0);
+    gl.glTranslated(-DrawLib.getTexture(TEX.HUD).getWidth()/2, 0, 0);
+    DrawLib.drawText("THE END", 100+(frameNumber%500*2), 0);
     gl.glPopMatrix();
   }
   
@@ -461,9 +467,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glScaled(1.1, 1.1, 1);
     gl.glColor3f(1f, 1f, 1f);
     if(!swapBackground) {
-      DrawLib.drawTexturedRectangle(TEX.TEX_BACKGROUND_1, DrawLib.getTexture(TEX.TEX_HUD).getWidth(), DrawLib.getTexture(TEX.TEX_HUD).getHeight()); // background level
+      DrawLib.drawTexturedRectangle(TEX.BACKGROUND_1, DrawLib.getTexture(TEX.HUD).getWidth(), DrawLib.getTexture(TEX.HUD).getHeight()); // background level
     } else {
-      DrawLib.drawTexturedRectangle(TEX.TEX_BACKGROUND_2, DrawLib.getTexture(TEX.TEX_HUD).getWidth(), DrawLib.getTexture(TEX.TEX_HUD).getHeight()); // secondary background level
+      DrawLib.drawTexturedRectangle(TEX.BACKGROUND_2, DrawLib.getTexture(TEX.HUD).getWidth(), DrawLib.getTexture(TEX.HUD).getHeight()); // secondary background level
     }
     gl.glPopMatrix();
   }
@@ -477,9 +483,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glColor3f(1f, 1f, 1f);
     translateScene(gl, true);
     if(currLevel < TOTAL_LEVELS)
-      DrawLib.drawTexturedRectangle(TEX.TEX_LEVEL_DECOR_1+(currLevel%2)); // draw the background level
+      DrawLib.drawTexturedRectangle(TEX.LEVEL_DECOR_1+(currLevel%2)); // draw the background level
     gl.glPopMatrix();
-    game.getVisibles().forEach((c) -> { c.draw(); }); // draw game objects
+    GAME.getVisibles().forEach((c) -> { c.draw(); }); // draw game objects
   }
   
   /**
@@ -498,9 +504,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     // draw foreground objects here
     gl.glPushMatrix();
     gl.glColor3f(1f, 1f, 1f);
-    gl.glTranslated(DrawLib.getTexture(TEX.TEX_LEVEL_DECOR_1).getWidth()/2, DrawLib.getTexture(TEX.TEX_LEVEL_DECOR_1).getHeight()/2, 0); // levels MUST be same size as DECOR_1
+    gl.glTranslated(DrawLib.getTexture(TEX.LEVEL_DECOR_1).getWidth()/2, DrawLib.getTexture(TEX.LEVEL_DECOR_1).getHeight()/2, 0); // levels MUST be same size as DECOR_1
     if(showDecor) {
-      if(currLevel <= TOTAL_LEVELS) DrawLib.drawTexturedRectangle(TEX.TEX_LEVEL_DECOR_1+Math.abs(currLevel%2-1));
+      int decorIdOffset = Math.abs(currLevel%2-1); // will either be 0 or 1, to swap between pre-loaded decor
+      if(currLevel > TOTAL_LEVELS) decorIdOffset = Math.abs(--decorIdOffset);
+      DrawLib.drawTexturedRectangle(TEX.LEVEL_DECOR_1+decorIdOffset);
     }
     gl.glPopMatrix();
   }
@@ -512,7 +520,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawIntro(GL2 gl) {
     gl.glPushMatrix();
     gl.glTranslated(0, 0, 0);
-    DrawLib.drawTexturedRectangle(TEX.TEX_LOGO);
+    DrawLib.drawTexturedRectangle(TEX.LOGO);
     gl.glPopMatrix();
   }
 
@@ -607,7 +615,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawHud(GL2 gl) {
     gl.glPushMatrix();
     gl.glTranslated(0, 0, 0);
-    DrawLib.drawTexturedRectangle(TEX.TEX_HUD);
+    DrawLib.drawTexturedRectangle(TEX.HUD);
     gl.glPopMatrix();
     drawHealth(gl);
     drawLives(gl);
@@ -624,16 +632,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       float xDiff = 10;
       float yDiff = -35;
       float[] textColor = new float[] { 1.0f, 1.0f, 1.0f };
-      float hudWidth = DrawLib.getTexture(TEX.TEX_HUD).getWidth();
-      float hudHeight = DrawLib.getTexture(TEX.TEX_HUD).getHeight();
-      float healthHeight = DrawLib.getTexture(TEX.TEX_HEALTH).getHeight();
-      float shellWidth = DrawLib.getTexture(TEX.TEX_SHELL).getWidth()*2;
-      float shellHeight = DrawLib.getTexture(TEX.TEX_SHELL).getHeight()*2;
+      float hudWidth = DrawLib.getTexture(TEX.HUD).getWidth();
+      float hudHeight = DrawLib.getTexture(TEX.HUD).getHeight();
+      float healthHeight = DrawLib.getTexture(TEX.HEALTH).getHeight();
+      float shellWidth = DrawLib.getTexture(TEX.SHELL).getWidth()*2;
+      float shellHeight = DrawLib.getTexture(TEX.SHELL).getHeight()*2;
       
       gl.glPushMatrix();
       gl.glColor3fv( textColor, 0);
       gl.glTranslated(-hudWidth/2+shellWidth/2+xDiff, hudHeight/2 - healthHeight - shellHeight + yDiff, 0);
-      DrawLib.drawTexturedRectangle(TEX.TEX_SHELL, shellWidth, shellHeight);
+      DrawLib.drawTexturedRectangle(TEX.SHELL, shellWidth, shellHeight);
       DrawLib.drawText(Integer.toString(hero.getAmmoCount()), 25, -6);
       gl.glPopMatrix();
     }
@@ -646,11 +654,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawHealth(GL2 gl) { // draw health in top left corner
     float xDiff = 10;
     gl.glPushMatrix();
-    gl.glTranslated(-DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2+DrawLib.getTexture(TEX.TEX_HEALTH).getWidth()+xDiff,
-            DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2-DrawLib.getTexture(TEX.TEX_HEALTH).getHeight(), 0);
+    gl.glTranslated(-DrawLib.getTexture(TEX.HUD).getWidth()/2+DrawLib.getTexture(TEX.HEALTH).getWidth()+xDiff,
+            DrawLib.getTexture(TEX.HUD).getHeight()/2-DrawLib.getTexture(TEX.HEALTH).getHeight(), 0);
     for(int i = 0; i < hero.getHealth(); i++) {
-      DrawLib.drawTexturedRectangle(TEX.TEX_HEALTH);
-      gl.glTranslated(DrawLib.getTexture(TEX.TEX_HEALTH).getWidth(), 0, 0);
+      DrawLib.drawTexturedRectangle(TEX.HEALTH);
+      gl.glTranslated(DrawLib.getTexture(TEX.HEALTH).getWidth(), 0, 0);
     }
     gl.glPopMatrix();
   }
@@ -663,8 +671,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     float[] textColor = new float[] { 1.0f, 1.0f, 1.0f };
     gl.glColor3d(textColor[0], textColor[1], textColor[2]);
     gl.glPushMatrix();
-    gl.glTranslated(-DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2,
-            DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2, 0);
+    gl.glTranslated(-DrawLib.getTexture(TEX.HUD).getWidth()/2,
+            DrawLib.getTexture(TEX.HUD).getHeight()/2, 0);
     DrawLib.drawText(Integer.toString(hero.getLives()), 40, -50);
     gl.glPopMatrix();
   }
@@ -678,10 +686,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     float[] textColor = new float[] { 1.0f, 1.0f, 1.0f };
     gl.glColor3d(textColor[0], textColor[1], textColor[2]);
     gl.glPushMatrix();
-    gl.glTranslated(DrawLib.getTexture(TEX.TEX_HUD).getWidth()/2-diffX,
-            DrawLib.getTexture(TEX.TEX_HUD).getHeight()/2, 0);
+    gl.glTranslated(DrawLib.getTexture(TEX.HUD).getWidth()/2-diffX,
+            DrawLib.getTexture(TEX.HUD).getHeight()/2, 0);
     String text = "SCORE: " + Long.toString(getScore());
-    //DrawLib.drawText(text, new Point(DrawLib.getTexture(TEX.TEX_HUD).getWidth()-120, DrawLib.getTexture(TEX.TEX_HUD).getHeight()-20));
+    //DrawLib.drawText(text, new Point(DrawLib.getTexture(TEX.HUD).getWidth()-120, DrawLib.getTexture(TEX.HUD).getHeight()-20));
     DrawLib.drawText(text, -120, -20);
     gl.glPopMatrix();
   }
@@ -739,10 +747,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void transitionToNextLevel() {
     // this is for slow mo jumping to next level
-    if(slowMo) { 
-      ++scene.globalZ;
-      if(scene.globalZ % scene.LEVEL_DEPTH == 0) slowMo = false;
-    }
+    ++scene.globalZ;
+    if(scene.globalZ % scene.LEVEL_DEPTH == 0) gameMode = GAME_MODE.RUNNING;
   }
 
   /**
@@ -763,6 +769,21 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void skipSentence() {
     if(!CONVERSATION.isEmpty()) CONVERSATION.pop(); // skip the current text
     MESSAGE_TIMER.restart();
+  }
+
+  /**
+   * Draws extra live debugging information in the bottom right corner of screen.
+   * @param gl drawing context
+   */
+  private void drawDebugWindow(GL2 gl) {
+    Point.Float wc = DrawLib.screenToWorld(currentMousePos);
+    gl.glPushMatrix();
+    gl.glColor3f(1f, 0.5f, 0);
+    gl.glTranslated(DrawLib.getTexture(TEX.HUD).getWidth()/3-80, -DrawLib.getTexture(TEX.HUD).getHeight()/2.4f, 0);
+    DrawLib.drawText("  GAME MODE: " + gameMode.toString(), 25, 35);
+    DrawLib.drawText("SCREEN COORD: (" + currentMousePos.x + ", " + currentMousePos.y + ")", 0, 15);
+    DrawLib.drawText("WORLD COORD: (" + (int)wc.x + ", " + (int)wc.y + ")", 7, -5);
+    gl.glPopMatrix();
   }
 
   /**
@@ -1023,14 +1044,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     
     switch(gameMode) {
       case WARPING:
-        if(warping) {
-          scene.transZ -= scene.LEVEL_DEPTH;
-          hero.setDefaultPosition(hero.getX(), hero.getY()); // continue from this point if die
-          warping = false;
-        } else {
-          slowMo = true;
-          gameMode = GAME_MODE.RUNNING;
-        }
+        scene.transZ -= scene.LEVEL_DEPTH;
+        hero.setDefaultPosition(hero.getX(), hero.getY()); // continue from this point if die
+        gameMode = GAME_MODE.SLOW_MO;
+        break;
+      case SLOW_MO:
+        transitionToNextLevel();
         break;
       case DYING: 
         if(!hero.wasRecentlyDamaged()) {
@@ -1039,12 +1058,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         break;
       case RUNNING:
         if(checkForWin()) return;
-        transitionToNextLevel();
         processPendingInteraction();
         PhysicsEngine.fall(); // apply gravity to all heavy objects
         PhysicsEngine.drag(); // apply drag to all necessary objects
 
-        ArrayList<Collidable> visibleObjects = game.getVisibles();
+        ArrayList<Collidable> visibleObjects = GAME.getVisibles();
         ArrayList<Integer> toRemove = new ArrayList<>(); // keep track of ids to remove at end of frame
 
         // for all objects
@@ -1074,8 +1092,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         toRemove.addAll(hero.processCollisions(visibleObjects));
 
         // check for warp collision, then remove all ids tagged for removal
-        if(toRemove.contains(ID.ID_WARP)) jumpToNextLevel();
-        toRemove.stream().forEach((id) -> { game.removeAny(id); });
+        if(toRemove.contains(ID.WARP)) jumpToNextLevel();
+        toRemove.stream().forEach((id) -> { GAME.removeAny(id); });
         
         if(hero.getLives() == 0) { gameMode = GAME_MODE.DYING; } // check for game over
         break;
@@ -1202,12 +1220,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * update interactiveObject to point to it.  If none found, will deselect all interactive objects.
    */
   public void detectInteractiveObject() {
-    interactiveObject = game.getInteractive(currentMousePos);
+    interactiveObject = GAME.getInteractive(currentMousePos);
     if(interactiveObject != null) {
       interactiveObject.select();
-      game.deselectAllIOBut(interactiveObject);
+      GAME.deselectAllIOBut(interactiveObject);
     } else {
-      game.deselectAllIO();
+      GAME.deselectAllIO();
     }
   }
   
@@ -1262,14 +1280,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     LinkedList<String> reverse = new LinkedList<>();
     for(String s : convo)
       reverse.push(s);
-    if(debugging) CONVERSATION.clear();
     while(!reverse.isEmpty())
       CONVERSATION.push(reverse.pop());
-    if(debugging) MESSAGE_TIMER.restart();
-    else {
-      MESSAGE_TIMER.start();
-      gameMode = GAME_MODE.TALKING;
-    }
+    MESSAGE_TIMER.restart();
+    gameMode = GAME_MODE.TALKING;
   }
   
   /**
@@ -1280,17 +1294,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       NextProjectile np;
       try {
         np = qProjectiles.take();
-      
         Projectile fired;
         if(!np.isFromEnemy) {
           Point.Float wc = DrawLib.screenToWorld(np.screenCoord);
-          if(debugging) setConversation(new String[] { "(" + wc.x + ", " + wc.y + ")" });
           if(np.isFromPrimaryWeapon)
             fired = hero.firePrimaryWeapon(wc);
           else
             fired = hero.fireSecondaryWeapon(wc);
         } else {
-          Collidable c = game.getGO(ID.ID_CALAMITY);
+          Collidable c = GAME.getGO(ID.CALAMITY);
           if(c != null) {
             Boss b = (Boss)c;
             fired = b.firePrimaryWeapon(np.worldCoord);
@@ -1299,7 +1311,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           }
         }
 
-        if(fired != null) game.addTO(fired.getObjectId(), fired);
+        if(fired != null) GAME.addTO(fired.getObjectId(), fired);
         else System.out.println("Attempted to fire null projectile.");
       } catch (InterruptedException ex) {
         Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
@@ -1314,7 +1326,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawLog(GL2 gl) {
     if(gameMode == GAME_MODE.RUNNING || gameMode == GAME_MODE.TALKING
             || gameMode == GAME_MODE.DYING || gameMode == GAME_MODE.WARPING)
-    TestDisplay.writeToScreen(gl, DrawLib.getTexture(TEX.TEX_HUD).getWidth());
+    TestDisplay.writeToScreen(gl, DrawLib.getTexture(TEX.HUD).getWidth());
   }
   
   /**

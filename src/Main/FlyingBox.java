@@ -38,8 +38,8 @@ public class FlyingBox extends Interactive {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
-        case TEX.TEX_BOX:
-        case TEX.TEX_LEVEL:
+        case TEX.BOX:
+        case TEX.LEVEL:
           if(movingRight()) {
             adjustToLeftOf(c);
           } else if(movingLeft()) {
@@ -50,7 +50,7 @@ public class FlyingBox extends Interactive {
           break;
         default:
           if(new Projectile().getClass().isInstance(c)) {
-            if(!(c.getTextureId() == TEX.TEX_ENEMY_WEAPON_1 || c.getTextureId() == TEX.TEX_ENEMY_WEAPON_2)) {
+            if(!(c.getTextureId() == TEX.ENEMY_WEAPON_1 || c.getTextureId() == TEX.ENEMY_WEAPON_2)) {
               if(!isComplete()) {
                 Projectile p = (Projectile)c;
                 setSpeed(p.getSpeed());
