@@ -256,7 +256,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     SOUND_EFFECT.THEME.playLoop();
     TestDisplay.resetLogWindow();
     hero.setName("Hero");
-    Engine.setConversation(new String[] { hero.getName() + ": where am I?" });
+    Engine.setConversation(new String[] { hero.getName() + ": where am I?", "Could this be a dream?", "Better go take a look around." });
   }
   
   /**
@@ -348,21 +348,20 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawConversation(GL2 gl) {
     String message = (!CONVERSATION.isEmpty()) ? CONVERSATION.peek() : null;
     if(MESSAGE_TIMER.isRunning() && message != null) { // check if we need to display a message
-      int additionalXOffset = 20;
-      int calculatedOffset = -5 * message.length();
+      int calculatedOffset = 5 * message.length();
       int calculatedHeight = 20; // * message[].length();
       gl.glPushMatrix();
-      gl.glTranslated(additionalXOffset, DrawLib.getTexture(TEX.HUD).getHeight()/2-60, 0); // 20 moves to center
+      gl.glTranslated(0, DrawLib.getTexture(TEX.HUD).getHeight()/2-60, 0); // 20 moves to center
       // draw box behind text
-      Drawable textBox = new Drawable(TEX.NONE, -additionalXOffset/2, 5, calculatedOffset*2.5f, calculatedHeight*2);
+      Drawable textBox = new Drawable(TEX.NONE, -message.length(), 5, calculatedOffset*2+message.length(), calculatedHeight*2);
       textBox.setColor(0, 0.2f, 1f);
       textBox.draw();
       gl.glColor3f(1.0f, 1.0f, 0);
-      DrawLib.drawText(message, calculatedOffset, 0);
+      DrawLib.drawText(message, -calculatedOffset, 0);
       gl.glPopMatrix();
     } else if(!CONVERSATION.isEmpty()) {
       CONVERSATION.pop();
-      MESSAGE_TIMER.start();
+      MESSAGE_TIMER.restart();
     }
     if(gameMode == GAME_MODE.TALKING) {
       if(CONVERSATION.isEmpty()) gameMode = GAME_MODE.RUNNING;
