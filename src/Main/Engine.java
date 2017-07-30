@@ -305,6 +305,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   public void translateScene(GL2 gl, boolean forBackgroundScene) {
     if(!forBackgroundScene) {
+      gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
+      gl.glTranslated(0, 0, scene.globalZ); // global z should decrease by 40 after each zoom
       if(hero.getX() > 600 && hero.getX() < 10500)
         gl.glTranslated(-hero.getX(), scene.transY, scene.transZ);
       else if(hero.getX() <= 600)
@@ -326,9 +328,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawNormalGamePlay(GL2 gl) {
     drawBackground(gl);
     gl.glPushMatrix(); // save initial transform
-    gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
-    gl.glTranslated(0, 0, scene.globalZ); // global z should decrease by 40 after each zoom
     translateScene(gl, false);
+    Point.Float wcTopLeft = DrawLib.screenToWorld(new Point(0,0));
+    Point.Float wcBottomRight = DrawLib.screenToWorld(new Point(windowDim.width, windowDim.height));
+    Rectangle worldWindow = new Rectangle(wcTopLeft.x, wcTopLeft.y, Math.abs(wcBottomRight.x-wcTopLeft.x), Math.abs(wcBottomRight.y-wcTopLeft.y));
+    
     detectInteractiveObject();
     drawLevel(gl);
     drawHero(gl);
@@ -780,8 +784,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    */
   private void drawDebugWindow(GL2 gl) {
     gl.glPushMatrix(); // save initial transform
-    gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
-    gl.glTranslated(0, 0, scene.globalZ); // global z should decrease by 40 after each zoom
     translateScene(gl, false);
     Point.Float wc = DrawLib.screenToWorld(currentMousePos); // get world coordinates based on scale and translation from above
     gl.glPopMatrix();
