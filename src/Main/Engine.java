@@ -1106,12 +1106,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             // process all collisions
             List<Integer> collisionIds = c.processCollisions(visibleObjects);
             if(collisionIds != null) toRemove.addAll(collisionIds);
-            
-            if(c instanceof Boss) {
-              if(!((Boss)c).didRecentlyFire()) qProjectiles.offer(new NextProjectile(hero.getPosition(), true)); // fire boss weapon toward hero
-            }
           }
         });
+        
+        Boss boss = (Boss)GAME.getGO(ID.CALAMITY);
+        if(boss != null && !boss.didRecentlyFire()) 
+          qProjectiles.offer(new NextProjectile(hero.getPosition(), true)); // fire boss weapon toward hero
 
         // check for warp collision, then remove all ids tagged for removal
         if(toRemove.contains(ID.WARP)) jumpToNextLevel();
