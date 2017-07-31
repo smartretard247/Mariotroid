@@ -18,6 +18,7 @@ public class ObjectContainer {
   private final Map<Integer, Collidable> gameObjects = new HashMap<>();
   private final Map<Integer, Collidable> tempObjects = new HashMap<>(); // like level and projectiles
   private final Map<Integer, Interactive> interactiveObjects = new HashMap<>();
+  private final float GRID_SIZE = 1/8*11502;
   
   public ArrayList<Collidable> getVisibles() {
     ArrayList<Collidable> v = new ArrayList<>();
@@ -28,7 +29,7 @@ public class ObjectContainer {
   }
   
   /**
-   * Only returns objects that are within the supplied world coordinates.
+   * Only returns objects that are within the supplied world rectangle.
    * @param window
    * @return game objects in window
    */
@@ -44,6 +45,28 @@ public class ObjectContainer {
       if(c.collidesWith(window)) v.add(c);
     }
     if(gameObjects.containsKey(ID.HERO)) v.add(getGO(ID.HERO));
+    return v;
+  }
+  
+  /**
+   * Gets all the objects in grid provided and plus/minus one grid.
+   * @param centerGridNum
+   * @return 
+   */
+  public ArrayList<Collidable> getGOByCenterGrid(int centerGridNum) {
+    ArrayList<Collidable> v = new ArrayList<>();
+    for(Collidable c : gameObjects.values()) {
+      int cGrid = (int)(c.getX()/GRID_SIZE);
+      if(cGrid == centerGridNum || cGrid == centerGridNum+1 || cGrid == centerGridNum-1) v.add(c);
+    }
+    for(Collidable c : tempObjects.values()) {
+      int cGrid = (int)(c.getX()/GRID_SIZE);
+      if(cGrid == centerGridNum || cGrid == centerGridNum+1 || cGrid == centerGridNum-1) v.add(c);
+    }
+    for(Collidable c : interactiveObjects.values()) {
+      int cGrid = (int)(c.getX()/GRID_SIZE);
+      if(cGrid == centerGridNum || cGrid == centerGridNum+1 || cGrid == centerGridNum-1) v.add(c);
+    }
     return v;
   }
   
