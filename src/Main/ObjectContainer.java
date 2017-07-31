@@ -27,6 +27,26 @@ public class ObjectContainer {
     return v;
   }
   
+  /**
+   * Only returns objects that are within the supplied world coordinates.
+   * @param window
+   * @return game objects in window
+   */
+  public ArrayList<Collidable> getVisiblesWithin(Rectangle window) {
+    ArrayList<Collidable> v = new ArrayList<>();
+    for(Collidable c : gameObjects.values()) {
+      if(c.collidesWith(window)) v.add(c);
+    }
+    for(Collidable c : tempObjects.values()) {
+      if(c.collidesWith(window)) v.add(c);
+    }
+    for(Collidable c : interactiveObjects.values()) {
+      if(c.collidesWith(window)) v.add(c);
+    }
+    if(gameObjects.containsKey(ID.HERO)) v.add(getGO(ID.HERO));
+    return v;
+  }
+  
   public void addGO(Collidable c) {
     if(c instanceof Interactive)
       addIO((Interactive)c);

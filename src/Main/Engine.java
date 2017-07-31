@@ -79,6 +79,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private Point currentMousePos;
   private Interactive interactiveObject;
   private boolean pendingInteraction = false;
+  private final Rectangle WORLD_WINDOW = new Rectangle();
   
   // getters / setters
   public static ObjectContainer getGameContainer() { return GAME; }
@@ -304,21 +305,34 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param forBackgroundScene adjust for the background scene?
    */
   public void translateScene(GL2 gl, boolean forBackgroundScene) {
+    float x = scene.transX;
+    float y = scene.transY;
+    float z = scene.transZ+scene.globalZ;
     if(!forBackgroundScene) {
-      gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
-      gl.glTranslated(0, 0, scene.globalZ); // global z should decrease by 40 after each zoom
       if(hero.getX() > 600 && hero.getX() < 10500)
-        gl.glTranslated(-hero.getX(), scene.transY, scene.transZ);
-      else if(hero.getX() <= 600)
-        gl.glTranslated(scene.transX, scene.transY, scene.transZ);
+        x = -hero.getX();
       else if(hero.getX() >= 10500)
-        gl.glTranslated(-10500, scene.transY, scene.transZ);
+        x = -10500;
     } else {
-      if(hero.getX() <= 600)
-        gl.glTranslated(-scene.transX*10, -scene.transY*3, scene.globalZ-scene.LEVEL_DEPTH*currLevel);
-      else 
-        gl.glTranslated(-scene.transX*10+hero.getX()/10, -scene.transY*3, scene.globalZ-scene.LEVEL_DEPTH*currLevel);
+      x *= -10;
+      if(!(hero.getX() <= 600))
+        x += hero.getX()/10;
+      y *= -3;
+      z = scene.globalZ-scene.LEVEL_DEPTH*currLevel;
     }
+    gl.glTranslated(x, y, z);
+  }
+  
+  /**
+   * Sets up the world rectangle based on the current view matrix.
+   */
+  public void refreshWorldWindow() {
+    Point.Float wcTopLeft = DrawLib.screenToWorld(new Point(0,0));
+    Point.Float wcBottomRight = DrawLib.screenToWorld(new Point(windowDim.width, windowDim.height));
+    WORLD_WINDOW.setX(wcTopLeft.x);
+    WORLD_WINDOW.setY(wcTopLeft.y);
+    WORLD_WINDOW.setW(Math.abs(wcBottomRight.x-wcTopLeft.x));
+    WORLD_WINDOW.setH(Math.abs(wcBottomRight.y-wcTopLeft.y));
   }
   
   /**
@@ -328,13 +342,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawNormalGamePlay(GL2 gl) {
     drawBackground(gl);
     gl.glPushMatrix(); // save initial transform
+    gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
     translateScene(gl, false);
-    Point.Float wcTopLeft = DrawLib.screenToWorld(new Point(0,0));
-    Point.Float wcBottomRight = DrawLib.screenToWorld(new Point(windowDim.width, windowDim.height));
-    Rectangle worldWindow = new Rectangle(wcTopLeft.x, wcTopLeft.y, Math.abs(wcBottomRight.x-wcTopLeft.x), Math.abs(wcBottomRight.y-wcTopLeft.y));
-    
+    refreshWorldWindow();
     detectInteractiveObject();
     drawLevel(gl);
+    drawGameObjects(gl);
     drawHero(gl);
     fireProjectiles(); // fire projectile from the queue
     drawForeground(gl);
@@ -487,7 +500,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     if(currLevel < TOTAL_LEVELS)
       DrawLib.drawTexturedRectangle(TEX.LEVEL_DECOR_1+(currLevel%2)); // draw the background level
     gl.glPopMatrix();
-    GAME.getVisibles().forEach((c) -> { c.draw(); }); // draw game objects
   }
   
   /**
@@ -801,6 +813,10 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     DrawLib.drawText("WORLD COORD: (" + (int)wc.x + ", " + (int)wc.y + ")", 7, -5);
     DrawLib.drawText("GLOBAL Z: " + (int)scene.globalZ, 59, -25);
     gl.glPopMatrix();
+  }
+
+  private void drawGameObjects(GL2 gl) {
+    GAME.getVisiblesWithin(WORLD_WINDOW).forEach((c) -> { c.draw(); }); // draw game objects
   }
 
   /**
