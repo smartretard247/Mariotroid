@@ -50,10 +50,11 @@ public class ObjectContainer {
   
   /**
    * Gets all the objects in grid provided and plus/minus one grid.
-   * @param centerGridNum
+   * @param xLocation
    * @return 
    */
-  public ArrayList<Collidable> getGOByCenterGrid(int centerGridNum) {
+  public ArrayList<Collidable> getGOsCloseTo(float xLocation) {
+    int centerGridNum = (int)(xLocation/GRID_SIZE);
     ArrayList<Collidable> v = new ArrayList<>();
     for(Collidable c : gameObjects.values()) {
       int cGrid = (int)(c.getX()/GRID_SIZE);
