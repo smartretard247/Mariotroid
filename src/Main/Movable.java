@@ -18,7 +18,7 @@ public class Movable extends Collidable {
   protected Point.Float speed;
   private static final float SPRINT_MULTIPLIER = 1.5f;
   private boolean isSprinting;
-  
+
   public Movable(int objId, int texId, float x, float y, float w, float h, Point.Float s) {
     super(objId, texId, x, y, w, h);
     speed = s;
@@ -56,6 +56,7 @@ public class Movable extends Collidable {
     this.resetPosition();
     this.setSpeed(defSpeed);
     if(isSprinting) toggleSprint();
+    resetCurrGrid();
   }
   
   /**
@@ -65,6 +66,7 @@ public class Movable extends Collidable {
     x += getSpeedX();
     y += getSpeedY();
     if(getSpeedX() != 0) setFlipY(getSpeedX() < 0); // this reverses the sprite with direction changes
+    resetCurrGrid(); // updates grid location
   }
   
   public boolean standingStill() {
@@ -121,18 +123,22 @@ public class Movable extends Collidable {
   
   public void adjustToBottomOf(Collidable c) {
     y = c.getBottom() - height/2 - 1;
+    resetCurrGrid();
   }
   
   public void adjustToTopOf(Collidable c) {
     y = c.getTop() + height/2 + 1;
+    resetCurrGrid();
   }
   
   public void adjustToRightOf(Collidable c) {
     x = c.getRight() + width/2 + 1;
+    resetCurrGrid();
   }
   
   public void adjustToLeftOf(Collidable c) {
     x = c.getLeft() - width/2 - 1;
+    resetCurrGrid();
   }
   
   public void inverseSpeedX() {

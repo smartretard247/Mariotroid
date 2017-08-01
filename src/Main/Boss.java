@@ -103,7 +103,7 @@ public class Boss extends Enemy {
               } catch (GameOverException ex) { // enemy died
                 if(Engine.isDebugging()) TestDisplay.addTestData("Boss destroyed");
                 Engine.addScore(getPointsWorth());
-                Engine.getGameContainer().addTO(ID.getNewId(), new Item(ID.getLastId(), TEX.HEALTH_ORB, getX(), getY()));
+                Engine.getGameContainer().addGO(new Item(ID.getNewId(), TEX.HEALTH_ORB, getX(), getY()));
                 Engine.getGameContainer().activateDoor();
                 toRemove.add(getObjectId());
               }

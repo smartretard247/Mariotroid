@@ -232,7 +232,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       LevelBuilder levelBuilder = new LevelBuilder(fileName);
       ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
       level.stream().forEach((r) -> {
-        GAME.addTO(ID.getNewId(), new Platform(ID.getLastId(), TEX.LEVEL, r.x(), r.y(), r.w(), r.h()));
+        GAME.addGO(new Platform(ID.getNewId(), TEX.LEVEL, r.x(), r.y(), r.w(), r.h()));
         //GAME.addTO(ID.getNewId(), new Platform(ID.getLastId(), TEX.LEVEL, r.x()-r.w()/2, r.y(), 1, r.h()));
         //GAME.addTO(ID.getNewId(), new Platform(ID.getLastId(), TEX.LEVEL, r.x()+r.w()/2, r.y(), 1, r.h()));
         //GAME.addTO(ID.getNewId(), new Platform(ID.getLastId(), TEX.LEVEL, r.x(), r.y()+r.h()/2, r.w(), 1));
@@ -809,7 +809,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glPopMatrix();
     gl.glColor3f(1f, 0.5f, 0);
     DrawLib.drawText("  GAME MODE: " + gameMode.toString(), 25, 35);
-    DrawLib.drawText("SCREEN COORD: (" + currentMousePos.x + ", " + currentMousePos.y + ")", 0, 15);
+    DrawLib.drawText("HERO GRID LOC: " + hero.getCurrGrid(), 0, 15);
     DrawLib.drawText("WORLD COORD: (" + (int)wc.x + ", " + (int)wc.y + ")", 7, -5);
     DrawLib.drawText("GLOBAL Z: " + (int)scene.globalZ, 59, -25);
     gl.glPopMatrix();
@@ -1101,11 +1101,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         // for all objects
         visibleObjects.stream().forEach((c) -> {
           if(c != null) {
-            if(c instanceof Movable) { ((Movable)c).move(); } // move all movables
+            if(c instanceof Movable) { 
+              Movable m = (Movable)c;
+              m.move(); 
+              GAME.updateGridLocation(m);
+            } // move all movables
             
             // process all collisions
             //List<Integer> collisionIds = c.processCollisions(visibleObjects);
-            List<Integer> collisionIds = c.processCollisions(GAME.getGOsCloseTo(c.getX()));
+            List<Integer> collisionIds = c.processCollisions(GAME.getGOsNear(c.getCurrGrid()));
             if(collisionIds != null) toRemove.addAll(collisionIds);
           }
         });
@@ -1116,7 +1120,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
 
         // check for warp collision, then remove all ids tagged for removal
         if(toRemove.contains(ID.WARP)) jumpToNextLevel();
-        toRemove.stream().forEach((id) -> { GAME.removeAny(id); });
+        toRemove.stream().forEach((id) -> { GAME.removeGO(id); });
         
         if(hero.getLives() == 0) { gameMode = GAME_MODE.DYING; } // check for game over
         break;
@@ -1335,7 +1339,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
           }
         }
 
-        if(fired != null) GAME.addTO(fired.getObjectId(), fired);
+        if(fired != null) GAME.addGO(fired);
         else System.out.println("Attempted to fire null projectile.");
       } catch (InterruptedException ex) {
         Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);

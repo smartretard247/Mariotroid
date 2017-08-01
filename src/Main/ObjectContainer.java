@@ -2,7 +2,6 @@ package Main;
 
 import Drawing.DrawLib;
 import Enumerations.ID;
-import com.jogamp.opengl.GL2;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,16 +14,21 @@ import java.util.Map;
 public class ObjectContainer {
   private static final int FIRST_CUSTOM_ID = 100000;
   private static int nextId = FIRST_CUSTOM_ID; // next id for custom objects, like floors/wall and projectiles
-  private final Map<Integer, Collidable> gameObjects = new HashMap<>();
-  private final Map<Integer, Collidable> tempObjects = new HashMap<>(); // like level and projectiles
+  //private final Map<Integer, Collidable> gameObjects = new HashMap<>();
+  //private final Map<Integer, Collidable> tempObjects = new HashMap<>(); // like level and projectiles
   private final Map<Integer, Interactive> interactiveObjects = new HashMap<>();
-  private final float GRID_SIZE = 1/8*11502;
+  private final Map<Integer, Collidable> permanentObjects = new HashMap<>();
+  private final Map<Integer, Map<Integer, Collidable>> objectGrid = new HashMap<>();
   
   public ArrayList<Collidable> getVisibles() {
     ArrayList<Collidable> v = new ArrayList<>();
-    v.addAll(gameObjects.values());
-    v.addAll(tempObjects.values());
-    v.addAll(interactiveObjects.values());
+    objectGrid.values().stream().forEach( (map) -> {
+      v.addAll(map.values());
+    });
+    //v.addAll(gameObjects.values());
+    //v.addAll(tempObjects.values());
+    //v.addAll(interactiveObjects.values());
+    v.addAll(permanentObjects.values());
     return v;
   }
   
@@ -35,68 +39,120 @@ public class ObjectContainer {
    */
   public ArrayList<Collidable> getVisiblesWithin(Rectangle window) {
     ArrayList<Collidable> v = new ArrayList<>();
-    for(Collidable c : gameObjects.values()) {
-      if(c.collidesWith(window)) v.add(c);
-    }
-    for(Collidable c : tempObjects.values()) {
-      if(c.collidesWith(window)) v.add(c);
-    }
-    for(Collidable c : interactiveObjects.values()) {
-      if(c.collidesWith(window)) v.add(c);
-    }
-    if(gameObjects.containsKey(ID.HERO)) v.add(getGO(ID.HERO));
+    objectGrid.values().forEach( (map) -> {
+      map.values().stream().forEach( (c) -> {
+      //gameObjects.values().stream().forEach( (c) -> {
+        if(c.collidesWith(window)) v.add(c);
+      //});
+      //tempObjects.values().stream().forEach( (c) -> {
+        //if(c.collidesWith(window)) v.add(c);
+      });
+      //interactiveObjects.values().stream().forEach( (c) -> {
+      //  if(c.collidesWith(window)) v.add(c);
+      //});
+      permanentObjects.values().stream().forEach( (c) -> {
+        if(c.collidesWith(window)) v.add(c);
+      });
+    });
+    //if(gameObjects.containsKey(ID.HERO)) v.add(getGO(ID.HERO));
     return v;
   }
   
   /**
-   * Gets all the objects in grid provided and plus/minus one grid.
-   * @param xLocation
+   * Checks if the supplied object moved to a new grid, if so swaps it into the correct list.
+   * @param c 
+   */
+  public void updateGridLocation(Collidable c) {
+    if(c != null && c.isGridFlagged()) {
+      int objId = c.getObjectId();
+      int oldGrid = c.getOldGrid();
+      int currGrid = c.getCurrGrid();
+      if(objectGrid.get(currGrid) == null)
+        objectGrid.put(currGrid, new HashMap<>());
+      objectGrid.get(currGrid).put(objId, c);
+      if(objectGrid.get(oldGrid) == null)
+        objectGrid.put(oldGrid, new HashMap<>());
+      objectGrid.get(oldGrid).remove(c.getObjectId());
+      c.resetCurrGrid();
+    }
+  }
+  
+  /**
+   * Gets all the objects in grid provided and plus/minus one grid in O(n)
+   * @param grid
    * @return 
    */
-  public ArrayList<Collidable> getGOsCloseTo(float xLocation) {
-    int centerGridNum = (int)(xLocation/GRID_SIZE);
+  public ArrayList<Collidable> getGOsNear(int grid) {
     ArrayList<Collidable> v = new ArrayList<>();
-    for(Collidable c : gameObjects.values()) {
-      int cGrid = (int)(c.getX()/GRID_SIZE);
-      if(cGrid == centerGridNum || cGrid == centerGridNum+1 || cGrid == centerGridNum-1) v.add(c);
+    if(objectGrid != null) {
+      Map<Integer, Collidable> m0 = objectGrid.get(grid);
+      if(m0 != null) v.addAll(m0.values());
+      if(grid > 0) {
+        Map<Integer, Collidable> m1 = objectGrid.get(grid-1);
+        if(m1 != null) v.addAll(m1.values());
+      }
+      if(grid < objectGrid.size()-1) {
+        Map<Integer, Collidable> m2 = objectGrid.get(grid+1);
+        if(m2 != null) v.addAll(m2.values());
+      }
     }
-    for(Collidable c : tempObjects.values()) {
-      int cGrid = (int)(c.getX()/GRID_SIZE);
-      if(cGrid == centerGridNum || cGrid == centerGridNum+1 || cGrid == centerGridNum-1) v.add(c);
-    }
-    for(Collidable c : interactiveObjects.values()) {
-      int cGrid = (int)(c.getX()/GRID_SIZE);
-      if(cGrid == centerGridNum || cGrid == centerGridNum+1 || cGrid == centerGridNum-1) v.add(c);
-    }
+    v.addAll(permanentObjects.values());
     return v;
   }
   
   public void addGO(Collidable c) {
-    if(c instanceof Interactive)
-      addIO((Interactive)c);
-    else
-      gameObjects.putIfAbsent(c.getObjectId(), c);
+    if(c != null) {
+      if(c instanceof Interactive)
+        addIO((Interactive)c); // put a reference to it in the interactive objects map, AND...
+      if(c.getW() >= Collidable.getGridSize()) {
+        addPO(c);
+      } else {
+        int currGrid = c.getCurrGrid();
+        if(objectGrid.get(currGrid) == null)
+          objectGrid.put(currGrid, new HashMap<>());
+        objectGrid.get(currGrid).put(c.getObjectId(), c);
+      }
+      c.resetCurrGrid();
+    }
   }
   
   private void addIO(Interactive i) {
     interactiveObjects.putIfAbsent(i.getObjectId(), i);
   }
   
-  private void removeGO(int id) {
-    if(gameObjects.containsKey(id)) gameObjects.remove(id);
+  private void addPO(Collidable c) {
+    permanentObjects.putIfAbsent(c.getObjectId(), c);
+  }
+  
+  private void removePO(int id) {
+    if(permanentObjects.containsKey(id)) permanentObjects.remove(id);
+  }
+  
+  /**
+   * Removes object from grid, and interactive map if exists.
+   * @param id the id of the object to remove
+   */
+  public void removeGO(int id) {
+    removeIO(id); // remove here first, as this is duplicate
+    for(Map<Integer, Collidable> m : objectGrid.values()) {
+      if(m.containsKey(id)) {
+        m.remove(id);
+        return;
+      }
+    }
+    removePO(id); // call this if objects wasn't found (rare permanent objects)
   }
   
   private void removeIO(int id) {
     if(interactiveObjects.containsKey(id)) interactiveObjects.remove(id);
   }
   
-  private void removeGO(Collidable c) {
-    gameObjects.remove(c.getObjectId(), c);
-  }
-  
   public Collidable getGO(int id) {
-    if(gameObjects.containsKey(id))
-      return gameObjects.get(id);
+    for(Map<Integer, Collidable> map : objectGrid.values()) {
+      if(map.containsKey(id)) {
+        return map.get(id);
+      }
+    }
     return null;
   }
   
@@ -110,37 +166,59 @@ public class ObjectContainer {
    * Clears all game, temp, and interactive objects except for the hero.
    */
   public void clearGOs() {
-    Hero h = (Hero)gameObjects.get(ID.HERO);
-    gameObjects.clear();
-    if(h != null) addGO(h);
-    tempObjects.clear();
+    clearGrid(); // but leave hero
     interactiveObjects.clear();
+    permanentObjects.clear();
     nextId = FIRST_CUSTOM_ID;
   }
   
-  public void addTO(int id, Collidable c) {
-    if(!tempObjects.containsKey(id))
-      tempObjects.put(id, c);
+  private void clearGrid() {
+    Hero h = (Hero)getGO(ID.HERO);
+    objectGrid.values().forEach( (map) -> {
+      map.clear();
+    });
+    if(h != null) addGO(h);
   }
   
-  private void removeTO(int id) {
+  /*public void addTO(int id, Collidable c) {
+    if(!tempObjects.containsKey(id)) {
+      tempObjects.put(id, c);
+    }
+    
+    if(c.getW() >= Collidable.getGridSize()) addPO(c);
+    updateGridLocation(c);
+  }*/
+  
+  /*private void removeTO(int id) {
     if(tempObjects.containsKey(id)) tempObjects.remove(id);
-  }
+  }*/
   
   /**
    * Removes any instance of id within game, temp, and interactive objects.
    * @param id 
    */
-  public void removeAny(int id) {
+  /*public void removeAny(int id) {
     removeGO(id);
-    removeTO(id);
-    removeIO(id);
-  }
+    //removeTO(id);
+    //removeIO(id);
+    removePO(id);
+  }*/
   
   public static final int getNewId() { return nextId++; }
   public static final int getLastId() {
     if(nextId == FIRST_CUSTOM_ID) return FIRST_CUSTOM_ID;
     else return nextId-1;
+  }
+  
+  public ArrayList<Interactive> getInteractivesInGrid(int grid) {
+    ArrayList<Interactive> list = new ArrayList<>();
+    Map<Integer, Collidable> map = objectGrid.get(grid);
+    if(map != null) {
+      map.values().forEach( (c) -> {
+        if(c instanceof Interactive) list.add((Interactive)c);
+      });
+    }
+    return list;
   }
   
   /**
@@ -151,19 +229,43 @@ public class ObjectContainer {
   public Interactive getInteractiveAt(Point at) {
     Point.Float wc = DrawLib.screenToWorld(at);
     Rectangle point = new Rectangle(wc.x, wc.y, 1, 1);
-    for(Interactive i : interactiveObjects.values()) {
+    
+    Map<Integer, Collidable> map = objectGrid.get((int)(wc.x/Collidable.getGridSize()));
+    if(map != null) {
+      for(Collidable c : map.values()) {
+        if(c instanceof Interactive) {
+          if(c.collidesWith(point)) {
+            Interactive i = (Interactive)c;
+            i.select();
+            return i;
+          }
+        }
+      }
+    }
+    return null;
+    /*
+    //for(Interactive i : interactiveObjects.values()) {
       if(i.collidesWith(point)) {
         i.select();
         return i;
       }
     }
-    return null;
+    return null;*/
   }
   
   /**
    * Deselects all interactive objects, called when a selected object becomes null.
    */
   public void deselectAllIO() {
+    /*objectGrid.keySet().forEach( (grid) -> {
+      ArrayList<Interactive> list = getInteractivesInGrid(grid);
+      if(list != null) {
+        list.forEach( (i) -> {
+          i.deselect();
+        });
+      }
+    });*/
+    
     interactiveObjects.values().forEach((i) -> { i.deselect(); });
   }
   
@@ -172,6 +274,16 @@ public class ObjectContainer {
    * @param i
    */
   public void deselectAllIOBut(Interactive i) {
+    /*objectGrid.keySet().forEach( (grid) -> {
+      ArrayList<Interactive> list = getInteractivesInGrid(grid);
+      if(list != null) {
+        list.forEach( (i2) -> {
+          if(i2.getObjectId() != i.getObjectId())
+            i2.deselect();
+        });
+      }
+    });*/
+    
     if(interactiveObjects.containsKey(i.getObjectId())) {
       interactiveObjects.values().forEach((i2) -> {
         if(i2.getObjectId() != i.getObjectId())

@@ -11,24 +11,62 @@ import java.util.List;
  * @author Jeezy
  */
 public abstract class Collidable extends Drawable {
+  private final static float GRID_SIZE = 1750f;
+  public static float getGridSize() { return GRID_SIZE; }
   private final int objectId;
+  private int currGrid;
+  private int oldGrid;
   
+  /**
+   *
+   * @param objId
+   * @param texId
+   * @param x
+   * @param y
+   * @param w
+   * @param h
+   */
   public Collidable(int objId, int texId, float x, float y, float w, float h) {
     super(texId, x, y, w, h);
     objectId = objId;
+    currGrid = (int)(x/GRID_SIZE);
+    oldGrid = currGrid;
   }
   
+  /**
+   *
+   * @param objId
+   * @param texId
+   * @param x
+   * @param y
+   */
   public Collidable(int objId, int texId, float x, float y) {
     this(objId, texId, x, y, (texId >= 0) ? DrawLib.getTexture(texId).getWidth() : 1, (texId >= 0) ? DrawLib.getTexture(texId).getHeight() : 1);
   }
   
+  /**
+   *
+   * @param x
+   * @param y
+   */
   public Collidable(int x, int y) {
     this(-1, TEX.NONE, x, y, 1, 1);
   }
   
+  /**
+   *
+   */
   public Collidable() {
     this(-1, TEX.NONE, 0, 0, 1, 1);
   }
+  
+  public int getOldGrid() { return oldGrid; }
+  public int getCurrGrid() { return currGrid; }
+  protected void resetCurrGrid() {
+    oldGrid = currGrid;
+    currGrid = (int)(x/GRID_SIZE);
+  }
+  public boolean isGridFlagged() { return !(oldGrid == currGrid); }
   
   /**
    * Returns a rectangle surrounding the object.
@@ -66,7 +104,16 @@ public abstract class Collidable extends Drawable {
             || src.y() - src.h() > dest.y()); // src is above dest
   }
   
+  /**
+   *
+   * @return
+   */
   public final int getObjectId() { return objectId; }
   
+  /**
+   *
+   * @param nearObjects
+   * @return
+   */
   public abstract List<Integer> processCollisions(ArrayList<Collidable> nearObjects);
 }
