@@ -1109,7 +1109,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             
             // process all collisions
             //List<Integer> collisionIds = c.processCollisions(visibleObjects);
-            List<Integer> collisionIds = c.processCollisions(GAME.getGOsNear(c.getCurrGrid()));
+            List<Integer> collisionIds = c.processCollisions(GAME.getGOsNear(c));
             if(collisionIds != null) toRemove.addAll(collisionIds);
           }
         });

@@ -14,8 +14,6 @@ import java.util.Map;
 public class ObjectContainer {
   private static final int FIRST_CUSTOM_ID = 100000;
   private static int nextId = FIRST_CUSTOM_ID; // next id for custom objects, like floors/wall and projectiles
-  //private final Map<Integer, Collidable> gameObjects = new HashMap<>();
-  //private final Map<Integer, Collidable> tempObjects = new HashMap<>(); // like level and projectiles
   private final Map<Integer, Interactive> interactiveObjects = new HashMap<>();
   private final Map<Integer, Collidable> permanentObjects = new HashMap<>();
   private final Map<Integer, Map<Integer, Collidable>> objectGrid = new HashMap<>();
@@ -25,9 +23,6 @@ public class ObjectContainer {
     objectGrid.values().stream().forEach( (map) -> {
       v.addAll(map.values());
     });
-    //v.addAll(gameObjects.values());
-    //v.addAll(tempObjects.values());
-    //v.addAll(interactiveObjects.values());
     v.addAll(permanentObjects.values());
     return v;
   }
@@ -41,15 +36,8 @@ public class ObjectContainer {
     ArrayList<Collidable> v = new ArrayList<>();
     objectGrid.values().forEach( (map) -> {
       map.values().stream().forEach( (c) -> {
-      //gameObjects.values().stream().forEach( (c) -> {
         if(c.collidesWith(window)) v.add(c);
-      //});
-      //tempObjects.values().stream().forEach( (c) -> {
-        //if(c.collidesWith(window)) v.add(c);
       });
-      //interactiveObjects.values().stream().forEach( (c) -> {
-      //  if(c.collidesWith(window)) v.add(c);
-      //});
       permanentObjects.values().stream().forEach( (c) -> {
         if(c.collidesWith(window)) v.add(c);
       });
@@ -78,11 +66,12 @@ public class ObjectContainer {
   }
   
   /**
-   * Gets all the objects in grid provided and plus/minus one grid in O(n)
-   * @param grid
+   * Gets all the objects in same grid as object provided and plus/minus one grid
+   * @param c collidable object
    * @return 
    */
-  public ArrayList<Collidable> getGOsNear(int grid) {
+  public ArrayList<Collidable> getGOsNear(Collidable c) {
+    int grid = c.getCurrGrid();
     ArrayList<Collidable> v = new ArrayList<>();
     if(objectGrid != null) {
       Map<Integer, Collidable> m0 = objectGrid.get(grid);
@@ -180,30 +169,6 @@ public class ObjectContainer {
     if(h != null) addGO(h);
   }
   
-  /*public void addTO(int id, Collidable c) {
-    if(!tempObjects.containsKey(id)) {
-      tempObjects.put(id, c);
-    }
-    
-    if(c.getW() >= Collidable.getGridSize()) addPO(c);
-    updateGridLocation(c);
-  }*/
-  
-  /*private void removeTO(int id) {
-    if(tempObjects.containsKey(id)) tempObjects.remove(id);
-  }*/
-  
-  /**
-   * Removes any instance of id within game, temp, and interactive objects.
-   * @param id 
-   */
-  /*public void removeAny(int id) {
-    removeGO(id);
-    //removeTO(id);
-    //removeIO(id);
-    removePO(id);
-  }*/
-  
   public static final int getNewId() { return nextId++; }
   public static final int getLastId() {
     if(nextId == FIRST_CUSTOM_ID) return FIRST_CUSTOM_ID;
@@ -243,29 +208,12 @@ public class ObjectContainer {
       }
     }
     return null;
-    /*
-    //for(Interactive i : interactiveObjects.values()) {
-      if(i.collidesWith(point)) {
-        i.select();
-        return i;
-      }
-    }
-    return null;*/
   }
   
   /**
    * Deselects all interactive objects, called when a selected object becomes null.
    */
   public void deselectAllIO() {
-    /*objectGrid.keySet().forEach( (grid) -> {
-      ArrayList<Interactive> list = getInteractivesInGrid(grid);
-      if(list != null) {
-        list.forEach( (i) -> {
-          i.deselect();
-        });
-      }
-    });*/
-    
     interactiveObjects.values().forEach((i) -> { i.deselect(); });
   }
   
@@ -274,16 +222,6 @@ public class ObjectContainer {
    * @param i
    */
   public void deselectAllIOBut(Interactive i) {
-    /*objectGrid.keySet().forEach( (grid) -> {
-      ArrayList<Interactive> list = getInteractivesInGrid(grid);
-      if(list != null) {
-        list.forEach( (i2) -> {
-          if(i2.getObjectId() != i.getObjectId())
-            i2.deselect();
-        });
-      }
-    });*/
-    
     if(interactiveObjects.containsKey(i.getObjectId())) {
       interactiveObjects.values().forEach((i2) -> {
         if(i2.getObjectId() != i.getObjectId())
