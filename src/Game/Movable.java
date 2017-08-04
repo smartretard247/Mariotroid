@@ -1,6 +1,5 @@
 package Game;
 
-import Game.Collidable;
 import Drawing.DrawLib;
 import Enumerations.TEX;
 import Main.PhysicsEngine;

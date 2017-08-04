@@ -1,6 +1,5 @@
 package Game;
 
-import Game.Collidable;
 import Enumerations.TEX;
 import Main.Engine;
 import java.util.ArrayList;
@@ -42,11 +41,10 @@ public class FallingBox extends Interactive {
       switch(texId) {
         case TEX.BOX:
         case TEX.LEVEL:
-          if(movingUpIgnoreX())
-            this.adjustToBottomOf(c);
-          else if(movingDownIgnoreX())
+          if(movingDownIgnoreX()) {
             this.adjustToTopOf(c);
-          this.setSpeedY(0);
+            this.setSpeedY(0);
+          }
           break;
         default:
           if(new Projectile().getClass().isInstance(c)) {

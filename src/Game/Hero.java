@@ -1,7 +1,5 @@
 package Game;
 
-import Game.Enemy;
-import Game.Collidable;
 import Enumerations.ID;
 import Enumerations.SOUND_EFFECT;
 import Enumerations.TEX;
@@ -166,7 +164,6 @@ public class Hero extends Living {
             setSpeedY(0);
             if(PhysicsEngine.gravityIsInverted()) doLand();
           } else if(standingStill()) { // not moving, must be a different object
-            adjustToBottomOf(c);
             if(Engine.isDebugging()) System.out.println("Hero not moving, source must be a different object");
           }
           break;

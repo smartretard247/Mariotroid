@@ -1,6 +1,5 @@
 package Game;
 
-import Game.Heavy;
 import Drawing.DrawLib;
 import Enumerations.TEX;
 

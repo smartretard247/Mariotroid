@@ -1,6 +1,5 @@
 package Game;
 
-import Game.Collidable;
 import Enumerations.TEX;
 import Main.Engine;
 import Main.GameOverException;

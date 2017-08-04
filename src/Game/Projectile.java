@@ -1,7 +1,5 @@
 package Game;
 
-import Game.Movable;
-import Game.Collidable;
 import Drawing.DrawLib;
 import Enumerations.TEX;
 import java.awt.Point;
@@ -15,9 +13,7 @@ import java.util.List;
  */
 public class Projectile extends Movable {
   private int damage;
-  
   private static final int SPEED = 50;
-  
   private int zRot;
   
   public Projectile(int objId, int texId, Point.Float zrot, float x, float y, int d) {
@@ -31,9 +27,7 @@ public class Projectile extends Movable {
     super(-1, -1, 0, 0, 0, 0);
   }
   
-  public void setZRot(int to) {
-    zRot = to;
-  }
+  public void setZRot(int to) { zRot = to; }
   
   @Override
   public void draw() {
@@ -92,7 +86,6 @@ public class Projectile extends Movable {
     for(Collidable c : collisions) {
       int collisiontexId = c.getTextureId();
       switch(collisiontexId) {
-      case TEX.BOX:   // remove if one of these
       case TEX.LEVEL:         // textures are collided with 
         toRemove.add(this.getObjectId());
         break;

@@ -1,6 +1,5 @@
 package Game;
 
-import Game.Movable;
 import Drawing.DrawLib;
 import Main.PhysicsEngine;
 import java.awt.Point;
