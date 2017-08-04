@@ -39,7 +39,6 @@ public class FallingBox extends Interactive {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
-        case TEX.BOX:
         case TEX.LEVEL:
           if(movingDownIgnoreX()) {
             this.adjustToTopOf(c);
@@ -55,6 +54,7 @@ public class FallingBox extends Interactive {
                 Engine.setStatusMessage("Brick broke free!");
               }
             }
+            toRemove.add(objId);
           }
           break;
       }

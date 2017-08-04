@@ -41,13 +41,45 @@ public class FlyingBox extends Interactive {
       switch(texId) {
         case TEX.BOX:
         case TEX.LEVEL:
-          if(movingRight()) {
-            adjustToLeftOf(c);
-          } else if(movingLeft()) {
+          if(movingDown()) { // falling straight down
+            adjustToTopOf(c);
+            setSpeedY(0);
+          } else if(movingDownAndRight()) { // falling right and down
+            if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
+              adjustToLeftOf(c);
+            } else {
+              adjustToTopOf(c);
+              setSpeedY(0);
+            }
+          } else if(movingDownAndLeft()) { // falling left and down
+            if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
+              adjustToRightOf(c);
+            } else {
+              adjustToTopOf(c);
+              setSpeedY(0);
+            }
+          } else if(movingLeft()) { // moving left
             adjustToRightOf(c);
+          } else if(movingRight()) { // moving right
+            adjustToLeftOf(c);
+          } else if(movingUpAndLeft()) { // flying upward and to the left
+            if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
+              adjustToRightOf(c);
+            } else {
+              adjustToBottomOf(c);
+              setSpeedY(0);
+            }
+          } else if(movingUpAndRight()) { // flying upward and to the right
+            if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
+              adjustToLeftOf(c);
+            } else {
+              adjustToBottomOf(c);
+              setSpeedY(0);
+            }
+          } else if(movingUp()) { // flying straight upward
+            adjustToBottomOf(c);
+            setSpeedY(0);
           }
-          adjustToTopOf(c);
-          setSpeedY(0);
           break;
         default:
           if(new Projectile().getClass().isInstance(c)) {
@@ -57,6 +89,7 @@ public class FlyingBox extends Interactive {
                 setSpeed(p.getSpeed());
               }
             }
+            toRemove.add(objId);
           }
           break;
       }

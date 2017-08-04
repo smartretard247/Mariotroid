@@ -97,11 +97,8 @@ public class Hero extends Living {
     for(Collidable c : collisions) {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
-      
       switch(texId) {
-        case TEX.SWITCH:
-          
-          break;
+        case TEX.SWITCH: break;
         case TEX.PRI_WEAPON: break;
         case TEX.ALT_WEAPON: break;
         case TEX.HEALTH_ORB:
@@ -163,8 +160,6 @@ public class Hero extends Living {
             adjustToBottomOf(c);
             setSpeedY(0);
             if(PhysicsEngine.gravityIsInverted()) doLand();
-          } else if(standingStill()) { // not moving, must be a different object
-            if(Engine.isDebugging()) System.out.println("Hero not moving, source must be a different object");
           }
           break;
         default: // then check for object ids to react to (like enemies)

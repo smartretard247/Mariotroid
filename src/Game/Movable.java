@@ -2,6 +2,7 @@ package Game;
 
 import Drawing.DrawLib;
 import Enumerations.TEX;
+import Main.Engine;
 import Main.PhysicsEngine;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -189,17 +190,45 @@ public class Movable extends Collidable {
       int texId = c.getTextureId();
       switch(texId) {
         case TEX.LEVEL:
-          if(movingUp())
-            this.adjustToBottomOf(c);
-          else if(movingDown())
-            this.adjustToTopOf(c);
-          this.setSpeedY(0);
-          
-          if(movingLeft())
-            this.adjustToRightOf(c);
-          else if(movingRight())
-            this.adjustToLeftOf(c);
-          this.setSpeedX(0);
+          if(movingDown()) { // falling straight down
+            adjustToTopOf(c);
+            setSpeedY(0);
+          } else if(movingDownAndRight()) { // falling right and down
+            if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
+              adjustToLeftOf(c);
+            } else {
+              adjustToTopOf(c);
+              setSpeedY(0);
+            }
+          } else if(movingDownAndLeft()) { // falling left and down
+            if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
+              adjustToRightOf(c);
+            } else {
+              adjustToTopOf(c);
+              setSpeedY(0);
+            }
+          } else if(movingLeft()) { // moving left
+            adjustToRightOf(c);
+          } else if(movingRight()) { // moving right
+            adjustToLeftOf(c);
+          } else if(movingUpAndLeft()) { // flying upward and to the left
+            if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
+              adjustToRightOf(c);
+            } else {
+              adjustToBottomOf(c);
+              setSpeedY(0);
+            }
+          } else if(movingUpAndRight()) { // flying upward and to the right
+            if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
+              adjustToLeftOf(c);
+            } else {
+              adjustToBottomOf(c);
+              setSpeedY(0);
+            }
+          } else if(movingUp()) { // flying straight upward
+            adjustToBottomOf(c);
+            setSpeedY(0);
+          }
           break;
         default: break;
       }
