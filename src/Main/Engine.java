@@ -212,7 +212,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         GAME.addGO(new Door(ID.DOOR, 300, 987, -60, 70, true));
         GAME.addGO(new GravitySwitch(ID.SWITCH, TEX.SWITCH, 5366, 702));
         break;
-      default: System.out.println("Unknown level number while resetting visibles."); break;
+      default: System.out.println("Unknown level number while setting up visibles."); break;
     }
   }
   
