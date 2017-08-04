@@ -1,8 +1,13 @@
-package Main;
+package Game;
 
+import Game.Enemy;
+import Game.Collidable;
 import Enumerations.ID;
 import Enumerations.SOUND_EFFECT;
 import Enumerations.TEX;
+import Main.Engine;
+import Main.GameOverException;
+import Main.PhysicsEngine;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;

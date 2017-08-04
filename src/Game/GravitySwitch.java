@@ -1,4 +1,7 @@
-package Main;
+package Game;
+
+import Main.Engine;
+import Main.PhysicsEngine;
 
 /**
  *

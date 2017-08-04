@@ -1,6 +1,8 @@
-package Main;
+package Game;
 
+import Game.Collidable;
 import Enumerations.TEX;
+import Main.Engine;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,12 +13,12 @@ import java.util.List;
  */
 public class FallingBox extends Interactive {
 
-  FallingBox(int id, int texId, float x, float y) {
+  public FallingBox(int id, int texId, float x, float y) {
     super(id, texId, x, y);
     weight = 0;
   }
 
-  FallingBox() {
+  public FallingBox() {
     this(-1, -1, 0, 0);
   }
   

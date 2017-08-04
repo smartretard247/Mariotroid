@@ -1,5 +1,6 @@
-package Main;
+package Game;
 
+import Game.Collidable;
 import java.util.ArrayList;
 import java.util.List;
 

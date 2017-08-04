@@ -1,5 +1,6 @@
-package Main;
+package Game;
 
+import Game.Collidable;
 import Enumerations.ID;
 import Enumerations.TEX;
 import java.util.ArrayList;

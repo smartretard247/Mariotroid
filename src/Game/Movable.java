@@ -1,7 +1,9 @@
-package Main;
+package Game;
 
+import Game.Collidable;
 import Drawing.DrawLib;
 import Enumerations.TEX;
+import Main.PhysicsEngine;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -141,11 +143,15 @@ public class Movable extends Collidable {
     resetCurrGrid();
   }
   
-  public void inverseSpeedX() {
+  public void adjust() {
+    
+  }
+  
+  public void reverseSpeedX() {
     speed.x = -speed.x;
   }
   
-  public void inverseSpeedY() {
+  public void reverseSpeedY() {
     speed.y = -speed.y;
   }
   

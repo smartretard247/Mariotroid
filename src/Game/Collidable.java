@@ -1,7 +1,8 @@
-package Main;
+package Game;
 
 import Drawing.DrawLib;
 import Enumerations.TEX;
+import Main.Rectangle;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,7 +63,7 @@ public abstract class Collidable extends Drawable {
   
   public int getOldGrid() { return oldGrid; }
   public int getCurrGrid() { return currGrid; }
-  protected void resetCurrGrid() {
+  public void resetCurrGrid() {
     oldGrid = currGrid;
     currGrid = (int)(x/GRID_SIZE);
   }

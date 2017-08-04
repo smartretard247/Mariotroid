@@ -1,5 +1,6 @@
 package Main;
 
+import Game.*;
 import Drawing.Scene;
 import Drawing.DrawLib;
 import Enumerations.START_MENU_OPTION;
@@ -233,10 +234,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       ArrayList<Rectangle> level = levelBuilder.scanForBoundaries();
       level.stream().forEach((r) -> {
         GAME.addGO(new Platform(ID.getNewId(), TEX.LEVEL, r.x(), r.y(), r.w(), r.h()));
-        //GAME.addTO(ID.getNewId(), new Platform(ID.getLastId(), TEX.LEVEL, r.x()-r.w()/2, r.y(), 1, r.h()));
-        //GAME.addTO(ID.getNewId(), new Platform(ID.getLastId(), TEX.LEVEL, r.x()+r.w()/2, r.y(), 1, r.h()));
-        //GAME.addTO(ID.getNewId(), new Platform(ID.getLastId(), TEX.LEVEL, r.x(), r.y()+r.h()/2, r.w(), 1));
-        //GAME.addTO(ID.getNewId(), new Platform(ID.getLastId(), TEX.LEVEL, r.x(), r.y()-r.h()/2, r.w(), 1));
       });
     }
     
@@ -1108,7 +1105,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             } // move all movables
             
             // process all collisions
-            //List<Integer> collisionIds = c.processCollisions(visibleObjects);
             List<Integer> collisionIds = c.processCollisions(GAME.getGOsNear(c));
             if(collisionIds != null) toRemove.addAll(collisionIds);
           }

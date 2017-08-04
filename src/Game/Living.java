@@ -1,7 +1,8 @@
-package Main;
+package Game;
 
 import Drawing.DrawLib;
 import Enumerations.TEX;
+import Main.GameOverException;
 import java.awt.Point;
 
 /**

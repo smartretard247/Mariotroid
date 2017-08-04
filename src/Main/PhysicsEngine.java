@@ -1,5 +1,6 @@
 package Main;
 
+import Game.Heavy;
 import java.util.ArrayList;
 
 /**

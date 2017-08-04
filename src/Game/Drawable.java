@@ -1,4 +1,4 @@
-package Main;
+package Game;
 
 import Drawing.DrawLib;
 import com.jogamp.opengl.GL2;

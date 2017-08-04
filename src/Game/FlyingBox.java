@@ -1,6 +1,7 @@
-package Main;
+package Game;
 
 import Enumerations.TEX;
+import Main.PhysicsEngine;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,12 +12,12 @@ import java.util.List;
  */
 public class FlyingBox extends Interactive {
 
-  FlyingBox(int id, int texId, float x, float y) {
+  public FlyingBox(int id, int texId, float x, float y) {
     super(id, texId, x, y);
     PhysicsEngine.addDrag(this);
   }
 
-  FlyingBox() {
+  public FlyingBox() {
     this(-1, -1, 0, 0);
   }
   

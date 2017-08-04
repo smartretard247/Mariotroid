@@ -1,5 +1,9 @@
 package Main;
 
+import Game.Interactive;
+import Game.Hero;
+import Game.Door;
+import Game.Collidable;
 import Drawing.DrawLib;
 import Enumerations.ID;
 import java.awt.Point;

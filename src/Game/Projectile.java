@@ -1,5 +1,7 @@
-package Main;
+package Game;
 
+import Game.Movable;
+import Game.Collidable;
 import Drawing.DrawLib;
 import Enumerations.TEX;
 import java.awt.Point;
