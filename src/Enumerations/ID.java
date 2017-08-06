@@ -23,6 +23,7 @@ public final class ID {
   public static final int FLYING_BOX = 1012;
   public static final int FLYING_BOX_2 = 1013;
   public static final int FLYING_BOX_3 = 1014;
+  public static final int PHANTOM = 1015;
   
   public static final int getNewId() { return ObjectContainer.getNewId(); }
   public static final int getLastId() { return ObjectContainer.getLastId(); }

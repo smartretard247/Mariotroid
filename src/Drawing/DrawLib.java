@@ -64,6 +64,7 @@ public class DrawLib {
     textureIdMap.put(TEX.SWITCH, "/res/switch.png");
     textureIdMap.put(TEX.BOX, "/res/box.png");
     //textureIdMap.put(TEX.TEXT_BOX, "/res/text_box.png");
+    textureIdMap.put(TEX.PHANTOM, "/res/phantom.png");
     
     // load custom font
     String fontName = "/res/spac3.ttf";
