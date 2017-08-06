@@ -16,15 +16,13 @@ import javax.swing.Timer;
  * @author Jeezy
  */
 public class Phantom extends Enemy {
-  private int minXLocation = 0; // to keep from entering the rest of the level
-  private int maxXLocation = 12000;
-  private final Timer fireTimer = new Timer(5000, null);
+  private final Timer fireTimer = new Timer(2000, null);
   
   public Phantom(int objId, int startLives, int startHealth, int texId, float x, float y, Point.Float speed, int points) {
     super(objId, startLives, startHealth, texId, x, y, speed);
     pointsWorth = points;
     fireTimer.setRepeats(false);
-    weight = 0; // comment this line if phantom should be subject to gravity
+//    weight = 0; // comment this line if phantom should be subject to gravity
   }
   
   public Phantom() {
@@ -39,7 +37,6 @@ public class Phantom extends Enemy {
   @Override
   public void move() {
     super.move();
-    if(x < minXLocation + width/2 || x > maxXLocation - width/2) reverseSpeedX();
   }
   
   @Override
@@ -54,14 +51,14 @@ public class Phantom extends Enemy {
         case TEX.LEVEL:
           if(movingDown()) { // falling straight down
             adjustToTopOf(c);
-            reverseSpeedY();
+            setSpeedY(0);
           } else if(movingDownAndRight()) { // falling right and down
             if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getTop() - getBottom())) {
               adjustToLeftOf(c);
               reverseSpeedX();
             } else {
               adjustToTopOf(c);
-              reverseSpeedY();
+              setSpeedY(0);
             }
           } else if(movingDownAndLeft()) { // falling left and down
             if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getTop() - getBottom())) {
@@ -69,7 +66,7 @@ public class Phantom extends Enemy {
               reverseSpeedX();
             } else {
               adjustToTopOf(c);
-              reverseSpeedY();
+              setSpeedY(0);
             }
           } else if(movingLeft()) { // moving left
             adjustToRightOf(c);
@@ -80,16 +77,18 @@ public class Phantom extends Enemy {
           } else if(movingUpAndLeft()) { // flying upward and to the left
             if(Math.abs(c.getRight() - getLeft()) <= Math.abs(c.getBottom() - getTop())) {
               adjustToRightOf(c);
+              reverseSpeedX(); // reverse direction
             } else {
               adjustToBottomOf(c);
-              reverseSpeedY();
+              setSpeedY(0);
             }
           } else if(movingUpAndRight()) { // flying upward and to the right
             if(Math.abs(c.getLeft() - getRight()) <= Math.abs(c.getBottom() - getTop())) {
               adjustToLeftOf(c);
+              reverseSpeedX(); // reverse direction
             } else {
               adjustToBottomOf(c);
-              reverseSpeedY();
+              setSpeedY(0);
             }
           }
           break;
@@ -104,7 +103,7 @@ public class Phantom extends Enemy {
               } catch (GameOverException ex) { // enemy died
                 if(Engine.isDebugging()) TestDisplay.addTestData("Boss destroyed");
                 Engine.addScore(getPointsWorth());
-                Engine.getGameContainer().addGO(new Item(ID.getNewId(), TEX.HEALTH_ORB, getX(), getY())); // drop item
+                Engine.getGameContainer().addGO(new Item(ID.SHELL, TEX.SHELL, getX(), getY())); // drop item
                 Engine.getGameContainer().activateDoor(); // comment this line if no door will be added
                 toRemove.add(getObjectId());
               }
@@ -117,16 +116,11 @@ public class Phantom extends Enemy {
     return toRemove;
   }
   
-  public int getMinX() { return minXLocation; }
-  public void setMinX(int to) { minXLocation = to; }
-  public int getMaxX() { return maxXLocation; }
-  public void setMaxX(int to) { maxXLocation = to; }
-  
   public Projectile firePrimaryWeapon(Point.Float direction) {
     fireTimer.start();
     Point.Float zRot = Projectile.calcRotation(new Point.Float(x, y), direction);
     flipY = (zRot.x < 0);
-    if(Engine.isDebugging()) TestDisplay.addTestData("Boss fire to: (" + getX() + ", " + getY() + ")");
+    if(Engine.isDebugging()) TestDisplay.addTestData("Phantom fire to: (" + getX() + ", " + getY() + ")");
     return new Projectile(ID.getNewId(), TEX.ENEMY_WEAPON_1, zRot, getX(), getY(), 5); // fire primary, 5 damage
   }
   
