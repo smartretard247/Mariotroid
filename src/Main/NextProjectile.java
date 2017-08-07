@@ -1,5 +1,6 @@
 package Main;
 
+import Enumerations.ID;
 import java.awt.Point;
 
 /**
@@ -10,19 +11,19 @@ public class NextProjectile {
   public Point screenCoord = new Point();
   public Point.Float worldCoord = new Point.Float();
   public boolean isFromPrimaryWeapon = true;
-  public boolean isFromEnemy = false;
+  public int firedID;
   
   public NextProjectile(Point sc, boolean fromPrimary) {
     screenCoord = sc;
     worldCoord = null;
     isFromPrimaryWeapon = fromPrimary;
-    isFromEnemy = false;
+    firedID = ID.HERO;
   }
   
-  public NextProjectile(Point.Float wc, boolean fromEnemy) {
+  public NextProjectile(Point.Float wc, int firedFrom) {
     screenCoord = null;
     worldCoord = wc;
     isFromPrimaryWeapon = false;
-    isFromEnemy = true;
+    firedID = firedFrom;
   }
 }
