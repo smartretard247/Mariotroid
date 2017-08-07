@@ -185,15 +185,12 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         h.resetAll();
         resetScore();
         hero.setGodMode(false);
-        GAME.addGO(new Item(ID.JETPACK, TEX.JETPACK, 1800, 800));
-        GAME.addGO(new Item(ID.SHELL, TEX.SHELL, 300, 800));
+        GAME.addGO(new Item(ID.JETPACK, TEX.JETPACK, 300, 800));
         GAME.addGO(new Item(ID.ARMOR, TEX.ARMOR, 5660, 198));
         GAME.addGO(new Enemy(ID.ENEMY_1, 1, 1, TEX.ENEMY_BASIC, 2000, 800, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
         GAME.addGO(new Enemy(ID.ENEMY_2, 1, 1, TEX.ENEMY_BASIC, 4000, 800, new Point.Float(5,0)));
         GAME.addGO(new Enemy(ID.ENEMY_3, 1, 1, TEX.ENEMY_BASIC, 8075, 240, new Point.Float(5,0)));
-        GAME.addGO(new Boss(ID.CALAMITY, 1, 20, TEX.CALAMITY, 11000, 500, new Point.Float(10,10), 500));
-        b = (Boss)GAME.getGO(ID.CALAMITY);
-        b.setMinX(8930);
+        GAME.addGO(new Phantom(ID.PHANTOM, 1, 5, TEX.PHANTOM, 11000, 500, new Point.Float(10,0), 300));
         GAME.addGO(new Door(ID.DOOR, 11100, 163, 75, 0));
         int boxHeight = DrawLib.getTexture(TEX.BOX).getHeight();
         GAME.addGO(new FallingBox(ID.FALLING_BOX, TEX.BOX, 760, 960));
@@ -1112,7 +1109,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         
         Boss boss = (Boss)GAME.getGO(ID.CALAMITY);
         if(boss != null && !boss.didRecentlyFire()) 
-          qProjectiles.offer(new NextProjectile(hero.getPosition(), true)); // fire boss weapon toward hero
+          qProjectiles.offer(new NextProjectile(hero.getPosition(), ID.CALAMITY)); // fire boss weapon toward hero
+        
+        Phantom phantom = (Phantom)GAME.getGO(ID.PHANTOM);
+        if(phantom != null && !phantom.didRecentlyFire()) 
+          qProjectiles.offer(new NextProjectile(hero.getPosition(), ID.PHANTOM)); // fire phantom weapon toward hero
 
         // check for warp collision, then remove all ids tagged for removal
         if(toRemove.contains(ID.WARP)) jumpToNextLevel();
@@ -1318,23 +1319,39 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       try {
         np = qProjectiles.take();
         Projectile fired;
-        if(!np.isFromEnemy) {
-          Point.Float wc = DrawLib.screenToWorld(np.screenCoord);
-          //if(debugging) Engine.setConversation(new String[] { wc.x + ", " + wc.y });
-          if(np.isFromPrimaryWeapon)
-            fired = hero.firePrimaryWeapon(wc);
-          else
-            fired = hero.fireSecondaryWeapon(wc);
-        } else {
-          Collidable c = GAME.getGO(ID.CALAMITY);
-          if(c != null) {
-            Boss b = (Boss)c;
-            fired = b.firePrimaryWeapon(np.worldCoord);
-          } else {
-            fired = null;
-          }
-        }
-
+        Collidable c;
+        switch(np.firedID){
+            case ID.HERO:
+              Point.Float wc = DrawLib.screenToWorld(np.screenCoord);
+              //if(debugging) Engine.setConversation(new String[] { wc.x + ", " + wc.y });
+              if(np.isFromPrimaryWeapon)
+                fired = hero.firePrimaryWeapon(wc);
+              else
+                fired = hero.fireSecondaryWeapon(wc);
+              break;
+            case ID.PHANTOM:
+              c = GAME.getGO(ID.PHANTOM);
+              if(c != null) {
+                Phantom p = (Phantom)c;
+                fired = p.firePrimaryWeapon(np.worldCoord);
+              } else {
+                fired = null;
+              }
+              break;
+            case ID.CALAMITY:
+              c = GAME.getGO(ID.CALAMITY);
+              if(c != null) {
+                Boss b = (Boss)c;
+                fired = b.firePrimaryWeapon(np.worldCoord);
+              } else {
+                fired = null;
+              }
+              break;
+            default:
+              System.out.println("Attempted to fire null projectile.");
+              fired = null;
+              break;
+        } 
         if(fired != null) GAME.addGO(fired);
         else System.out.println("Attempted to fire null projectile.");
       } catch (InterruptedException ex) {
