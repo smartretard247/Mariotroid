@@ -75,6 +75,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final int TOTAL_LEVELS = 2;
   private int currLevel = 1;
   private Hero hero;
+  private Enemy keyHolder;
   private boolean leftPressed = false;
   private boolean rightPressed = false;
   private Point currentMousePos;
@@ -197,6 +198,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         GAME.addGO(new FlyingBox(ID.FLYING_BOX, TEX.BOX, 8810, 960-boxHeight*2));
         GAME.addGO(new FlyingBox(ID.FLYING_BOX_2, TEX.BOX, 8810, 960-boxHeight));
         GAME.addGO(new FlyingBox(ID.FLYING_BOX_3, TEX.BOX, 8810, 960));
+        keyHolder = (Enemy)GAME.getGO(ID.PHANTOM);
         break;
       case 2:// setup level 2, only add level 2 game objects to this map
         GAME.addGO(new Enemy(ID.ENEMY_1, 1, 1, TEX.ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
@@ -206,6 +208,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         b = (Boss)GAME.getGO(ID.CALAMITY);
         b.setMinX(0);
         b.setMaxX(2570);
+        keyHolder = (Enemy)GAME.getGO(ID.CALAMITY);
         GAME.addGO(new Door(ID.DOOR, 300, 987, -60, 70, true));
         GAME.addGO(new GravitySwitch(ID.SWITCH, TEX.SWITCH, 5366, 702));
         break;
@@ -1118,6 +1121,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         // check for warp collision, then remove all ids tagged for removal
         if(toRemove.contains(ID.WARP)) jumpToNextLevel();
         toRemove.stream().forEach((id) -> { GAME.removeGO(id); });
+        
+        // check if keyholder died to unlock door
+        if(toRemove.contains(keyHolder.getObjectId())) GAME.activateDoor();
         
         if(hero.getLives() == 0) { gameMode = GAME_MODE.DYING; } // check for game over
         break;
