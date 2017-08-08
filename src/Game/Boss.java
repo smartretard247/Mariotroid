@@ -105,7 +105,6 @@ public class Boss extends Enemy {
                 if(Engine.isDebugging()) TestDisplay.addTestData("Boss destroyed");
                 Engine.addScore(getPointsWorth());
                 Engine.getGameContainer().addGO(new Item(ID.getNewId(), TEX.HEALTH_ORB, getX(), getY()));
-                Engine.getGameContainer().activateDoor();
                 toRemove.add(getObjectId());
               }
               toRemove.add(objId);
