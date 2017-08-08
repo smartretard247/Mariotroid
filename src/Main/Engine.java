@@ -182,7 +182,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(level) {
       case 1:// only add level 1 visible objects to this map
         loadDefaults();
-        h.setDefaultPosition(9300, 189);
+        h.setDefaultPosition(300, 189);
         h.resetAll();
         resetScore();
         hero.setGodMode(false);
@@ -306,14 +306,16 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     float y = scene.transY;
     float z = scene.transZ+scene.globalZ;
     if(!forBackgroundScene) {
-      if(hero.getX() > 600 && hero.getX() < 10500)
+      if(hero.getX() > 600 && hero.getX() < 10500) {
         x = -hero.getX();
-      else if(hero.getX() >= 10500)
+      } else if(hero.getX() >= 10500) {
         x = -10500;
+      }
     } else {
       x *= -10;
-      if(!(hero.getX() <= 600))
+      if(!(hero.getX() <= 600)) {
         x += hero.getX()/10;
+      }
       y *= -3;
       z = scene.globalZ-scene.LEVEL_DEPTH*currLevel;
     }
