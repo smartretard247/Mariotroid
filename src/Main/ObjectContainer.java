@@ -94,7 +94,7 @@ public class ObjectContainer {
   }
   
   public void addGO(Collidable c) {
-    if(c != null) {
+    if(c != null) { // && DOESNT ALREADY EXIST
       if(c instanceof Interactive)
         addIO((Interactive)c); // put a reference to it in the interactive objects map, AND...
       if(c.getW() >= Collidable.getGridSize()) {
@@ -103,7 +103,7 @@ public class ObjectContainer {
         int currGrid = c.getCurrGrid();
         if(objectGrid.get(currGrid) == null)
           objectGrid.put(currGrid, new HashMap<>());
-        objectGrid.get(currGrid).put(c.getObjectId(), c);
+        objectGrid.get(currGrid).putIfAbsent(c.getObjectId(), c);
       }
       c.resetCurrGrid();
     }

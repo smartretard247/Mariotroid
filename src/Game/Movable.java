@@ -142,10 +142,6 @@ public class Movable extends Collidable {
     resetCurrGrid();
   }
   
-  public void adjust() {
-    
-  }
-  
   public void reverseSpeedX() {
     speed.x = -speed.x;
   }
@@ -178,7 +174,10 @@ public class Movable extends Collidable {
       speed.x = (speed.x > 0) ? MAX_SPEED_X : -MAX_SPEED_X;
   }
   
-  public void setSprinting(boolean to) { isSprinting = to; }
+  public void setSprinting(boolean to) {
+    if(isSprinting == to) return;
+    toggleSprint();
+  }
   public boolean isSprinting() { return isSprinting; }
 
   @Override

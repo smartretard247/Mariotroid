@@ -221,9 +221,11 @@ public class Hero extends Living {
       }
     }
     // Move on top of object if reached the top
-    if(reachedTop()) {
-      x += (x < lastWallCollision.getX()) ? 20 : -20;
-      setClimbing(false);
+    if(isClimbing()) {
+      if(reachedTop()) {
+        x += (x < lastWallCollision.getX()) ? 20 : -20;
+        setClimbing(false);
+      }
     }
     return toRemove;
   }
@@ -233,14 +235,14 @@ public class Hero extends Living {
     if(Engine.isSoundEnabled()) SOUND_EFFECT.JUMP.play();
     fallCount++;
     jumped = true;
-    setSpeedY(JUMP_SPEED);
+    setSpeedY((PhysicsEngine.gravityIsInverted()) ? -JUMP_SPEED : JUMP_SPEED);
   }
   public boolean canDoubleJump() { return !floatJumped && jumped && hasDoubleJump; }
   public void doDoubleJump() {
     if(Engine.isSoundEnabled()) SOUND_EFFECT.JETPACK.play();
     fallCount++;
     floatJumped = true;
-    setSpeedY(JUMP_SPEED);
+    setSpeedY((PhysicsEngine.gravityIsInverted()) ? -JUMP_SPEED : JUMP_SPEED);
   }
   
   public void doLand() {
@@ -351,7 +353,6 @@ public class Hero extends Living {
     try {
       super.die();
     } catch (GameOverException ex) {
-      this.setSpeedX(0);
       godMode = true; // prevent further damage, so damage timer will eventually expire
     }
   }

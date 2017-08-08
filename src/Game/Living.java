@@ -71,7 +71,13 @@ public abstract class Living extends Heavy {
     if(--lives <= 0) throw new GameOverException();
     resetHealth();
     resetPosition();
+    resetSpeed();
   }
   
   protected abstract void deathAction();
+
+  private void resetSpeed() {
+    speed.x = 0;
+    speed.y = 0;
+  }
 }
