@@ -209,7 +209,7 @@ public class Hero extends Living {
                     try {
                       loseHealth((int)(p.getDamage()*armor));
                     } catch (GameOverException ex) {
-                      this.setLives(0);
+                      deathAction();
                     }
                     toRemove.add(objId);
                   }
@@ -377,5 +377,10 @@ public class Hero extends Living {
     } else {
       Engine.setStatusMessage("Nothing around to interact with.");
     }
+  }
+
+  @Override
+  protected void deathAction() {
+    this.setLives(0);
   }
 }

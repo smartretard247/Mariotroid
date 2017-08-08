@@ -1,0 +1,13 @@
+--GOD MODE ON--
+Phantom fire to: (11010.0, 490.0)
+Hero hit by projectile
+Hero HP: 10
+Hero damage: 5 / Hero HP: 10
+Phantom fire to: (11330.5, 190.0)
+Hero hit by projectile
+Hero HP: 10
+Hero damage: 5 / Hero HP: 10
+Phantom fire to: (11330.5, 190.0)
+Hero hit by projectile
+Hero HP: 10
+Hero damage: 5 / Hero HP: 10

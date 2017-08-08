@@ -123,4 +123,9 @@ public class Enemy extends Living {
   public void setPointsWorth(int to) { pointsWorth = to; }
   
   public static int getBaseDamage() { return BASE_DAMAGE; }
+
+  @Override
+  protected void deathAction() {
+    // do nothing
+  }
 }

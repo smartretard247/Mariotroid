@@ -72,4 +72,6 @@ public abstract class Living extends Heavy {
     resetHealth();
     resetPosition();
   }
+  
+  protected abstract void deathAction();
 }

@@ -181,7 +181,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(level) {
       case 1:// only add level 1 visible objects to this map
         loadDefaults();
-        h.setDefaultPosition(300, 189);
+        h.setDefaultPosition(9300, 189);
         h.resetAll();
         resetScore();
         hero.setGodMode(false);
