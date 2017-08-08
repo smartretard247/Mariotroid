@@ -104,7 +104,6 @@ public class Phantom extends Enemy {
                 if(Engine.isDebugging()) TestDisplay.addTestData("Boss destroyed");
                 Engine.addScore(getPointsWorth());
                 Engine.getGameContainer().addGO(new Item(ID.SHELL, TEX.SHELL, getX(), getY())); // drop item
-                Engine.getGameContainer().activateDoor(); // comment this line if no door will be added
                 toRemove.add(getObjectId());
               }
               toRemove.add(objId);
