@@ -108,6 +108,14 @@ public class Hero extends Living {
           if(Engine.isDebugging()) TestDisplay.addTestData("Health orb: " + 3 + " / Hero HP: " + getHealth());
           toRemove.add(objId);
           break;
+        case TEX.SHELL:
+          if (hasSecondaryWeapon){
+            pickupAmmo();
+          }else{
+            pickupSecondaryWeapon();
+          }
+          toRemove.add(objId);
+          break;
         case TEX.BOX:
         case TEX.LEVEL:
           if(movingDown()) { // falling straight down
@@ -177,12 +185,6 @@ public class Hero extends Living {
                   toRemove.add(this.getObjectId());
                 }
               }
-              break;
-            case ID.SHELL:
-              Engine.setStatusMessage("Got missles!");
-              Engine.addScore(1000);
-              pickupSecondaryWeapon();
-              toRemove.add(objId);
               break;
             case ID.ARMOR:
               Engine.setStatusMessage("Got armor!");
@@ -254,7 +256,17 @@ public class Hero extends Living {
   }
   
   public boolean hasSecondaryWeapon() { return hasSecondaryWeapon; }
-  public void pickupSecondaryWeapon() { hasSecondaryWeapon = true; }
+  public void pickupSecondaryWeapon() {
+    hasSecondaryWeapon = true;
+    Engine.setStatusMessage("Got missles!");
+    Engine.addScore(1000);
+    Engine.allowAmmoDrop();
+  }
+  public void pickupAmmo() {
+      Engine.setStatusMessage("Got Ammo!");
+      Engine.addScore(200);
+      secondaryAmmoCount += 5;
+  }
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
   
   public Projectile firePrimaryWeapon(Point.Float direction) {
