@@ -25,6 +25,8 @@ public class Boss extends Enemy {
     pointsWorth = points;
     fireTimer.setRepeats(false);
     weight = 0;
+    drops = new int[] { TEX.HEALTH_ORB, TEX.SHELL };
+    rates = new float[] { 0.5f, 1.0f };
   }
   
   public Boss() {
@@ -104,7 +106,7 @@ public class Boss extends Enemy {
               } catch (GameOverException ex) { // enemy died
                 if(Engine.isDebugging()) TestDisplay.addTestData("Boss destroyed");
                 Engine.addScore(getPointsWorth());
-                Engine.getGameContainer().addGO(new Item(ID.getNewId(), TEX.HEALTH_ORB, getX(), getY()));
+                deathAction();
                 toRemove.add(getObjectId());
               }
               toRemove.add(objId);
