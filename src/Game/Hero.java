@@ -108,12 +108,12 @@ public class Hero extends Living {
           if(Engine.isDebugging()) TestDisplay.addTestData("Health orb: " + 3 + " / Hero HP: " + getHealth());
           toRemove.add(objId);
           break;
+        case TEX.WEAPON_PICKUP:
+          pickupSecondaryWeapon();
+          toRemove.add(objId);
+          break;
         case TEX.SHELL:
-          if (hasSecondaryWeapon){
-            pickupAmmo();
-          }else{
-            pickupSecondaryWeapon();
-          }
+          pickupAmmo();
           toRemove.add(objId);
           break;
         case TEX.BOX:
@@ -260,7 +260,7 @@ public class Hero extends Living {
     hasSecondaryWeapon = true;
     Engine.setStatusMessage("Got missles!");
     Engine.addScore(1000);
-    Engine.allowAmmoDrop();
+    Engine.setAmmoDrop(true);
   }
   public void pickupAmmo() {
       Engine.setStatusMessage("Got Ammo!");
