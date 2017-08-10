@@ -1386,4 +1386,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     if(SOUND_EFFECT.volume == SOUND_EFFECT.Volume.MUTE) SOUND_EFFECT.THEME.stop();
     else { SOUND_EFFECT.THEME.playLoop(); }
   }
+  
+  /**
+   * Enables enemy ammo drop
+   */
+  public static void allowAmmoDrop() { Enemy.alternateWeaponsDrop(); }
 }
