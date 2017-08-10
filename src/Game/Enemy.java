@@ -1,5 +1,6 @@
 package Game;
 
+import Enumerations.ID;
 import Enumerations.TEX;
 import Main.Engine;
 import Main.GameOverException;
@@ -17,13 +18,25 @@ import java.util.List;
 public class Enemy extends Living {
   protected int pointsWorth = 100;
   protected static final int BASE_DAMAGE = 2; // damage dealt by contact, not projectiles
+  protected static boolean altWeaponDrops;
+  protected int[] drops;
+  protected float[] rates;
   
   public Enemy(int objId, int startLives, int startHealth, int texId, float x, float y, Point.Float speed) {
     super(objId, startLives, startHealth, texId, x, y, speed);
+    altWeaponDrops = false;
+    drops = new int[] { TEX.HEALTH_ORB, TEX.SHELL };
+    rates = new float[] { 0.3f, 0.6f };
   }
   
   public Enemy() {
     this(-1, 1, 1, TEX.ENEMY_BASIC, 0, 0, new Point.Float(0, 0));
+  }
+  
+  @Override
+  public void resetAll(){
+      super.resetAll();
+      altWeaponDrops = false;
   }
   
   @Override
@@ -93,6 +106,7 @@ public class Enemy extends Living {
               } catch (GameOverException ex) { // enemy died
                 if(Engine.isDebugging()) TestDisplay.addTestData("Enemy destroyed");
                 Engine.addScore(getPointsWorth());
+                deathAction();
                 toRemove.add(getObjectId());
               }
               toRemove.add(objId);
@@ -123,9 +137,22 @@ public class Enemy extends Living {
   public void setPointsWorth(int to) { pointsWorth = to; }
   
   public static int getBaseDamage() { return BASE_DAMAGE; }
+  public static void alternateWeaponsDrop() { altWeaponDrops = true; }
 
   @Override
-  protected void deathAction() {
-    // do nothing
+  protected void deathAction() { 
+    int dropTex = -1;
+    double rand = Math.random();
+    for (int drop = 0; drop < drops.length ; drop++){
+      if (rand < rates[drop]){
+        dropTex = drops[drop];
+        break;
+      }
+    }
+    
+    TestDisplay.addTestData("rand = " + rand);
+    if (dropTex == TEX.SHELL && !altWeaponDrops) dropTex = -1;
+    TestDisplay.addTestData("dropTex = " + dropTex);
+    if (dropTex != -1) Engine.getGameContainer().addGO(new Item(ID.getNewId(), dropTex, getX(), getY()));
   }
 }
