@@ -18,13 +18,11 @@ import java.util.List;
 public class Enemy extends Living {
   protected int pointsWorth = 100;
   protected static final int BASE_DAMAGE = 2; // damage dealt by contact, not projectiles
-  protected static boolean altWeaponDrops;
   protected int[] drops;
   protected float[] rates;
   
   public Enemy(int objId, int startLives, int startHealth, int texId, float x, float y, Point.Float speed) {
     super(objId, startLives, startHealth, texId, x, y, speed);
-    altWeaponDrops = false;
     drops = new int[] { TEX.HEALTH_ORB, TEX.SHELL };
     rates = new float[] { 0.3f, 0.6f };
   }
@@ -36,7 +34,6 @@ public class Enemy extends Living {
   @Override
   public void resetAll(){
       super.resetAll();
-      altWeaponDrops = false;
   }
   
   @Override
@@ -137,7 +134,25 @@ public class Enemy extends Living {
   public void setPointsWorth(int to) { pointsWorth = to; }
   
   public static int getBaseDamage() { return BASE_DAMAGE; }
-  public static void alternateWeaponsDrop() { altWeaponDrops = true; }
+  
+  /**
+   * Changes the drops for the enemy to allow custom drops on specific enemies
+   * 
+   * Drops are the TEX number from enumerations, while rates refer to the rate
+   * escalating to 1.0 for the items.  For example if rates are {0.3, 0.6}
+   * then the first item  will drop if the random value is between 0-.2999, the 
+   * second item will drop if the value is between .3-.6, and any value higher
+   * will have no drop.
+   * 
+   * @param newDrops new array of drop TEX integer values
+   * @param newRates new array of rates in float for drops
+   */
+  public void changeDrop(int[] newDrops, float[] newRates){
+    if(newDrops.length == newRates.length){
+        drops = newDrops;
+        rates = newRates;
+    }
+  }
 
   @Override
   protected void deathAction() { 
@@ -151,7 +166,7 @@ public class Enemy extends Living {
     }
     
     TestDisplay.addTestData("rand = " + rand);
-    if (dropTex == TEX.SHELL && !altWeaponDrops) dropTex = -1;
+    if (dropTex == TEX.SHELL && !Engine.ammoCanDrop()) dropTex = -1;
     TestDisplay.addTestData("dropTex = " + dropTex);
     if (dropTex != -1) Engine.getGameContainer().addGO(new Item(ID.getNewId(), dropTex, getX(), getY()));
   }
