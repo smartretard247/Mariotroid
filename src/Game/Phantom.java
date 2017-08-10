@@ -22,8 +22,8 @@ public class Phantom extends Enemy {
     super(objId, startLives, startHealth, texId, x, y, speed);
     pointsWorth = points;
     fireTimer.setRepeats(false);
-    drops = new int[] { TEX.SHELL };
-    rates = new float[] { 1.0f };
+    drops = new int[] { TEX.HEALTH_ORB, TEX.SHELL };
+    rates = new float[] { 0.4f, 0.8f };
 //    weight = 0; // comment this line if phantom should be subject to gravity
   }
   
@@ -126,19 +126,4 @@ public class Phantom extends Enemy {
   }
   
   public boolean didRecentlyFire() { return fireTimer.isRunning(); }
-  
-  @Override
-  protected void deathAction() { 
-    int dropTex = -1;
-    double rand = Math.random();
-    for (int drop = 0; drop < drops.length ; drop++){
-      if (rand < rates[drop]){
-          dropTex = drops[drop];
-          break;
-        }
-    }
-    TestDisplay.addTestData("rand = " + rand);
-    TestDisplay.addTestData("dropTex = " + dropTex);
-    if (dropTex != -1) Engine.getGameContainer().addGO(new Item(ID.getNewId(), dropTex, getX(), getY()));
-  }
 }
