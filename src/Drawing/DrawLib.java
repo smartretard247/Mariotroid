@@ -65,6 +65,7 @@ public class DrawLib {
     textureIdMap.put(TEX.BOX, "/res/box.png");
     //textureIdMap.put(TEX.TEXT_BOX, "/res/text_box.png");
     textureIdMap.put(TEX.PHANTOM, "/res/phantom.png");
+    textureIdMap.put(TEX.WEAPON_PICKUP, "/res/hud_shell.png"); // Until new sprite made
     
     // load custom font
     String fontName = "/res/spac3.ttf";
