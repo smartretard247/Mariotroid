@@ -58,6 +58,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private static final Timer MESSAGE_TIMER = new Timer(4000, null);
   private static final LinkedList<String> CONVERSATION = new LinkedList<>();
   private static long score = 0;
+  private static boolean ammoDrops = false;
   private DrawLib drawLib;
   private static GAME_MODE gameMode = GAME_MODE.INTRO;
   private START_MENU_OPTION startMenuSelection = START_MENU_OPTION.START_GAME;
@@ -88,6 +89,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public static long getScore() { return score; }
   public static void resetScore() { score = 0; }
   public static void addScore(int points) { score += points; }
+  public static void setAmmoDrop(boolean bool) { ammoDrops = bool; }
+  public static boolean ammoCanDrop() { return ammoDrops; }
   public static void setGameMode(GAME_MODE mode) { Engine.gameMode = mode; }
   public static int getFrameNumber() { return frameNumber; }
   public static boolean isSoundEnabled() { return soundEnabled; }
@@ -199,6 +202,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         GAME.addGO(new FlyingBox(ID.FLYING_BOX_2, TEX.BOX, 8810, 960-boxHeight));
         GAME.addGO(new FlyingBox(ID.FLYING_BOX_3, TEX.BOX, 8810, 960));
         keyHolder = (Enemy)GAME.getGO(ID.PHANTOM);
+        ((Phantom)GAME.getGO(ID.PHANTOM)).changeDrop(new int[]{TEX.WEAPON_PICKUP}, new float[]{1.0f});
         break;
       case 2:// setup level 2, only add level 2 game objects to this map
         GAME.addGO(new Enemy(ID.ENEMY_1, 1, 1, TEX.ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
@@ -254,6 +258,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     TestDisplay.resetLogWindow();
     hero.setName("Hero");
     Engine.setConversation(new String[] { hero.getName() + ": where am I?", "Could this be a dream?", "I'd better go take a look around." });
+    setAmmoDrop(false);
   }
   
   /**
@@ -1386,9 +1391,4 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     if(SOUND_EFFECT.volume == SOUND_EFFECT.Volume.MUTE) SOUND_EFFECT.THEME.stop();
     else { SOUND_EFFECT.THEME.playLoop(); }
   }
-  
-  /**
-   * Enables enemy ammo drop
-   */
-  public static void allowAmmoDrop() { Enemy.alternateWeaponsDrop(); }
 }
