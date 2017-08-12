@@ -1,11 +1,9 @@
 package Game;
 
 import Drawing.DrawLib;
-import Enumerations.TEX;
 import Main.PhysicsEngine;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**

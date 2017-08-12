@@ -1,6 +1,7 @@
 package Drawing;
 
 import Enumerations.TEX;
+import Test.TestDisplay;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLException;
@@ -216,5 +217,24 @@ public class DrawLib {
               viewport, 0, 
               wcoord, 0);
     return new Point.Float((float)wcoord[0], (float)wcoord[1]);
+  }
+  
+  /**
+   * Generate texture Id from given ids (drops) at given rate (rates).
+   * @param drops
+   * @param rates
+   * @return 
+   */
+  public static int generateDropTex(int[] drops, float[] rates) {
+    int dropTex = -1;
+    double rand = Math.random();
+    TestDisplay.addTestData("rand = " + rand);
+    for (int drop = 0; drop < drops.length ; drop++){
+      if (rand < rates[drop]){
+        dropTex = drops[drop];
+        break;
+      }
+    }
+    return dropTex;
   }
 }

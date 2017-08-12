@@ -202,7 +202,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         GAME.addGO(new FlyingBox(ID.FLYING_BOX_2, TEX.BOX, 8810, 960-boxHeight));
         GAME.addGO(new FlyingBox(ID.FLYING_BOX_3, TEX.BOX, 8810, 960));
         keyHolder = (Enemy)GAME.getGO(ID.PHANTOM);
-        ((Phantom)GAME.getGO(ID.PHANTOM)).changeDrop(new int[]{TEX.WEAPON_PICKUP}, new float[]{1.0f});
+        ((Phantom)GAME.getGO(ID.PHANTOM)).changeDrop(new int[]{ TEX.WEAPON_PICKUP }, new float[]{ 1.0f });
         break;
       case 2:// setup level 2, only add level 2 game objects to this map
         GAME.addGO(new Enemy(ID.ENEMY_1, 1, 1, TEX.ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));

@@ -2,6 +2,7 @@ package Game;
 
 import Enumerations.ID;
 import Enumerations.TEX;
+import Drawing.DrawLib;
 import Main.Engine;
 import Main.GameOverException;
 import Main.PhysicsEngine;
@@ -15,16 +16,14 @@ import java.util.List;
  *
  * @author Jeezy
  */
-public class Enemy extends Living {
+public class Enemy extends Living implements Drops {
   protected int pointsWorth = 100;
   protected static final int BASE_DAMAGE = 2; // damage dealt by contact, not projectiles
-  protected int[] drops;
-  protected float[] rates;
+  protected int dropTex;
   
   public Enemy(int objId, int startLives, int startHealth, int texId, float x, float y, Point.Float speed) {
     super(objId, startLives, startHealth, texId, x, y, speed);
-    drops = new int[] { TEX.HEALTH_ORB, TEX.SHELL };
-    rates = new float[] { 0.3f, 0.6f };
+    dropTex = DrawLib.generateDropTex(new int[] { TEX.HEALTH_ORB, TEX.SHELL }, new float[] { 0.3f, 0.6f });
   }
   
   public Enemy() {
@@ -135,6 +134,11 @@ public class Enemy extends Living {
   
   public static int getBaseDamage() { return BASE_DAMAGE; }
   
+  @Override
+  protected void deathAction() { 
+    drop();
+  }
+  
   /**
    * Changes the drops for the enemy to allow custom drops on specific enemies
    * 
@@ -144,28 +148,20 @@ public class Enemy extends Living {
    * second item will drop if the value is between .3-.6, and any value higher
    * will have no drop.
    * 
-   * @param newDrops new array of drop TEX integer values
-   * @param newRates new array of rates in float for drops
+   * @param drops new array of drop TEX integer values
+   * @param rates new array of rates in float for drops
    */
-  public void changeDrop(int[] newDrops, float[] newRates){
-    if(newDrops.length == newRates.length){
-        drops = newDrops;
-        rates = newRates;
-    }
+  public void changeDrop(int[] drops, float[] rates) {
+    dropTex = DrawLib.generateDropTex(drops, rates);
   }
 
+  /**
+   * Implementation of interface "Drops".  dropTex should already be set, this function simply
+   * drops the texture ID to current location.
+   */
   @Override
-  protected void deathAction() { 
-    int dropTex = -1;
-    double rand = Math.random();
-    for (int drop = 0; drop < drops.length ; drop++){
-      if (rand < rates[drop]){
-        dropTex = drops[drop];
-        break;
-      }
-    }
-    
-    TestDisplay.addTestData("rand = " + rand);
+  public void drop() {
+    //TestDisplay.addTestData("rand = " + rand);
     if (dropTex == TEX.SHELL && !Engine.ammoCanDrop()) dropTex = -1;
     TestDisplay.addTestData("dropTex = " + dropTex);
     if (dropTex != -1) Engine.getGameContainer().addGO(new Item(ID.getNewId(), dropTex, getX(), getY()));
