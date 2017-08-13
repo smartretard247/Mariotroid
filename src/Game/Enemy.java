@@ -23,7 +23,7 @@ public class Enemy extends Living implements Drops {
   
   public Enemy(int objId, int startLives, int startHealth, int texId, float x, float y, Point.Float speed) {
     super(objId, startLives, startHealth, texId, x, y, speed);
-    dropTex = DrawLib.generateDropTex(new int[] { TEX.HEALTH_ORB, TEX.SHELL }, new float[] { 0.3f, 0.6f });
+    dropTex = DrawLib.generateDropTex(new int[] { TEX.HEALTH_ORB, TEX.AMMO_ORB }, new float[] { 0.3f, 0.6f });
   }
   
   public Enemy() {
@@ -162,7 +162,7 @@ public class Enemy extends Living implements Drops {
   @Override
   public void drop() {
     //TestDisplay.addTestData("rand = " + rand);
-    if (dropTex == TEX.SHELL && !Engine.ammoCanDrop()) dropTex = -1;
+    if (dropTex == TEX.AMMO_ORB && !Engine.ammoCanDrop()) dropTex = -1;
     TestDisplay.addTestData("dropTex = " + dropTex);
     if (dropTex != -1) Engine.getGameContainer().addGO(new Item(ID.getNewId(), dropTex, getX(), getY()));
   }

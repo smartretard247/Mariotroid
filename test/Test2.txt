@@ -1,0 +1,160 @@
+rand = 0.19930336573108687
+rand = 0.7570225713672606
+rand = 0.7715600750577833
+rand = 0.13071693762387682
+rand = 0.17623596499401828
+rand = 0.5808097309281269
+Phantom fire to: (11010.0, 490.0)
+Phantom fire to: (11010.5, 190.0)
+Brick broke free!
+Phantom fire to: (10360.5, 190.0)
+Got jetpack!
+Phantom fire to: (9710.5, 190.0)
+Phantom fire to: (9060.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Phantom fire to: (9560.5, 190.0)
+Phantom fire to: (10210.5, 190.0)
+Picked up a health orb.
+Hero HP: 10
+Health orb: 1 / Hero HP: 10
+Phantom fire to: (10860.5, 190.0)
+Phantom fire to: (11160.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Phantom fire to: (10510.5, 190.0)
+Phantom fire to: (9860.5, 190.0)
+Phantom fire to: (9210.5, 190.0)
+Phantom fire to: (9410.5, 190.0)
+Phantom fire to: (10060.5, 190.0)
+Phantom fire to: (10710.5, 190.0)
+Phantom fire to: (11310.5, 190.0)
+Phantom fire to: (10660.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Phantom fire to: (10010.5, 190.0)
+Phantom fire to: (9360.5, 190.0)
+Got armor!
+Phantom fire to: (9260.5, 190.0)
+Phantom fire to: (9910.5, 190.0)
+Phantom fire to: (10560.5, 190.0)
+Phantom fire to: (11210.5, 190.0)
+Phantom fire to: (10810.5, 190.0)
+Phantom fire to: (10160.5, 190.0)
+Phantom fire to: (9510.5, 190.0)
+Phantom fire to: (10010.633, 190.0)
+Phantom fire to: (10660.633, 190.0)
+Phantom fire to: (11310.633, 190.0)
+Phantom fire to: (10710.5, 190.0)
+Phantom fire to: (10060.5, 190.0)
+Phantom fire to: (9460.633, 190.0)
+Phantom fire to: (10120.633, 190.0)
+Phantom fire to: (10770.633, 190.0)
+Phantom fire to: (11250.5, 190.0)
+Phantom fire to: (10600.5, 190.0)
+Phantom fire to: (9950.5, 190.0)
+Phantom fire to: (9570.633, 190.0)
+Phantom fire to: (10220.633, 190.0)
+Phantom fire to: (10870.633, 190.0)
+rand = 0.5574231237370199
+rand = 0.049814585454757365
+rand = 0.9111545448597382
+rand = 0.5768315989515169
+rand = 0.36438817329164475
+rand = 0.983614180728871
+Phantom fire to: (11010.0, 490.0)
+Phantom fire to: (11010.5, 190.0)
+Brick broke free!
+Got jetpack!
+Phantom fire to: (10360.5, 190.0)
+Phantom fire to: (9710.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2031
+Got Ammo!
+Phantom fire to: (9060.5, 190.0)
+Phantom fire to: (9560.5, 190.0)
+Phantom fire to: (10210.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Phantom fire to: (10860.5, 190.0)
+Picked up a health orb.
+Hero HP: 10
+Health orb: 1 / Hero HP: 10
+Phantom fire to: (11160.5, 190.0)
+Phantom fire to: (10510.5, 190.0)
+Phantom fire to: (9860.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Phantom fire to: (9210.5, 190.0)
+Got armor!
+Phantom fire to: (9410.5, 190.0)
+Phantom fire to: (10060.5, 190.0)
+Phantom fire to: (10710.5, 190.0)
+Phantom fire to: (11310.5, 190.0)
+Phantom fire to: (10660.5, 190.0)
+Phantom fire to: (10000.5, 190.0)
+Phantom fire to: (9350.5, 190.0)
+Phantom fire to: (9945.04, 190.0)
+Phantom fire to: (10595.04, 190.0)
+Boss HP: 5
+Boss damage: 1 / Boss HP: 4
+Boss HP: 4
+Boss damage: 1 / Boss HP: 3
+Boss HP: 3
+Boss damage: 1 / Boss HP: 2
+Boss HP: 2
+Boss damage: 1 / Boss HP: 1
+Phantom fire to: (11245.04, 190.0)
+Phantom fire to: (10770.5, 190.0)
+Boss HP: 1
+Boss destroyed
+dropTex = 2030
+Warp activated.
+Hero hit by projectile
+Hero HP: 10
+Hero damage: 2 / Hero HP: 8
+Got missles!
+rand = 0.8457231026806982
+rand = 0.12014546274491444
+rand = 0.19308253055319857
+rand = 0.7207824179234262
+rand = 0.2680776380420109
+Boss fire to: (310.0, 585.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Boss fire to: (1930.0, 441.5)
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Picked up a health orb.
+Hero HP: 8
+Health orb: 1 / Hero HP: 9
+Boss fire to: (1170.0, 821.5)
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Picked up a health orb.
+Hero HP: 9
+Health orb: 1 / Hero HP: 10
+Boss fire to: (920.5, 451.5)
+Boss fire to: (2180.5, 581.5)
+Boss HP: 20
+Boss damage: 5 / Boss HP: 15
+Boss HP: 15
+Boss damage: 5 / Boss HP: 10
+Boss HP: 10
+Boss damage: 5 / Boss HP: 5
+Boss HP: 5
+Boss destroyed
+dropTex = 2032
+Warp activated.
+Picked up a health orb.
+Hero HP: 10
+Health orb: 3 / Hero HP: 10

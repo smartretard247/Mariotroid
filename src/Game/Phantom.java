@@ -23,7 +23,8 @@ public class Phantom extends Enemy {
     super(objId, startLives, startHealth, texId, x, y, speed);
     pointsWorth = points;
     fireTimer.setRepeats(false);
-    dropTex = DrawLib.generateDropTex(new int[] { TEX.HEALTH_ORB, TEX.SHELL }, new float[] { 0.4f, 0.8f });
+    dropTex = DrawLib.generateDropTex(new int[] { TEX.HEALTH_ORB, TEX.AMMO_ORB, TEX.BIG_HEALTH_ORB, TEX.BIG_AMMO_ORB },
+                                      new float[] { 0.25f, 0.5f, 0.75f, 1.0f });
   }
   
   public Phantom() {
