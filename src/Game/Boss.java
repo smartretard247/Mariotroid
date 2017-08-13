@@ -26,7 +26,8 @@ public class Boss extends Enemy {
     pointsWorth = points;
     fireTimer.setRepeats(false);
     weight = 0;
-    dropTex = DrawLib.generateDropTex(new int[] { TEX.HEALTH_ORB, TEX.SHELL }, new float[] { 0.5f, 1.0f });
+    dropTex = DrawLib.generateDropTex(new int[] { TEX.BIG_HEALTH_ORB, TEX.BIG_AMMO_ORB },
+                                      new float[] { 0.5f, 1.0f });
   }
   
   public Boss() {

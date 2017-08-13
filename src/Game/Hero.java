@@ -104,6 +104,13 @@ public class Hero extends Living {
         case TEX.HEALTH_ORB:
           Engine.setStatusMessage("Picked up a health orb.");
           if(Engine.isDebugging()) TestDisplay.addTestData("Hero HP: " + getHealth());
+          addHealth(1);
+          if(Engine.isDebugging()) TestDisplay.addTestData("Health orb: " + 1 + " / Hero HP: " + getHealth());
+          toRemove.add(objId);
+          break;
+        case TEX.BIG_HEALTH_ORB:
+          Engine.setStatusMessage("Picked up a health orb.");
+          if(Engine.isDebugging()) TestDisplay.addTestData("Hero HP: " + getHealth());
           addHealth(3);
           if(Engine.isDebugging()) TestDisplay.addTestData("Health orb: " + 3 + " / Hero HP: " + getHealth());
           toRemove.add(objId);
@@ -112,8 +119,12 @@ public class Hero extends Living {
           pickupSecondaryWeapon();
           toRemove.add(objId);
           break;
-        case TEX.SHELL:
-          pickupAmmo();
+        case TEX.AMMO_ORB:
+          pickupAmmo(1);
+          toRemove.add(objId);
+          break;
+        case TEX.BIG_AMMO_ORB:
+          pickupAmmo(3);
           toRemove.add(objId);
           break;
         case TEX.BOX:
@@ -262,10 +273,10 @@ public class Hero extends Living {
     Engine.addScore(1000);
     Engine.setAmmoDrop(true);
   }
-  public void pickupAmmo() {
+  public void pickupAmmo(int qty) {
       Engine.setStatusMessage("Got Ammo!");
       Engine.addScore(200);
-      secondaryAmmoCount += 5;
+      secondaryAmmoCount += qty;
   }
   public void dropSecondaryWeapon() { hasSecondaryWeapon = false; }
   

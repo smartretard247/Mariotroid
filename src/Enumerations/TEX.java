@@ -39,4 +39,7 @@ public final class TEX {
   public static final int TEXT_BOX = 2028;
   public static final int PHANTOM = 2029;
   public static final int WEAPON_PICKUP = 2030;
+  public static final int AMMO_ORB = 2031;
+  public static final int BIG_HEALTH_ORB = 2032;
+  public static final int BIG_AMMO_ORB = 2033;
 }

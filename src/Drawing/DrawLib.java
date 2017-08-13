@@ -60,13 +60,16 @@ public class DrawLib {
     textureIdMap.put(TEX.ARMOR, "/res/armor.png");
     textureIdMap.put(TEX.BACKGROUND_1, "/res/background_1.jpg");
     textureIdMap.put(TEX.BACKGROUND_2, "/res/background_2.jpg");
-    textureIdMap.put(TEX.HEALTH_ORB, "/res/health_orb.png");
+    textureIdMap.put(TEX.HEALTH_ORB, "/res/small_health.png");
     textureIdMap.put(TEX.TRANSPARENT, "/res/transparent.png");
     textureIdMap.put(TEX.SWITCH, "/res/switch.png");
     textureIdMap.put(TEX.BOX, "/res/box.png");
     //textureIdMap.put(TEX.TEXT_BOX, "/res/text_box.png");
     textureIdMap.put(TEX.PHANTOM, "/res/phantom.png");
-    textureIdMap.put(TEX.WEAPON_PICKUP, "/res/hud_shell.png"); // Until new sprite made
+    textureIdMap.put(TEX.WEAPON_PICKUP, "/res/weapon_pickup.png");
+    textureIdMap.put(TEX.AMMO_ORB, "/res/small_ammo.png");
+    textureIdMap.put(TEX.BIG_HEALTH_ORB, "/res/big_health.png");
+    textureIdMap.put(TEX.BIG_AMMO_ORB, "/res/big_ammo.png");
     
     // load custom font
     String fontName = "/res/spac3.ttf";
