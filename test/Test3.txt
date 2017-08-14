@@ -1,0 +1,51 @@
+rand = 0.3322602514712387
+rand = 0.2562911654285671
+rand = 0.3951759524173919
+rand = 0.0181058769653053
+rand = 0.2145455375653016
+rand = 0.06085459946845839
+Phantom fire to: (11010.0, 490.0)
+Phantom fire to: (11000.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Phantom fire to: (10350.5, 190.0)
+Phantom fire to: (9700.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Picked up a health orb.
+Hero HP: 10
+Health orb: 1 / Hero HP: 10
+Phantom fire to: (9050.5, 190.0)
+Phantom fire to: (9570.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Phantom fire to: (10220.5, 190.0)
+Phantom fire to: (10870.5, 190.0)
+Phantom fire to: (11150.5, 190.0)
+Phantom fire to: (10500.5, 190.0)
+Phantom fire to: (9850.5, 190.0)
+Phantom fire to: (9200.5, 190.0)
+Phantom fire to: (9420.5, 190.0)
+Phantom fire to: (10070.5, 190.0)
+Phantom fire to: (10720.5, 190.0)
+Phantom fire to: (11300.5, 190.0)
+Phantom fire to: (10650.5, 190.0)
+Hero hit by projectile
+Hero HP: 10
+Hero damage: 5 / Hero HP: 5
+Boss HP: 5
+Boss damage: 1 / Boss HP: 4
+Boss HP: 4
+Boss damage: 1 / Boss HP: 3
+Boss HP: 3
+Boss damage: 1 / Boss HP: 2
+Boss HP: 2
+Boss damage: 1 / Boss HP: 1
+Boss HP: 1
+Boss destroyed
+dropTex = 2030
+Warp activated.
+Got missles!

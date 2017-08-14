@@ -198,9 +198,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         GAME.addGO(new Door(ID.DOOR, 11100, 163, 75, 0));
         int boxHeight = DrawLib.getTexture(TEX.BOX).getHeight();
         GAME.addGO(new FallingBox(ID.FALLING_BOX, TEX.BOX, 760, 960));
-        GAME.addGO(new FlyingBox(ID.FLYING_BOX, TEX.BOX, 8810, 960-boxHeight*2));
-        GAME.addGO(new FlyingBox(ID.FLYING_BOX_2, TEX.BOX, 8810, 960-boxHeight));
-        GAME.addGO(new FlyingBox(ID.FLYING_BOX_3, TEX.BOX, 8810, 960));
+        GAME.addGO(new CrumblingBox(ID.FLYING_BOX, TEX.BOX, 8810, 960-boxHeight*2));
+        GAME.addGO(new CrumblingBox(ID.FLYING_BOX_2, TEX.BOX, 8810, 960-boxHeight));
+        GAME.addGO(new CrumblingBox(ID.FLYING_BOX_3, TEX.BOX, 8810, 960));
         keyHolder = (Enemy)GAME.getGO(ID.PHANTOM);
         ((Phantom)GAME.getGO(ID.PHANTOM)).changeDrop(new int[]{ TEX.WEAPON_PICKUP }, new float[]{ 1.0f });
         break;

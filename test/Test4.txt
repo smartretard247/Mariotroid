@@ -1,0 +1,42 @@
+rand = 0.30527282250903753
+rand = 0.24102175407727944
+rand = 0.40962407258483935
+rand = 0.3321904178814139
+rand = 0.11662011313776277
+rand = 0.6597464784998633
+Phantom fire to: (11010.0, 490.0)
+Phantom fire to: (11010.5, 190.0)
+Phantom fire to: (10360.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Phantom fire to: (9710.5, 190.0)
+Phantom fire to: (9060.5, 190.0)
+Phantom fire to: (9560.5, 190.0)
+Phantom fire to: (10210.5, 190.0)
+Phantom fire to: (10860.5, 190.0)
+Phantom fire to: (11160.5, 190.0)
+Phantom fire to: (10510.5, 190.0)
+Phantom fire to: (9860.5, 190.0)
+Phantom fire to: (9210.5, 190.0)
+Boss HP: 5
+Boss damage: 1 / Boss HP: 4
+Boss HP: 4
+Boss damage: 1 / Boss HP: 3
+Phantom fire to: (9410.5, 190.0)
+Boss HP: 3
+Boss damage: 1 / Boss HP: 2
+Boss HP: 2
+Boss damage: 1 / Boss HP: 1
+Boss HP: 1
+Boss destroyed
+dropTex = 2030
+Warp activated.
+Got missles!
+rand = 0.8648881326299795
+rand = 0.40404606879725213
+rand = 0.929256819885407
+rand = 0.7027236213053819
+rand = 0.8552197467229505
+Boss fire to: (310.0, 585.0)
+Boss fire to: (1930.0, 441.5)
