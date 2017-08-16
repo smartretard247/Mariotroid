@@ -65,7 +65,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private PAUSE_MENU_OPTION pauseMenuSelection = PAUSE_MENU_OPTION.CONTINUE;
   private boolean won = false;
   private boolean showControls = true;
-  private boolean showDecor = true;
+  private boolean showDecor = false;
   private boolean swapBackground = false;
   private static boolean soundEnabled = true;
   private final TestDisplay testDisplay = new TestDisplay();
@@ -73,7 +73,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private final PhysicsEngine phy = new PhysicsEngine();
   private static final ObjectContainer GAME = new ObjectContainer();
   private final LinkedBlockingQueue<NextProjectile> qProjectiles = new LinkedBlockingQueue<>();
-  private final int TOTAL_LEVELS = 2;
+  private final int TOTAL_LEVELS = 5;
   private int currLevel = 1;
   private Hero hero;
   private Enemy keyHolder;
@@ -189,7 +189,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         h.resetAll();
         resetScore();
         hero.setGodMode(false);
-        GAME.addGO(new Item(ID.JETPACK, TEX.JETPACK, 300, 800));
         GAME.addGO(new Item(ID.ARMOR, TEX.ARMOR, 5660, 198));
         GAME.addGO(new Enemy(ID.ENEMY_1, 1, 1, TEX.ENEMY_BASIC, 2000, 800, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
         GAME.addGO(new Enemy(ID.ENEMY_2, 1, 1, TEX.ENEMY_BASIC, 4000, 800, new Point.Float(5,0)));
@@ -205,6 +204,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         ((Phantom)GAME.getGO(ID.PHANTOM)).changeDrop(new int[]{ TEX.WEAPON_PICKUP }, new float[]{ 1.0f });
         break;
       case 2:// setup level 2, only add level 2 game objects to this map
+        GAME.addGO(new Item(ID.JETPACK, TEX.JETPACK, 11300, 800));
         GAME.addGO(new Enemy(ID.ENEMY_1, 1, 1, TEX.ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
         GAME.addGO(new Enemy(ID.ENEMY_2, 1, 1, TEX.ENEMY_BASIC, 4000, 950, new Point.Float(5,0)));
         GAME.addGO(new Enemy(ID.ENEMY_3, 1, 1, TEX.ENEMY_BASIC, 8075, 950, new Point.Float(5,0)));
@@ -214,7 +214,14 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         b.setMaxX(2570);
         keyHolder = (Enemy)GAME.getGO(ID.CALAMITY);
         GAME.addGO(new Door(ID.DOOR, 300, 987, -60, 70, true));
-        GAME.addGO(new GravitySwitch(ID.SWITCH, TEX.SWITCH, 5366, 702));
+        //GAME.addGO(new GravitySwitch(ID.SWITCH, TEX.SWITCH, 5366, 702));
+        break;
+      case 3:
+        break;
+      case 4:
+        break;
+      case 5:
+        GAME.addGO(new GravitySwitch(ID.SWITCH, TEX.SWITCH, 200, 160));
         break;
       default: System.out.println("Unknown level number while setting up visibles."); break;
     }
@@ -229,6 +236,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     switch(num) {
       case 1: fileName = "/res/layer_collision_1.png"; break;
       case 2: fileName = "/res/layer_collision_2.png"; break;
+      case 3: fileName = "/res/layer_collision_3.png"; break;
+      case 4: fileName = "/res/layer_collision_4.png"; break;
+      case 5: fileName = "/res/layer_collision_5.png"; break;
       default: System.out.println("Unknown level number while loading level collisions."); break;
     }
     
@@ -251,7 +261,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void loadDefaults() {
     currLevel = 1; // no need to adjust level number on any further cases
     swapBackground = false;
-    showDecor = true;
+    showDecor = false;
     won = false;
     scene.resetAll(); // do not change scene in other cases
     SOUND_EFFECT.THEME.playLoop();
