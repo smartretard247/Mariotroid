@@ -1,0 +1,169 @@
+rand = 0.5633541815036208
+rand = 0.23181857591043464
+rand = 0.8805871307820208
+rand = 0.2439403128242582
+rand = 0.8570689284803402
+rand = 0.14266974595768567
+rand = 0.6502007121028778
+rand = 0.5094423128006097
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Picked up a health orb.
+Hero HP: 10
+Health orb: 1 / Hero HP: 10
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Hero hit by enemy
+Hero HP: 10
+Hero damage: 2 / Hero HP: 8
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Picked up a health orb.
+Hero HP: 8
+Health orb: 1 / Hero HP: 9
+Hero hit by enemy
+Hero HP: 9
+Hero damage: 2 / Hero HP: 7
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Picked up a health orb.
+Hero HP: 7
+Health orb: 1 / Hero HP: 8
+Hero hit by enemy
+Hero HP: 8
+Hero damage: 2 / Hero HP: 6
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Warp activated.
+rand = 0.28843412220391196
+rand = 0.5365578583603966
+rand = 0.6076740388979066
+rand = 0.8742063736924618
+rand = 0.6432696521666194
+rand = 0.46452922920124795
+rand = 0.06543724636703752
+rand = 0.46478992865920954
+rand = 0.18507908462886302
+rand = 0.11984968919963779
+rand = 0.45073483290490657
+rand = 0.8468569234489267
+Phantom fire to: (1140.0, 490.0)
+Phantom fire to: (490.0, 190.0)
+Phantom fire to: (501.5, 190.0)
+Got jetpack!
+Phantom fire to: (1151.5, 190.0)
+Phantom fire to: (1801.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Picked up a health orb.
+Hero HP: 6
+Health orb: 1 / Hero HP: 7
+Phantom fire to: (2451.5, 190.0)
+Phantom fire to: (2315.5, 190.0)
+Phantom fire to: (1665.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Phantom fire to: (1015.5, 190.0)
+Picked up a health orb.
+Hero HP: 7
+Health orb: 1 / Hero HP: 8
+Phantom fire to: (365.5, 190.0)
+Phantom fire to: (621.5, 190.0)
+Phantom fire to: (1271.5, 190.0)
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Phantom fire to: (1921.5, 190.0)
+Phantom fire to: (2571.5, 190.0)
+Phantom fire to: (2195.5, 190.0)
+Boss HP: 5
+Boss damage: 1 / Boss HP: 4
+Boss HP: 4
+Boss damage: 1 / Boss HP: 3
+Boss HP: 3
+Boss damage: 1 / Boss HP: 2
+Boss HP: 2
+Boss damage: 1 / Boss HP: 1
+Phantom fire to: (1545.5, 190.0)
+Boss HP: 1
+Boss destroyed
+dropTex = 2030
+Warp activated.
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Got missles!
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2031
+Got Ammo!
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Picked up a health orb.
+Hero HP: 8
+Health orb: 1 / Hero HP: 9
+--GOD MODE ON--
+--GOD MODE OFF--
+--LEVEL SKIPPED--
+Got armor!
+rand = 0.5896143274795557
+rand = 0.6402176958292333
+--LEVEL SKIPPED--
+Boss fire to: (315.5, 585.0)
+Hero hit by projectile
+Hero HP: 9
+Hero damage: 2 / Hero HP: 7
+Boss HP: 20
+Boss damage: 1 / Boss HP: 19
+Boss HP: 19
+Boss damage: 1 / Boss HP: 18
+Boss HP: 18
+Boss damage: 1 / Boss HP: 17
+Boss HP: 17
+Boss damage: 1 / Boss HP: 16
+Boss HP: 16
+Boss damage: 1 / Boss HP: 15
+Boss HP: 15
+Boss damage: 1 / Boss HP: 14
+Boss fire to: (305.5, 1288.5)
+Boss HP: 14
+Boss damage: 1 / Boss HP: 13
+Boss HP: 13
+Boss damage: 1 / Boss HP: 12
+Boss HP: 12
+Boss damage: 1 / Boss HP: 11
+Boss HP: 11
+Boss damage: 1 / Boss HP: 10
+Boss HP: 10
+Boss damage: 5 / Boss HP: 5
+Boss HP: 5
+Boss destroyed
+dropTex = 2033
+Warp activated.
+Got Ammo!

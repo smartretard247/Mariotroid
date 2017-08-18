@@ -189,39 +189,52 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         h.resetAll();
         resetScore();
         hero.setGodMode(false);
-        GAME.addGO(new Item(ID.ARMOR, TEX.ARMOR, 5660, 198));
-        GAME.addGO(new Enemy(ID.ENEMY_1, 1, 1, TEX.ENEMY_BASIC, 2000, 800, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
-        GAME.addGO(new Enemy(ID.ENEMY_2, 1, 1, TEX.ENEMY_BASIC, 4000, 800, new Point.Float(5,0)));
-        GAME.addGO(new Enemy(ID.ENEMY_3, 1, 1, TEX.ENEMY_BASIC, 8075, 240, new Point.Float(5,0)));
-        GAME.addGO(new Phantom(ID.PHANTOM, 1, 5, TEX.PHANTOM, 11000, 500, new Point.Float(10,0), 300));
+        Enemy enemy = new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 9000, 200, new Point.Float(-5,0));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 2000, 200, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 3000, 200, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 8000, 200, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 9000, 800, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 9300, 800, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 9600, 800, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 10000, 200, new Point.Float(5,0)));
+        GAME.addGO(enemy);
         GAME.addGO(new Door(ID.DOOR, 11100, 163, 75, 0));
-        int boxHeight = DrawLib.getTexture(TEX.BOX).getHeight();
-        GAME.addGO(new FallingBox(ID.FALLING_BOX, TEX.BOX, 760, 960));
-        GAME.addGO(new CrumblingBox(ID.FLYING_BOX, TEX.BOX, 8810, 960-boxHeight*2));
-        GAME.addGO(new CrumblingBox(ID.FLYING_BOX_2, TEX.BOX, 8810, 960-boxHeight));
-        GAME.addGO(new CrumblingBox(ID.FLYING_BOX_3, TEX.BOX, 8810, 960));
-        keyHolder = (Enemy)GAME.getGO(ID.PHANTOM);
-        ((Phantom)GAME.getGO(ID.PHANTOM)).changeDrop(new int[]{ TEX.WEAPON_PICKUP }, new float[]{ 1.0f });
+        keyHolder = enemy;
         break;
       case 2:// setup level 2, only add level 2 game objects to this map
         GAME.addGO(new Item(ID.JETPACK, TEX.JETPACK, 11300, 800));
-        GAME.addGO(new Enemy(ID.ENEMY_1, 1, 1, TEX.ENEMY_BASIC, 10000, 950, new Point.Float(5,0)));
-        GAME.addGO(new Enemy(ID.ENEMY_2, 1, 1, TEX.ENEMY_BASIC, 4000, 950, new Point.Float(5,0)));
-        GAME.addGO(new Enemy(ID.ENEMY_3, 1, 1, TEX.ENEMY_BASIC, 8075, 950, new Point.Float(5,0)));
-        GAME.addGO(new Boss(ID.CALAMITY, 1, 20, TEX.CALAMITY, 300, 575, new Point.Float(10,10), 750));
-        b = (Boss)GAME.getGO(ID.CALAMITY);
-        b.setMinX(0);
-        b.setMaxX(2570);
-        keyHolder = (Enemy)GAME.getGO(ID.CALAMITY);
-        GAME.addGO(new Door(ID.DOOR, 300, 987, -60, 70, true));
-        //GAME.addGO(new GravitySwitch(ID.SWITCH, TEX.SWITCH, 5366, 702));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 500, 200, new Point.Float(-5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 900, 200, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 1200, 200, new Point.Float(-5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 3000, 200, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 3500, 200, new Point.Float(-5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 8300, 200, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 8000, 200, new Point.Float(-5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 9000, 200, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 9500, 200, new Point.Float(-5,0)));
+        GAME.addGO(new Phantom(ID.PHANTOM, 1, 5, TEX.PHANTOM, 1150, 500, new Point.Float(-10,0), 300));
+        ((Phantom)GAME.getGO(ID.PHANTOM)).changeDrop(new int[]{ TEX.WEAPON_PICKUP }, new float[]{ 1.0f });
+        keyHolder = (Enemy)GAME.getGO(ID.PHANTOM);
+        GAME.addGO(new Door(ID.DOOR, 300, 163, 75, 0));
         break;
       case 3:
+        GAME.addGO(new Door(ID.DOOR, 11100, 780, 75, 0));
         break;
       case 4:
+        GAME.addGO(new Item(ID.ARMOR, TEX.ARMOR, 5740, 198));
+        GAME.addGO(new Door(ID.DOOR, 300, 987, -60, 70, true));
         break;
       case 5:
         GAME.addGO(new GravitySwitch(ID.SWITCH, TEX.SWITCH, 200, 160));
+        int boxHeight = DrawLib.getTexture(TEX.BOX).getHeight();
+        GAME.addGO(new CrumblingBox(ID.FLYING_BOX, TEX.BOX, 3400, 200));
+        GAME.addGO(new CrumblingBox(ID.FLYING_BOX_2, TEX.BOX, 3400, 200+boxHeight));
+        GAME.addGO(new Boss(ID.CALAMITY, 1, 20, TEX.CALAMITY, 10000, 575, new Point.Float(10,10), 750));
+        b = (Boss)GAME.getGO(ID.CALAMITY);
+        b.setMinX(8050);
+        b.setMaxX(11200);
+        keyHolder = (Enemy)GAME.getGO(ID.CALAMITY);
+        GAME.addGO(new Door(ID.DOOR, 11100, 163, 75, 0));
         break;
       default: System.out.println("Unknown level number while setting up visibles."); break;
     }
@@ -1140,7 +1153,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         toRemove.stream().forEach((id) -> { GAME.removeGO(id); });
         
         // check if keyholder died to unlock door
-        if(toRemove.contains(keyHolder.getObjectId())) GAME.activateDoor();
+        if(keyHolder != null){
+          if(toRemove.contains(keyHolder.getObjectId())) GAME.activateDoor();
+        }
         
         if(hero.getLives() == 0) { gameMode = GAME_MODE.DYING; } // check for game over
         break;
