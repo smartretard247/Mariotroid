@@ -109,7 +109,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     window.addWindowListener(new WindowAdapter(){
       @Override
       public void windowClosing(WindowEvent e){
-        if(debugging) TestDisplay.writeToFile();
+        //if(debugging) TestDisplay.writeToFile();
         window.dispose();
         System.exit(0);
       }
