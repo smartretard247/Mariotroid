@@ -236,8 +236,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case 5:
         GAME.addGO(new GravitySwitch(ID.SWITCH, TEX.SWITCH, 200, 160));
         int boxHeight = DrawLib.getTexture(TEX.BOX).getHeight();
-        GAME.addGO(new CrumblingBox(ID.FLYING_BOX, TEX.BOX, 3400, 200));
-        GAME.addGO(new CrumblingBox(ID.FLYING_BOX_2, TEX.BOX, 3400, 200+boxHeight));
+        GAME.addGO(new CrumblingBox(ID.getNewId(), TEX.BOX, 3400, 200));
+        GAME.addGO(new CrumblingBox(ID.getNewId(), TEX.BOX, 3400, 200+boxHeight));
         GAME.addGO(new Calamity(ID.KEY_HOLDER, 1, 20, TEX.CALAMITY, 10000, 575, new Point.Float(10,10), 750));
         b = (Calamity)GAME.getGO(ID.KEY_HOLDER);
         b.setMinX(8050);
@@ -343,6 +343,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     float y = scene.transY;
     float z = scene.transZ+scene.globalZ;
     if(!forBackgroundScene) {
+      gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
       if(hero.getX() > 600 && hero.getX() < 10500) {
         x = -hero.getX();
       } else if(hero.getX() >= 10500) {
@@ -378,7 +379,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   private void drawNormalGamePlay(GL2 gl) {
     drawBackground(gl);
     gl.glPushMatrix(); // save initial transform
-    gl.glScaled(scene.scaleX, scene.scaleY, scene.scaleZ); // set global scale
     translateScene(gl, false);
     refreshWorldWindow();
     detectInteractiveObject();
