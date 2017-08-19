@@ -236,7 +236,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
       case 5:
         GAME.addGO(new GravitySwitch(ID.getNewId(), TEX.SWITCH, 230, 135));
         GAME.addGO(new GravitySwitch(ID.getNewId(), TEX.SWITCH, 6272, 920));
-        GAME.getGO(ID.getLastId()).setFlipX(true);
+        GAME.getGO(ID.getLastId()).setFlipX(true); // this switch is upside down
         int boxHeight = DrawLib.getTexture(TEX.BOX).getHeight();
         GAME.addGO(new CrumblingBox(ID.getNewId(), TEX.BOX, 3400, 200));
         GAME.addGO(new CrumblingBox(ID.getNewId(), TEX.BOX, 3400, 200+boxHeight));
