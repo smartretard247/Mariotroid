@@ -1,0 +1,55 @@
+rand = 0.9830244052988925
+rand = 0.14839977146424732
+rand = 0.11880565828931966
+rand = 0.21099091452488972
+rand = 0.8373047723272842
+rand = 0.9733542430572263
+rand = 0.8001144821034534
+rand = 0.4362413114235707
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Picked up a health orb.
+Hero HP: 10
+Health orb: 1 / Hero HP: 10
+Hero hit by enemy
+Hero HP: 10
+Hero damage: 2 / Hero HP: 8
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Picked up a health orb.
+Hero HP: 8
+Health orb: 1 / Hero HP: 9
+Enemy HP: 1
+Enemy destroyed
+dropTex = 2024
+Picked up a health orb.
+Hero HP: 9
+Health orb: 1 / Hero HP: 10
+Hero hit by enemy
+Hero HP: 10
+Hero damage: 2 / Hero HP: 8
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Enemy HP: 1
+Enemy destroyed
+dropTex = -1
+Warp activated.
+rand = 0.009909322340853288
+rand = 0.13783149021986796
+rand = 0.3301131189439592
+rand = 0.08846767196062244
+rand = 0.8113628271826897
+Boss fire to: (310.0, 585.0)
+Boss fire to: (1940.0, 431.5)

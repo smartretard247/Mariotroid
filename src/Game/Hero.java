@@ -181,22 +181,21 @@ public class Hero extends Living {
             if(PhysicsEngine.gravityIsInverted()) doLand();
           }
           break;
+        case TEX.ENEMY_BASIC: // these are simple damage, from contact with enemy sprites
+        case TEX.PHANTOM:
+        case TEX.CALAMITY:
+          if(!wasRecentlyDamaged()) {
+            if(Engine.isDebugging()) TestDisplay.addTestData("Hero hit by enemy");
+            recentDamageTimer.start();
+            try {
+              loseHealth((int)(Enemy.getBaseDamage()*armor));
+            } catch (GameOverException ex) {
+              toRemove.add(this.getObjectId());
+            }
+          }
+          break;
         default: // then check for object ids to react to (like enemies)
           switch(objId) {
-            case ID.ENEMY_1: // these are simple damage, from contact with enemy sprites
-            case ID.ENEMY_2:
-            case ID.ENEMY_3:
-            case ID.CALAMITY:
-              if(!wasRecentlyDamaged()) {
-                if(Engine.isDebugging()) TestDisplay.addTestData("Hero hit by enemy");
-                recentDamageTimer.start();
-                try {
-                  loseHealth((int)(Enemy.getBaseDamage()*armor));
-                } catch (GameOverException ex) {
-                  toRemove.add(this.getObjectId());
-                }
-              }
-              break;
             case ID.ARMOR:
               Engine.setStatusMessage("Got armor!");
               Engine.addScore(275);
