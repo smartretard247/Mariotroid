@@ -18,7 +18,7 @@ public final class ID {
   public static final int ARMOR = 1007;
   public static final int DOOR = 1008;
   public static final int SHELL = 1009;
-  public static final int SWITCH = 1010;
+  //public static final int SWITCH = 1010;
   public static final int FALLING_BOX = 1011;
   //public static final int FLYING_BOX = 1012;
   //public static final int FLYING_BOX_2 = 1013;

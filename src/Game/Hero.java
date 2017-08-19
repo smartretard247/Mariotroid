@@ -80,6 +80,7 @@ public class Hero extends Living implements Armed {
     super.move();
     if(Math.abs(this.getY()) > 3000) { //fell off map
       die();
+      doLand();
     }
   }
   

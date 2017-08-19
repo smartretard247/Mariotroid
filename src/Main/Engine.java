@@ -234,14 +234,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         GAME.addGO(new Door(ID.DOOR, 300, 987, -60, 70, true));
         break;
       case 5:
-        GAME.addGO(new GravitySwitch(ID.SWITCH, TEX.SWITCH, 200, 160));
+        GAME.addGO(new GravitySwitch(ID.getNewId(), TEX.SWITCH, 230, 135));
+        GAME.addGO(new GravitySwitch(ID.getNewId(), TEX.SWITCH, 6272, 920));
+        GAME.getGO(ID.getLastId()).setFlipX(true);
         int boxHeight = DrawLib.getTexture(TEX.BOX).getHeight();
         GAME.addGO(new CrumblingBox(ID.getNewId(), TEX.BOX, 3400, 200));
         GAME.addGO(new CrumblingBox(ID.getNewId(), TEX.BOX, 3400, 200+boxHeight));
         GAME.addGO(new Calamity(ID.KEY_HOLDER, 1, 20, TEX.CALAMITY, 10000, 575, new Point.Float(10,10), 750));
         b = (Calamity)GAME.getGO(ID.KEY_HOLDER);
-        b.setMinX(8050);
-        b.setMaxX(11200);
+        b.setMinX(8920);
         keyHolder = (Enemy)GAME.getGO(ID.KEY_HOLDER);
         GAME.addGO(new Door(ID.DOOR, 11100, 163, 75, 0));
         break;
@@ -1376,7 +1377,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             break;
           default:
             c = GAME.getGO(np.firedID);
-            if(c != null) {
+            if(c != null && c instanceof Armed) {
               Armed p = (Armed)c;
               fired = p.firePrimaryWeapon(np.worldCoord);
             } else {
