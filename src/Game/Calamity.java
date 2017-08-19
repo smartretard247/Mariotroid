@@ -7,6 +7,7 @@ import Main.Engine;
 import Main.GameOverException;
 import Test.TestDisplay;
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,12 +17,12 @@ import javax.swing.Timer;
  *
  * @author Jeezy
  */
-public class Boss extends Enemy {
+public class Calamity extends Enemy implements Armed, AutoFires {
   private int minXLocation = 0; // to keep from entering the rest of the level
   private int maxXLocation = 12000;
   private final Timer fireTimer = new Timer(5000, null);
   
-  public Boss(int objId, int startLives, int startHealth, int texId, float x, float y, Point.Float speed, int points) {
+  public Calamity(int objId, int startLives, int startHealth, int texId, float x, float y, Point.Float speed, int points) {
     super(objId, startLives, startHealth, texId, x, y, speed);
     pointsWorth = points;
     fireTimer.setRepeats(false);
@@ -30,7 +31,7 @@ public class Boss extends Enemy {
                                       new float[] { 0.5f, 1.0f });
   }
   
-  public Boss() {
+  public Calamity() {
     this(-1, 1, 1, TEX.ENEMY_BASIC, 0, 0, new Point.Float(0, 0), 0);
   }
   
@@ -124,6 +125,7 @@ public class Boss extends Enemy {
   public int getMaxX() { return maxXLocation; }
   public void setMaxX(int to) { maxXLocation = to; }
   
+  @Override
   public Projectile firePrimaryWeapon(Point.Float direction) {
     fireTimer.start();
     Point.Float zRot = Projectile.calcRotation(new Point.Float(x, y), direction);
@@ -132,5 +134,12 @@ public class Boss extends Enemy {
     return new Projectile(ID.getNewId(), TEX.ENEMY_WEAPON_1, zRot, getX(), getY(), 5); // fire primary, 5 damage
   }
   
+  @Override
+  public Projectile fireSecondaryWeapon(Point2D.Float direction) {
+    return null;
+  }
+  
+  @Override
   public boolean didRecentlyFire() { return fireTimer.isRunning(); }
+
 }

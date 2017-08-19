@@ -181,7 +181,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     PhysicsEngine.resetGravity();
     GAME.clearGOs(); // will not clear the hero
     Hero h = (Hero)GAME.getGO(ID.HERO);
-    Boss b;
+    Calamity b;
     switch(level) {
       case 1:// only add level 1 visible objects to this map
         loadDefaults();
@@ -212,13 +212,22 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 8000, 200, new Point.Float(-5,0)));
         GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 9000, 200, new Point.Float(5,0)));
         GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 9500, 200, new Point.Float(-5,0)));
-        GAME.addGO(new Phantom(ID.PHANTOM, 1, 5, TEX.PHANTOM, 1150, 500, new Point.Float(-10,0), 300));
-        ((Phantom)GAME.getGO(ID.PHANTOM)).changeDrop(new int[]{ TEX.WEAPON_PICKUP }, new float[]{ 1.0f });
-        keyHolder = (Enemy)GAME.getGO(ID.PHANTOM);
+        GAME.addGO(new Phantom(ID.KEY_HOLDER, 1, 5, TEX.PHANTOM, 1150, 500, new Point.Float(-10,0), 300));
+        ((Phantom)GAME.getGO(ID.KEY_HOLDER)).changeDrop(new int[]{ TEX.WEAPON_PICKUP }, new float[]{ 1.0f });
+        keyHolder = (Enemy)GAME.getGO(ID.KEY_HOLDER);
         GAME.addGO(new Door(ID.DOOR, 300, 163, 75, 0));
         break;
       case 3:
-        GAME.addGO(new Door(ID.DOOR, 11100, 780, 75, 0));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 2435, 200, new Point.Float(-5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 3900, 580, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 4636, 580, new Point.Float(-5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 7940, 200, new Point.Float(5,0)));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 3842, 200, new Point.Float(-10,0), 300));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 4387, 200, new Point.Float(10,0), 300));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 6374, 200, new Point.Float(-10,0), 300));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 9973, 200, new Point.Float(10,0), 300));
+        GAME.addGO(new Phantom(ID.KEY_HOLDER, 1, 5, TEX.PHANTOM, 10420, 200, new Point.Float(-10,0), 300));
+        GAME.addGO(new Door(ID.DOOR, 11300, 740, 75, 0));
         break;
       case 4:
         GAME.addGO(new Item(ID.ARMOR, TEX.ARMOR, 5740, 198));
@@ -229,11 +238,11 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         int boxHeight = DrawLib.getTexture(TEX.BOX).getHeight();
         GAME.addGO(new CrumblingBox(ID.FLYING_BOX, TEX.BOX, 3400, 200));
         GAME.addGO(new CrumblingBox(ID.FLYING_BOX_2, TEX.BOX, 3400, 200+boxHeight));
-        GAME.addGO(new Boss(ID.CALAMITY, 1, 20, TEX.CALAMITY, 10000, 575, new Point.Float(10,10), 750));
-        b = (Boss)GAME.getGO(ID.CALAMITY);
+        GAME.addGO(new Calamity(ID.KEY_HOLDER, 1, 20, TEX.CALAMITY, 10000, 575, new Point.Float(10,10), 750));
+        b = (Calamity)GAME.getGO(ID.KEY_HOLDER);
         b.setMinX(8050);
         b.setMaxX(11200);
-        keyHolder = (Enemy)GAME.getGO(ID.CALAMITY);
+        keyHolder = (Enemy)GAME.getGO(ID.KEY_HOLDER);
         GAME.addGO(new Door(ID.DOOR, 11100, 163, 75, 0));
         break;
       default: System.out.println("Unknown level number while setting up visibles."); break;
@@ -1137,17 +1146,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             // process all collisions
             List<Integer> collisionIds = c.processCollisions(GAME.getGOsNear(c));
             if(collisionIds != null) toRemove.addAll(collisionIds);
+            
+            if(c instanceof AutoFires) {
+              if(!((AutoFires)c).didRecentlyFire()) {
+                qProjectiles.offer(new NextProjectile(hero.getPosition(), c.getObjectId())); // fire boss weapon toward hero
+              }
+            }
           }
         });
         
-        Boss boss = (Boss)GAME.getGO(ID.CALAMITY);
-        if(boss != null && !boss.didRecentlyFire()) 
-          qProjectiles.offer(new NextProjectile(hero.getPosition(), ID.CALAMITY)); // fire boss weapon toward hero
-        
-        Phantom phantom = (Phantom)GAME.getGO(ID.PHANTOM);
-        if(phantom != null && !phantom.didRecentlyFire()) 
-          qProjectiles.offer(new NextProjectile(hero.getPosition(), ID.PHANTOM)); // fire phantom weapon toward hero
-
         // check for warp collision, then remove all ids tagged for removal
         if(toRemove.contains(ID.WARP)) jumpToNextLevel();
         toRemove.stream().forEach((id) -> { GAME.removeGO(id); });
@@ -1359,36 +1366,24 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         Projectile fired;
         Collidable c;
         switch(np.firedID){
-            case ID.HERO:
-              Point.Float wc = DrawLib.screenToWorld(np.screenCoord);
-              //if(debugging) Engine.setConversation(new String[] { wc.x + ", " + wc.y });
-              if(np.isFromPrimaryWeapon)
-                fired = hero.firePrimaryWeapon(wc);
-              else
-                fired = hero.fireSecondaryWeapon(wc);
-              break;
-            case ID.PHANTOM:
-              c = GAME.getGO(ID.PHANTOM);
-              if(c != null) {
-                Phantom p = (Phantom)c;
-                fired = p.firePrimaryWeapon(np.worldCoord);
-              } else {
-                fired = null;
-              }
-              break;
-            case ID.CALAMITY:
-              c = GAME.getGO(ID.CALAMITY);
-              if(c != null) {
-                Boss b = (Boss)c;
-                fired = b.firePrimaryWeapon(np.worldCoord);
-              } else {
-                fired = null;
-              }
-              break;
-            default:
+          case ID.HERO:
+            Point.Float wc = DrawLib.screenToWorld(np.screenCoord);
+            //if(debugging) Engine.setConversation(new String[] { wc.x + ", " + wc.y });
+            if(np.isFromPrimaryWeapon)
+              fired = hero.firePrimaryWeapon(wc);
+            else
+              fired = hero.fireSecondaryWeapon(wc);
+            break;
+          default:
+            c = GAME.getGO(np.firedID);
+            if(c != null) {
+              Armed p = (Armed)c;
+              fired = p.firePrimaryWeapon(np.worldCoord);
+            } else {
               System.out.println("Attempted to fire null projectile.");
               fired = null;
-              break;
+            }
+            break;
         } 
         if(fired != null) GAME.addGO(fired);
         else System.out.println("Attempted to fire null projectile.");

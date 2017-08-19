@@ -7,6 +7,7 @@ import Main.Engine;
 import Main.GameOverException;
 import Test.TestDisplay;
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +17,7 @@ import javax.swing.Timer;
  *
  * @author Jeezy
  */
-public class Phantom extends Enemy {
+public class Phantom extends Enemy implements Armed, AutoFires {
   private final Timer fireTimer = new Timer(2000, null);
   
   public Phantom(int objId, int startLives, int startHealth, int texId, float x, float y, Point.Float speed, int points) {
@@ -125,5 +126,12 @@ public class Phantom extends Enemy {
     return new Projectile(ID.getNewId(), TEX.ENEMY_WEAPON_1, zRot, getX(), getY(), 5); // fire primary, 5 damage
   }
   
+  @Override
+  public Projectile fireSecondaryWeapon(Point2D.Float direction) {
+    return null;
+  }
+  
+  @Override
   public boolean didRecentlyFire() { return fireTimer.isRunning(); }
+
 }

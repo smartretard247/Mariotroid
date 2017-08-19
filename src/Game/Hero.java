@@ -17,7 +17,7 @@ import Test.TestDisplay;
  *
  * @author Jeezy
  */
-public class Hero extends Living {
+public class Hero extends Living implements Armed {
   private static final int MAX_SECONDARY_AMMO = 5;
   private static final int JUMP_SPEED = 85;
   private int fallCount; // to prevent user from "slowing" fall by repeatedly tapping spacebar
@@ -288,6 +288,7 @@ public class Hero extends Living {
             (isFlippedOnY()) ? getX()-xOffset : getX()+xOffset, // fire in opposite direction if flipped
             getY(), 1); //fire primary, 1 damage
   }
+  
   public Projectile fireSecondaryWeapon(Point.Float direction) {
     if(Engine.isSoundEnabled() && hasSecondaryWeapon) SOUND_EFFECT.GUN.play();
     if(hasSecondaryWeapon && secondaryAmmoCount > 0) {
