@@ -6,4 +6,5 @@ package Game;
  */
 public interface AutoFires {
   public boolean didRecentlyFire();
+  public boolean closeToTarget(Hero h);
 }

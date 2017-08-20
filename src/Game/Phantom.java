@@ -5,6 +5,7 @@ import Enumerations.ID;
 import Enumerations.TEX;
 import Main.Engine;
 import Main.GameOverException;
+import Main.PhysicsEngine;
 import Test.TestDisplay;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -30,11 +31,6 @@ public class Phantom extends Enemy implements Armed, AutoFires {
   
   public Phantom() {
     this(-1, 1, 1, TEX.ENEMY_BASIC, 0, 0, new Point.Float(0, 0), 0);
-  }
-  
-  @Override
-  public void draw() {
-    super.draw(false);
   }
   
   @Override
@@ -134,4 +130,6 @@ public class Phantom extends Enemy implements Armed, AutoFires {
   @Override
   public boolean didRecentlyFire() { return fireTimer.isRunning(); }
 
+  @Override
+  public boolean closeToTarget(Hero h){ return (Math.abs(h.getX() - getX()) < 2000); }
 }

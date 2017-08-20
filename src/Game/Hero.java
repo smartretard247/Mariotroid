@@ -99,7 +99,9 @@ public class Hero extends Living implements Armed {
       int texId = c.getTextureId();
       int objId = c.getObjectId();
       switch(texId) {
-        case TEX.SWITCH: break;
+        case TEX.SWITCH:
+          ((GravitySwitch)c).doAction();
+          break;
         case TEX.PRI_WEAPON: break;
         case TEX.ALT_WEAPON: break;
         case TEX.HEALTH_ORB:
