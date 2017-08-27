@@ -32,14 +32,17 @@ public final class TEX {
   public static final int BACKGROUND_2 = 2021;
   public static final int LEVEL_DECOR_1 = 2022;
   public static final int LEVEL_DECOR_2 = 2023;
-  public static final int HEALTH_ORB = 2024;
-  public static final int TRANSPARENT = 2025;
-  public static final int SWITCH = 2026;
-  public static final int BOX = 2027;
-  public static final int TEXT_BOX = 2028;
-  public static final int PHANTOM = 2029;
-  public static final int WEAPON_PICKUP = 2030;
-  public static final int AMMO_ORB = 2031;
-  public static final int BIG_HEALTH_ORB = 2032;
-  public static final int BIG_AMMO_ORB = 2033;
+  public static final int LEVEL_DECOR_3 = 2024;
+  public static final int LEVEL_DECOR_4 = 2025;
+  public static final int LEVEL_DECOR_5 = 2026;
+  public static final int HEALTH_ORB = 2027;
+  public static final int TRANSPARENT = 2028;
+  public static final int SWITCH = 2029;
+  public static final int BOX = 2030;
+  public static final int TEXT_BOX = 2031;
+  public static final int PHANTOM = 2032;
+  public static final int WEAPON_PICKUP = 2033;
+  public static final int AMMO_ORB = 2034;
+  public static final int BIG_HEALTH_ORB = 2035;
+  public static final int BIG_AMMO_ORB = 2036;
 }
