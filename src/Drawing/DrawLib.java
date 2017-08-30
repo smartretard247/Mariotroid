@@ -52,8 +52,11 @@ public class DrawLib {
     textureIdMap.put(TEX.ENEMY_WEAPON_2, "/res/projectile_green.png");
     textureIdMap.put(TEX.JETPACK, "/res/jetpack.png");
     textureIdMap.put(TEX.ENEMY_BASIC, "/res/enemy_basic.png");
-    textureIdMap.put(TEX.LEVEL_DECOR_1, "/res/layer_decor_1.png"); // only load the first two levels
-    textureIdMap.put(TEX.LEVEL_DECOR_2, "/res/layer_decor_2.png"); // the rest will alternate btw these id's
+    textureIdMap.put(TEX.LEVEL_DECOR_1, "/res/layer_decor_1.png");
+    textureIdMap.put(TEX.LEVEL_DECOR_2, "/res/layer_decor_2.png");
+    textureIdMap.put(TEX.LEVEL_DECOR_3, "/res/layer_decor_3.png");
+    textureIdMap.put(TEX.LEVEL_DECOR_4, "/res/layer_decor_4.png");
+    textureIdMap.put(TEX.LEVEL_DECOR_5, "/res/layer_decor_5.png");
     textureIdMap.put(TEX.CALAMITY, "/res/calamity.png");
     textureIdMap.put(TEX.DOOR, "/res/door.png");
     textureIdMap.put(TEX.DOOR_POWERED, "/res/door_powered.png");

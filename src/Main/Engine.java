@@ -311,7 +311,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void loadDefaults() {
     currLevel = 1; // no need to adjust level number on any further cases
     swapBackground = false;
-    showDecor = false;
+    showDecor = true;
     won = false;
     scene.resetAll(); // do not change scene in other cases
     SOUND_EFFECT.THEME.playLoop();
@@ -562,7 +562,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glColor3f(1f, 1f, 1f);
     translateScene(gl, true);
     if(currLevel < TOTAL_LEVELS)
-      DrawLib.drawTexturedRectangle(TEX.LEVEL_DECOR_1+(currLevel%2)); // draw the background level
+      DrawLib.drawTexturedRectangle(TEX.LEVEL_DECOR_1+(currLevel)); // draw the background level
     gl.glPopMatrix();
   }
   
@@ -584,9 +584,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glColor3f(1f, 1f, 1f);
     gl.glTranslated(DrawLib.getTexture(TEX.LEVEL_DECOR_1).getWidth()/2, DrawLib.getTexture(TEX.LEVEL_DECOR_1).getHeight()/2, 0); // levels MUST be same size as DECOR_1
     if(showDecor) {
-      int decorIdOffset = Math.abs(currLevel%2-1); // will either be 0 or 1, to swap between pre-loaded decor
-      if(currLevel > TOTAL_LEVELS) decorIdOffset = Math.abs(--decorIdOffset);
-      DrawLib.drawTexturedRectangle(TEX.LEVEL_DECOR_1+decorIdOffset);
+      DrawLib.drawTexturedRectangle(TEX.LEVEL_DECOR_1 + currLevel - 1);
     }
     gl.glPopMatrix();
   }
