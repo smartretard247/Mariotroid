@@ -45,4 +45,5 @@ public final class TEX {
   public static final int AMMO_ORB = 2034;
   public static final int BIG_HEALTH_ORB = 2035;
   public static final int BIG_AMMO_ORB = 2036;
+  public static final int BOX_BROKEN = 2037;
 }

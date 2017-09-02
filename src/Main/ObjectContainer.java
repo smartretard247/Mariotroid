@@ -155,6 +155,12 @@ public class ObjectContainer {
     return null;
   }
   
+  public ArrayList<Interactive> getIOs(){
+      ArrayList<Interactive> io = new ArrayList<>();
+      io.addAll(interactiveObjects.values());
+    return io;
+  }
+  
   /**
    * Clears all game, temp, and interactive objects except for the hero.
    */

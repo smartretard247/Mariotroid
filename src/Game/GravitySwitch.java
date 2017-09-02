@@ -21,7 +21,14 @@ public class GravitySwitch extends Interactive {
       PhysicsEngine.inverseGravity();
       setColor(1f, 0.5f, 1f); // deactivated color
       setColorNormal(1f, 0.5f, 1f); // deactivated color
+      Engine.resetGravSwitches();
       setComplete(true);
     }
+  }
+  
+  public void toggleOff(){
+      setColor(new float[] { 0.5f, 0.3f, 0.8f });
+      setColorNormal(1f, 1f, 1f);
+      setComplete(false);
   }
 }
