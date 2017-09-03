@@ -1418,6 +1418,15 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   /**
+   * Resets all the gravity switches to off
+   */
+  public static void resetGravSwitches(){
+      for(Interactive i : GAME.getIOs()){
+          if(i instanceof GravitySwitch){((GravitySwitch)i).toggleOff();}
+      }
+  }
+  
+  /**
    * Draws the scrolling log to the top left corner of the scene.
    * @param gl 
    */
