@@ -47,7 +47,7 @@ import javax.swing.JFrame;
 public class Engine extends JPanel implements GLEventListener, KeyListener, MouseListener, 
         MouseMotionListener, ActionListener {
   //////// VARIBLES
-  private static boolean debugging = true;
+  private static boolean debugging = false;
   
   private final GLJPanel display;
   private final Dimension windowDim = new Dimension(1280,720);
@@ -507,17 +507,35 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     credits.add("TEAM MARIOTROID!");
     credits.add("----------------");
     credits.add("");
-    credits.add("Greggie Pascual - Project Lead");
+    credits.add("Project Lead: Greggie Pascual");
     credits.add("");
-    credits.add("Marvelous Agabi - Documentation");
+    credits.add("--- Programmers ---");
     credits.add("");
-    credits.add("Nathan Mitson - Testing");
+    credits.add("Lead Programmer: Jesse Young");
     credits.add("");
-    credits.add("Matthew Miller - Design");
+    credits.add("Lead Engine Developer: Jesse Young");
     credits.add("");
-    credits.add("Jesse Young - Developer");
+    credits.add("Programmer: Nathan Mitson");
     credits.add("");
-    credits.add("William Malone - Developer");
+    credits.add("--- Game Design ---");
+    credits.add("");
+    credits.add("Lead Designer: Matthew Miller");
+    credits.add("");
+    credits.add("Level Designer: Nathan Mitson");
+    credits.add("");
+    credits.add("--- Documentation ---");
+    credits.add("");
+    credits.add("Documentation Lead: Marvelous Agabi");
+    credits.add("");
+    credits.add("Software diagrams designer: William Malone");
+    credits.add("");
+    credits.add("--- Testing ---");
+    credits.add("");
+    credits.add("Test Developer: Nathan Mitson");
+    credits.add("");
+    credits.add("Game Play Tester: Nathan Mitson");
+    credits.add("");
+    credits.add("Game Play Tester: Jesse Young");
 
     gl.glColor3fv( new float[] { 0.0f, 1.0f, 0.0f }, 0);
     for(int i = 0; i < credits.size(); i++)
@@ -1431,9 +1449,9 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * @param gl 
    */
   private void drawLog(GL2 gl) {
-    if(gameMode == GAME_MODE.RUNNING || gameMode == GAME_MODE.TALKING
-            || gameMode == GAME_MODE.DYING || gameMode == GAME_MODE.WARPING)
-    TestDisplay.writeToScreen(gl, DrawLib.getTexture(TEX.HUD).getWidth());
+//    if(gameMode == GAME_MODE.RUNNING || gameMode == GAME_MODE.TALKING
+//            || gameMode == GAME_MODE.DYING || gameMode == GAME_MODE.WARPING)
+//    TestDisplay.writeToScreen(gl, DrawLib.getTexture(TEX.HUD).getWidth());
   }
   
   /**
