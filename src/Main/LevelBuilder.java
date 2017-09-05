@@ -100,7 +100,7 @@ public class LevelBuilder {
               r.setY(y);
               r.setW(findWidth(x, y, bounds.width)); // find width
               r.setH(findHeight(x, y, (int)r.w(), bounds.height)); //height
-              System.out.println(r); // found rectangle
+              //System.out.println(r); // found rectangle
               markPixels(marked, r); // mark dead pixels
               // adjust to center before adding to found
               r.setX(r.x()+r.w()/2);
@@ -129,7 +129,7 @@ public class LevelBuilder {
           }
           Rectangle r = new Rectangle(var.get(0), var.get(1), var.get(2), var.get(3));
           found.add(r); // add to found rectangles
-          System.out.println(r); // log rectangle
+          //System.out.println(r); // log rectangle
         }
       });
     }
