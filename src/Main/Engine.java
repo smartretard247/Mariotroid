@@ -47,7 +47,7 @@ import javax.swing.JFrame;
 public class Engine extends JPanel implements GLEventListener, KeyListener, MouseListener, 
         MouseMotionListener, ActionListener {
   //////// VARIBLES
-  private static boolean debugging = true;
+  private static boolean debugging = false;
   
   private final GLJPanel display;
   private final Dimension windowDim = new Dimension(1280,720);
@@ -189,7 +189,6 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         h.resetAll();
         resetScore();
         hero.setGodMode(false);
-        Enemy enemy = new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 9000, 200, new Point.Float(-5,0));
         GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 2000, 200, new Point.Float(-5,0))); // objId, 1 life, 1 health, texId, x, y, sx/sy
         GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 3000, 200, new Point.Float(5,0)));
         GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 8000, 200, new Point.Float(5,0)));
@@ -197,9 +196,8 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 9300, 800, new Point.Float(5,0)));
         GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 9600, 800, new Point.Float(5,0)));
         GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 10000, 200, new Point.Float(5,0)));
-        GAME.addGO(enemy);
+        GAME.addGO(new Enemy(ID.KEY_HOLDER, 1, 1, TEX.ENEMY_BASIC, 9000, 200, new Point.Float(-5,0)));
         GAME.addGO(new Door(ID.DOOR, 11100, 163, 75, 0));
-        keyHolder = enemy;
         break;
       case 2:// setup level 2, only add level 2 game objects to this map
         GAME.addGO(new Item(ID.JETPACK, TEX.JETPACK, 11300, 800));
@@ -230,16 +228,45 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         GAME.addGO(new Door(ID.DOOR, 11300, 740, 75, 0));
         break;
       case 4:
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 3200, 200, new Point.Float(-5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 3800, 200, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 6000, 200, new Point.Float(-5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 6000, 200, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 6200, 200, new Point.Float(-5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 6200, 200, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 6400, 200, new Point.Float(-5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 6400, 200, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 6600, 200, new Point.Float(-5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 6600, 200, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 6800, 200, new Point.Float(-5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 6800, 200, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 5700, 200, new Point.Float(5,0)));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 400, 200, new Point.Float(-10,0), 300));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 300, 200, new Point.Float(10,0), 300));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 4000, 200, new Point.Float(10,0), 300));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 9300, 200, new Point.Float(10,0), 300));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 10420, 200, new Point.Float(-10,0), 300));
+        GAME.addGO(new Phantom(ID.KEY_HOLDER, 1, 5, TEX.PHANTOM, 200, 200, new Point.Float(-10,0), 300));
+        GAME.addGO(new GravitySwitch(ID.getNewId(), TEX.SWITCH, 400, 135));
         GAME.addGO(new Item(ID.ARMOR, TEX.ARMOR, 5740, 198));
-        GAME.addGO(new Door(ID.DOOR, 300, 987, -60, 70, true));
+        GAME.addGO(new Door(ID.DOOR, 600, 987, -60, 70, true));
         break;
       case 5:
+        PhysicsEngine.resetGravity();
         GAME.addGO(new GravitySwitch(ID.getNewId(), TEX.SWITCH, 230, 135));
         GAME.addGO(new GravitySwitch(ID.getNewId(), TEX.SWITCH, 6272, 920));
         GAME.getGO(ID.getLastId()).setFlipX(true); // this switch is upside down
         int boxHeight = DrawLib.getTexture(TEX.BOX).getHeight();
-        GAME.addGO(new CrumblingBox(ID.getNewId(), TEX.BOX, 3400, 200));
-        GAME.addGO(new CrumblingBox(ID.getNewId(), TEX.BOX, 3400, 200+boxHeight));
+        GAME.addGO(new CrumblingBox(ID.getNewId(), TEX.BOX, 4440, 180));
+        GAME.addGO(new CrumblingBox(ID.getNewId(), TEX.BOX, 4440, 180 + boxHeight));
+        GAME.addGO(new CrumblingBox(ID.getNewId(), TEX.BOX, 2890, 294 + boxHeight/2));
+        GAME.addGO(new CrumblingBox(ID.getNewId(), TEX.BOX, 2890, 294 + boxHeight/2 + boxHeight));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 2200, 650, new Point.Float(5,0)));
+        GAME.addGO(new Enemy(ID.getNewId(), 1, 1, TEX.ENEMY_BASIC, 2200, 650, new Point.Float(-5,0)));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 2200, 650, new Point.Float(10,0), 300));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 3200, 200, new Point.Float(10,0), 300));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 3800, 200, new Point.Float(10,0), 300));
+        GAME.addGO(new Phantom(ID.getNewId(), 1, 5, TEX.PHANTOM, 4200, 200, new Point.Float(10,0), 300));
         GAME.addGO(new Calamity(ID.KEY_HOLDER, 1, 20, TEX.CALAMITY, 10000, 575, new Point.Float(10,10), 750));
         b = (Calamity)GAME.getGO(ID.KEY_HOLDER);
         b.setMinX(8920);
@@ -284,7 +311,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   public void loadDefaults() {
     currLevel = 1; // no need to adjust level number on any further cases
     swapBackground = false;
-    showDecor = false;
+    showDecor = true;
     won = false;
     scene.resetAll(); // do not change scene in other cases
     SOUND_EFFECT.THEME.playLoop();
@@ -480,17 +507,35 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     credits.add("TEAM MARIOTROID!");
     credits.add("----------------");
     credits.add("");
-    credits.add("Greggie Pascual - Project Lead");
+    credits.add("Project Lead: Greggie Pascual");
     credits.add("");
-    credits.add("Marvelous Agabi - Documentation");
+    credits.add("--- Programmers ---");
     credits.add("");
-    credits.add("Nathan Mitson - Testing");
+    credits.add("Lead Programmer: Jesse Young");
     credits.add("");
-    credits.add("Matthew Miller - Design");
+    credits.add("Lead Engine Developer: Jesse Young");
     credits.add("");
-    credits.add("Jesse Young - Developer");
+    credits.add("Programmer: Nathan Mitson");
     credits.add("");
-    credits.add("William Malone - Developer");
+    credits.add("--- Game Design ---");
+    credits.add("");
+    credits.add("Lead Designer: Matthew Miller");
+    credits.add("");
+    credits.add("Level Designer: Nathan Mitson");
+    credits.add("");
+    credits.add("--- Documentation ---");
+    credits.add("");
+    credits.add("Documentation Lead: Marvelous Agabi");
+    credits.add("");
+    credits.add("Software diagrams designer: William Malone");
+    credits.add("");
+    credits.add("--- Testing ---");
+    credits.add("");
+    credits.add("Test Developer: Nathan Mitson");
+    credits.add("");
+    credits.add("Game Play Tester: Nathan Mitson");
+    credits.add("");
+    credits.add("Game Play Tester: Jesse Young");
 
     gl.glColor3fv( new float[] { 0.0f, 1.0f, 0.0f }, 0);
     for(int i = 0; i < credits.size(); i++)
@@ -535,7 +580,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glColor3f(1f, 1f, 1f);
     translateScene(gl, true);
     if(currLevel < TOTAL_LEVELS)
-      DrawLib.drawTexturedRectangle(TEX.LEVEL_DECOR_1+(currLevel%2)); // draw the background level
+      DrawLib.drawTexturedRectangle(TEX.LEVEL_DECOR_1+(currLevel)); // draw the background level
     gl.glPopMatrix();
   }
   
@@ -557,9 +602,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
     gl.glColor3f(1f, 1f, 1f);
     gl.glTranslated(DrawLib.getTexture(TEX.LEVEL_DECOR_1).getWidth()/2, DrawLib.getTexture(TEX.LEVEL_DECOR_1).getHeight()/2, 0); // levels MUST be same size as DECOR_1
     if(showDecor) {
-      int decorIdOffset = Math.abs(currLevel%2-1); // will either be 0 or 1, to swap between pre-loaded decor
-      if(currLevel > TOTAL_LEVELS) decorIdOffset = Math.abs(--decorIdOffset);
-      DrawLib.drawTexturedRectangle(TEX.LEVEL_DECOR_1+decorIdOffset);
+      DrawLib.drawTexturedRectangle(TEX.LEVEL_DECOR_1 + currLevel - 1);
     }
     gl.glPopMatrix();
   }
@@ -1149,7 +1192,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
             if(collisionIds != null) toRemove.addAll(collisionIds);
             
             if(c instanceof AutoFires) {
-              if(!((AutoFires)c).didRecentlyFire()) {
+              if(!((AutoFires)c).didRecentlyFire() && ((AutoFires)c).closeToTarget(hero)) {
                 qProjectiles.offer(new NextProjectile(hero.getPosition(), c.getObjectId())); // fire boss weapon toward hero
               }
             }
@@ -1161,9 +1204,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
         toRemove.stream().forEach((id) -> { GAME.removeGO(id); });
         
         // check if keyholder died to unlock door
-        if(keyHolder != null){
-          if(toRemove.contains(keyHolder.getObjectId())) GAME.activateDoor();
-        }
+        if(toRemove.contains(ID.KEY_HOLDER)) GAME.activateDoor();
         
         if(hero.getLives() == 0) { gameMode = GAME_MODE.DYING; } // check for game over
         break;
@@ -1360,7 +1401,7 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
    * Process a projectile than has been added to the queue.
    */
   public void fireProjectiles() {
-    if(!qProjectiles.isEmpty()) {
+    for(int projCount = 0; projCount < qProjectiles.size(); projCount++) {
       NextProjectile np;
       try {
         np = qProjectiles.take();
@@ -1395,13 +1436,22 @@ public class Engine extends JPanel implements GLEventListener, KeyListener, Mous
   }
   
   /**
+   * Resets all the gravity switches to off
+   */
+  public static void resetGravSwitches(){
+      for(Interactive i : GAME.getIOs()){
+          if(i instanceof GravitySwitch){((GravitySwitch)i).toggleOff();}
+      }
+  }
+  
+  /**
    * Draws the scrolling log to the top left corner of the scene.
    * @param gl 
    */
   private void drawLog(GL2 gl) {
-    if(gameMode == GAME_MODE.RUNNING || gameMode == GAME_MODE.TALKING
-            || gameMode == GAME_MODE.DYING || gameMode == GAME_MODE.WARPING)
-    TestDisplay.writeToScreen(gl, DrawLib.getTexture(TEX.HUD).getWidth());
+//    if(gameMode == GAME_MODE.RUNNING || gameMode == GAME_MODE.TALKING
+//            || gameMode == GAME_MODE.DYING || gameMode == GAME_MODE.WARPING)
+//    TestDisplay.writeToScreen(gl, DrawLib.getTexture(TEX.HUD).getWidth());
   }
   
   /**

@@ -142,4 +142,6 @@ public class Calamity extends Enemy implements Armed, AutoFires {
   @Override
   public boolean didRecentlyFire() { return fireTimer.isRunning(); }
 
+  @Override
+  public boolean closeToTarget(Hero h){ return (Math.abs(h.getX() - getX()) < 2000); }
 }

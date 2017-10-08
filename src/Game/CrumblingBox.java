@@ -1,6 +1,7 @@
 package Game;
 
 import Enumerations.TEX;
+import Main.PhysicsEngine;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,18 +50,26 @@ public class CrumblingBox extends Interactive {
           }
           break;
         default:
-          if(new Projectile().getClass().isInstance(c)) {
-            if(!(c.getTextureId() == TEX.ENEMY_WEAPON_1 || c.getTextureId() == TEX.ENEMY_WEAPON_2)) {
-              if(!isComplete()) {
-                this.setTextureId(TEX.NONE); // change to texture of 'crumbled' rock
-                this.setComplete(true);
+          if (this.getTextureId() == TEX.BOX){
+            if(new Projectile().getClass().isInstance(c)) {
+              if(!(c.getTextureId() == TEX.ENEMY_WEAPON_1 || c.getTextureId() == TEX.ENEMY_WEAPON_2)) {
+                if(!isComplete()) {
+                  this.setTextureId(TEX.BOX_BROKEN); // change to texture of 'crumbled' rock
+                  this.setComplete(true);
+                }
               }
+              toRemove.add(objId);
             }
-            toRemove.add(objId);
           }
           break;
       }
     }
     return toRemove;
+  }
+  
+  @Override
+  public void draw() {
+    flipX = PhysicsEngine.gravityIsInverted();
+    super.draw();
   }
 }
